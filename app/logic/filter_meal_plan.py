@@ -1,6 +1,8 @@
 from app.utils.logger import get_logger
+from app.utils.timing import timed
 logger = get_logger(__name__)
 
+@timed
 def filter_meal_plan(meal_plan: dict, conditions: list[str]) -> dict:
     logger.info("Applying health filters...")
     sensitive_ingredients = {

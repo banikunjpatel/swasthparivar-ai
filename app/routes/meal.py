@@ -1,15 +1,34 @@
+import json
+import re
 from fastapi import APIRouter
 from app.prompts.meal_plan import build_meal_plan_prompt
 from app.services.openai_client import call_gpt
-from app.models.user_profile import UserProfile
+from app.utils.logger import get_logger
+from app.utils.formatting import title_case_meals
+from app.modals.user_profile import UserProfile
+logger = get_logger(__name__)
 
 router = APIRouter()
 
 @router.post("/generate-meal")
 def generate_meal(user: UserProfile):
+    logger.info(f"Generating meal plan for {user.fullName}")
     prompt = build_meal_plan_prompt(user.dict())
-    raw_output = call_gpt(prompt)  # wraps openai.ChatCompletion.create
+    raw_output = call_gpt(prompt)
+    print("=== Endpoint called ===")
+    print("Raw GPT output:", raw_output)
     try:
-        return json.loads(raw_output)
-    except:
+        # Extract JSON between triple backticks if present
+        match = re.search(r"```json(.*?)```", raw_output, re.DOTALL)
+        if match:
+            json_str = match.group(1).strip()
+        else:
+            # Fallback: try to find the first {...} block
+            match = re.search(r"(\{.*\})", raw_output, re.DOTALL)
+            json_str = match.group(1).strip() if match else raw_output
+
+        print("Extracted JSON string:", json_str)
+        return json.loads(json_str)
+    except Exception as e:
+        print("Meal plan parsing error:", e)
         return {"error": "Could not parse meal plan response."}
