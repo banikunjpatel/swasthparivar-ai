@@ -1,16 +1,16 @@
 import json
 import re
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.prompts.meal_plan import build_meal_plan_prompt
 from app.services.openai_client import call_gpt
 from app.utils.logger import get_logger
 from app.utils.formatting import title_case_meals
-from app.modals.user_profile import UserProfile
-logger = get_logger(__name__)
+from app.models.user_profile import UserProfile
 
+logger = get_logger(__name__)
 router = APIRouter()
 
-@router.post("/generate-meal")
+@router.post("/generate-meal-plan")
 def generate_meal(user: UserProfile):
     logger.info(f"Generating meal plan for {user.fullName}")
     prompt = build_meal_plan_prompt(user.dict())
@@ -28,7 +28,7 @@ def generate_meal(user: UserProfile):
             json_str = match.group(1).strip() if match else raw_output
 
         print("Extracted JSON string:", json_str)
-        return json.loads(json_str)
+        return title_case_meals(json.loads(json_str))
     except Exception as e:
-        print("Meal plan parsing error:", e)
-        return {"error": "Could not parse meal plan response."}
+        logger.error(f"Meal plan parsing error: {e}")
+        raise HTTPException(status_code=500, detail="Meal plan output could not be parsed as JSON.")

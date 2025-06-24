@@ -5,8 +5,8 @@ from dotenv import load_dotenv
 from app.utils.timing import timed
 from app.utils.logger import get_logger
 
-load_dotenv()
 logger = get_logger(__name__)
+load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 

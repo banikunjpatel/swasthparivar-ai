@@ -1,47 +1,79 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import List
-from app.modals.user_profile import UserProfile
+from typing import List, Dict, Any
+from fastapi.responses import JSONResponse
+
+from app.models.user_profile import UserProfile
 from app.services.meal_plan_service import generate_meal_plan
-from app.logic.combine_family_plans import merge_family_meal_plans
+from app.logic.combine_family_plans import combine_family_plans
 from app.utils.validators import validate_user_profile
 from app.utils.formatting import title_case_meals
+from app.utils.logger import get_logger
 
 router = APIRouter()
+logger = get_logger(__name__)
 
+
+# 🧾 Request schema
 class FamilyMealRequest(BaseModel):
     members: List[UserProfile]
 
+
+# ✅ POST route to generate family meal from user input
 @router.post("/generate-family-meal", summary="Generate a combined family meal plan")
 def generate_family_meal(data: FamilyMealRequest):
     try:
-        meal_plans = []
-
+        meal_plans = {}
         for member in data.members:
             profile = member.dict()
-            validate_user_profile(profile)  # 🛡️ ensure data is safe
-            individual_plan = generate_meal_plan(profile)  # 🔄 GPT-based generation
-            meal_plans.append(individual_plan)
+            validate_user_profile(profile)
+            individual_plan = generate_meal_plan(profile)
+            meal_plans[member.fullName] = individual_plan
 
-        # 🧠 Merge all individual meal plans
-        family_meal = merge_family_meal_plans([m.dict() for m in data.members], meal_plans)
+        # 🧠 Merge the individual meal plans using smart logic
+        combined = combine_family_plans(meal_plans)
 
-        # 🧼 Flatten lists
-        for day in family_meal:
-            for meal_type in family_meal[day]:
-                if isinstance(family_meal[day][meal_type], list):
-                    family_meal[day][meal_type] = ", ".join(family_meal[day][meal_type])
-                    
-        print("🔎 Merged family meal plan keys:", family_meal.keys())
-        print("🔎 Sample day:", family_meal['Day 1'])
-        print("🔎 Type of Breakfast:", type(family_meal['Day 1']['Breakfast']))
-
-        # ✨ Format meal text
-        formatted_meal = title_case_meals(family_meal)
-        return formatted_meal
+        logger.info("✅ Family meal plan generated successfully.")
+        return combined
 
     except ValueError as e:
+        logger.error(f"❌ Validation error: {e}")
         raise HTTPException(status_code=400, detail=str(e))
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Family meal generation failed: {str(e)}")
+        logger.exception("❌ Unexpected error during family meal generation.")
+        raise HTTPException(status_code=500, detail="Family meal generation failed")
+
+
+# ✅ GET route to export a sample shared family plan (SP-203.6)
+@router.get("/export-family-meal", summary="Export a sample family meal plan")
+def export_sample_family_plan():
+    try:
+        # 🔁 Hardcoded sample input (can be moved to file or replaced with POST input)
+        sample_input = {
+            "Anita": {
+                "Monday": {
+                    "breakfast": "Poha",
+                    "lunch": "Paneer Curry"
+                }
+            },
+            "Ramesh": {
+                "Monday": {
+                    "breakfast": "Poha",
+                    "lunch": "Chicken Curry"
+                }
+            },
+            "Amit": {
+                "Monday": {
+                    "breakfast": "Upma",
+                    "lunch": "Dal Fry"
+                }
+            }
+        }
+
+        result = combine_family_plans(sample_input)
+        return JSONResponse(content=result)
+
+    except Exception as e:
+        logger.exception("❌ Failed to export sample family plan.")
+        raise HTTPException(status_code=500, detail="Could not export family meal plan")

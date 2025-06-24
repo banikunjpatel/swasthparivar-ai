@@ -1,39 +1,44 @@
 def build_meal_plan_prompt(user):
-    return f"""
-You are an experienced Indian Ayurvedic nutritionist and fitness-aware meal planner.
+    health_conditions = user.get("health_conditions", [])
+    allergies = user.get("allergies", [])
+    preferences = user.get("preferences", [])
+    calorie_goal = user.get("calorie_goal", "unspecified")
 
-Generate a 7-day meal plan for the following user:
+    health_notes = ""
+    if health_conditions:
+        health_notes += "Consider the following health conditions:\n"
+        for condition in health_conditions:
+            health_notes += f"- {condition}: avoid known triggers\n"
 
-- Name: {user.get("fullName", "Unknown")}
-- Age: {user.get("age", "Unknown")}, Gender: {user.get("gender", "")}
-- Weight: {user.get("weight", "Unknown")} kg, Height: {user.get("height", "Unknown")} cm
-- Ayurvedic Body Type (Prakriti): {user.get("prakriti", "Unknown")}
-- Fitness Goal: {user.get("fitnessGoals", "general wellness")}
-- Activity Level: {user.get("activityLevel", "moderately active")}
-- Dietary Preference: {user.get("dietaryPreferences", "vegetarian")}
-- Medical Conditions: {", ".join(user.get("medicalConditions", [])) or "None"}
-- Food Allergies: {", ".join(user.get("allergies", [])) or "None"}
+    if allergies:
+        health_notes += "User has the following allergies: " + ", ".join(allergies) + ".\n"
 
-🟢 Guidelines:
-- Align meals with Ayurvedic principles for the user's prakriti type.
-- Support the user's goal while respecting allergies and activity level.
-- Use seasonal, Indian ingredients and practical recipes.
-- Include 4 meals/day: Breakfast, Lunch, Snack, Dinner.
-- Add hydration or portion tips if helpful.
+    prompt = f"""
+You are an expert Indian Ayurvedic dietician.
 
-🗓️ Respond ONLY with valid JSON — no markdown, no explanation.
-Format:
+Generate a personalized 7-day Indian meal plan for a person with:
+- Prakriti: {user.get("prakriti", "Not specified")}
+- Dietary preferences: {", ".join(preferences)}
+- Calorie goal: {calorie_goal} kcal/day
 
-{{
-  "Day 1": {{
-    "Breakfast": "...",
-    "Lunch": "...",
-    "Snack": "...",
-    "Dinner": "..."
+{health_notes}
+
+Each day must include:
+- Breakfast, Lunch, and Dinner
+- Meal names only (no recipes)
+- Meals suitable for the person's prakriti and health
+- Strictly avoid any ingredients that are unhealthy for their conditions or allergies
+
+Return response in JSON format like:
+[
+  {{
+    "day": "Monday",
+    "breakfast": "Idli with coconut chutney",
+    "lunch": "Vegetable khichdi",
+    "dinner": "Tofu curry with roti"
   }},
   ...
-  "Day 7": {{
-    ...
-  }}
-}}
+]
+Do not use Markdown. No extra commentary.
 """
+    return prompt.strip()
