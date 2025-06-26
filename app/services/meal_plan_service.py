@@ -17,10 +17,8 @@ def generate_meal_plan(user_profile: dict) -> dict:
     logger.info(f"[MealPlan Request] User: {user_profile.get('name', 'anonymous')}")
     logger.debug(f"[MealPlan Prompt] {prompt}")
     logger.debug(f"[MealPlan Raw GPT Output] {raw_response}")
-    logger.info(f"[MealPlan Cleaned Output] {cleaned}")
 
-
-    # Remove Markdown fencing (```json ... ```)
+    # ✅ Remove Markdown fencing (```json ... ```)
     cleaned = re.sub(r"^```(?:json)?|```$", "", raw_response.strip(), flags=re.MULTILINE).strip()
     logger.info(f"🧽 Cleaned GPT response:\n{cleaned}")
 
@@ -38,12 +36,11 @@ def generate_meal_plan(user_profile: dict) -> dict:
             logger.error(f"Fallback JSON parsing failed: {e}")
             raise HTTPException(status_code=400, detail="Meal plan output could not be parsed as JSON.")
 
-
-    # Optional metadata
-    parsed["meta"] = {
+    return {
+    "plan": parsed,
+    "meta": {
         "version": "1.0",
         "source": "GPT-4",
         "parsed_at": datetime.now().isoformat()
     }
-
-    return parsed
+}
