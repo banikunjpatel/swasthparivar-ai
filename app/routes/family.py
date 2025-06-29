@@ -4,6 +4,8 @@ from typing import List
 from fastapi.responses import JSONResponse
 from datetime import datetime
 from bson import ObjectId
+from app.dependencies.auth_dependency import get_current_user
+from fastapi import Depends
 
 from app.db.mongo import families_collection, members_collection
 from app.models.mongo_schemas import FamilyModel, MemberModel
@@ -23,7 +25,7 @@ class FamilyWithMembers(BaseModel):
 
 # ✅ Register family + members into MongoDB
 @router.post("/register-family", summary="Register family with members")
-async def register_family(data: FamilyWithMembers):
+async def register_family(data: FamilyWithMembers, current_user: str = Depends(get_current_user)):
     try:
         # 🔍 Check if email already registered
         existing = await families_collection.find_one({"email": data.family.email})
