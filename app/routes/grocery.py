@@ -27,6 +27,11 @@ async def generate_grocery_list(data: MealPlanInput):
         prompt = build_grocery_prompt(data.plan)
         raw_output = call_gpt(prompt)
         logger.debug(f"[Grocery Raw GPT Output] {raw_output}")
+        
+        if not raw_output.strip():
+            logger.error("⚠️ GPT returned an empty grocery response")
+            raise HTTPException(status_code=502, detail="GPT did not return a valid grocery list.")
+
 
         grocery_items = json.loads(raw_output)
         logger.info("✅ Grocery list parsed successfully")

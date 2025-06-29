@@ -1,11 +1,15 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import List, Optional
+from pydantic import StringConstraints
+from typing import Annotated, Optional, List
 from datetime import datetime
+
+StrippedStr = Annotated[str, StringConstraints(strip_whitespace=True)]
+PasswordStr = Annotated[str, StringConstraints(min_length=6)]
 
 class FamilyModel(BaseModel):
     email: EmailStr
-    password: str
-    fullName: str
+    password: PasswordStr
+    fullName: StrippedStr
     age: Optional[int]
     gender: Optional[str]
     dietaryPreferences: Optional[str]
@@ -16,8 +20,8 @@ class FamilyModel(BaseModel):
     updatedAt: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
 class MemberModel(BaseModel):
-    userId: str  # This links back to families._id as a string
-    fullName: str
+    userId: str
+    fullName: StrippedStr
     age: Optional[int]
     gender: Optional[str]
     dietaryPreferences: Optional[str]

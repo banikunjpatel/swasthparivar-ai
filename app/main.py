@@ -10,6 +10,7 @@ from app.routes.meal import router as meal_router
 from app.routes.grocery import router as grocery_router
 from app.routes.dosha import router as dosha_router
 from app.routes.family import router as family_router
+from app.routes.members import router as member_router
 
 # ─────────────────────────────────────────────
 # 📋 Logging setup
@@ -54,6 +55,7 @@ app.include_router(meal_router, prefix="/api", tags=["Meal Plan"])
 app.include_router(grocery_router, prefix="/api", tags=["Grocery List"])
 app.include_router(dosha_router, prefix="/api", tags=["Dosha Detection"])
 app.include_router(family_router, prefix="/api", tags=["Family Plan"])
+app.include_router(member_router, prefix="/api", tags=["Member"])
 
 # ─────────────────────────────────────────────
 # ✅ Root Endpoint
