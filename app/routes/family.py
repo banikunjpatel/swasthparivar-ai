@@ -2,18 +2,18 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List
 from fastapi.responses import JSONResponse
+from datetime import datetime
 from bson import ObjectId
-from app.utils.formatting import convert_list_to_day_dict
 
 from app.db.mongo import families_collection, members_collection
 from app.models.mongo_schemas import FamilyModel, MemberModel
 from app.services.meal_plan_service import generate_meal_plan
 from app.logic.combine_family_plans import combine_family_plans
 from app.utils.logger import get_logger
+from app.utils.formatting import convert_list_to_day_dict
 
 router = APIRouter()
 logger = get_logger(__name__)
-
 
 # 🧾 Request model for registering family and members
 class FamilyWithMembers(BaseModel):
@@ -25,17 +25,29 @@ class FamilyWithMembers(BaseModel):
 @router.post("/register-family", summary="Register family with members")
 async def register_family(data: FamilyWithMembers):
     try:
+        # 🔍 Check if email already registered
         existing = await families_collection.find_one({"email": data.family.email})
         if existing:
             raise HTTPException(status_code=409, detail="Email already registered")
 
+        now = datetime.utcnow()
+
+        # 🏠 Prepare and insert family document
         family_doc = data.family.model_dump()
+        family_doc["createdAt"] = now
+        family_doc["updatedAt"] = now
+        family_doc["isVerified"] = False
+
         result = await families_collection.insert_one(family_doc)
         user_id = str(result.inserted_id)
 
+        # 👥 Insert all members
         for member in data.members:
             member_doc = member.model_dump()
             member_doc["userId"] = user_id
+            member_doc["createdAt"] = now
+            member_doc["updatedAt"] = now
+            member_doc["isVerified"] = False
             await members_collection.insert_one(member_doc)
 
         return {"message": "Family registered successfully", "userId": user_id}
