@@ -1,0 +1,52 @@
+import json
+import re
+from fastapi import APIRouter, HTTPException
+from bson import ObjectId
+
+from app.db.mongo import members_collection
+from app.prompts.meal_plan import build_meal_plan_prompt
+from app.services.openai_client import call_gpt
+from app.utils.logger import get_logger
+from app.utils.formatting import title_case_meals
+
+logger = get_logger(__name__)
+router = APIRouter()
+
+# ✅ Generate meal plan using stored member profile
+@router.get("/generate-meal/{member_id}", summary="Generate meal plan for one member by ID")
+async def generate_meal(member_id: str):
+    try:
+        # ✅ Retrieve member profile from MongoDB
+        member = await members_collection.find_one({"_id": ObjectId(member_id)})
+        if not member:
+            raise HTTPException(status_code=404, detail="Member not found")
+
+        logger.info(f"Generating meal plan for member: {member.get('fullName')}")
+
+        # Clean Mongo-specific fields
+        member.pop("_id", None)
+        member.pop("createdAt", None)
+        member.pop("updatedAt", None)
+
+        # 🧠 Build prompt and call GPT
+        prompt = build_meal_plan_prompt(member)
+        raw_output = call_gpt(prompt)
+
+        logger.debug("=== /generate-meal endpoint called ===")
+        logger.debug(f"Raw GPT output:\n{raw_output}")
+
+        # ✅ Strip Markdown code block (```json ... ```) if present
+        cleaned = raw_output.strip()
+        if cleaned.startswith("```"):
+            cleaned = re.sub(r"^```(?:json)?|```$", "", cleaned.strip(), flags=re.MULTILINE).strip()
+
+        parsed = json.loads(cleaned)
+        return title_case_meals(parsed)
+
+    except json.JSONDecodeError as e:
+        logger.error(f"Meal plan parsing error for member {member_id}: {e}")
+        raise HTTPException(status_code=500, detail="Meal plan output could not be parsed as JSON.")
+
+    except Exception as e:
+        logger.exception(f"Unexpected error in meal generation for {member_id}")
+        raise HTTPException(status_code=500, detail="Meal plan could not be generated")
