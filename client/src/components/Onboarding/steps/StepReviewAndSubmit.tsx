@@ -37,7 +37,7 @@ const StepReviewAndSubmit: React.FC<StepReviewProps> = ({ formState, handleBack,
 
         <div>
           <p className="text-sm font-medium text-gray-600">Dietary Preferences:</p>
-          <p className="text-lg font-semibold text-gray-900">{formState.dietaryPreference || 'None'}</p>
+          <p className="text-lg font-semibold text-gray-900">{formState.dietaryPreferences || 'None'}</p>
         </div>
 
         <div>

@@ -9,6 +9,7 @@
     "dev:server": "nodemon server/index.js",
     "build": "vite build",
     "lint": "eslint .",
+    "python":"python -m uvicorn app.main:app --reload",
     "preview": "vite preview"
   },
   "dependencies": {

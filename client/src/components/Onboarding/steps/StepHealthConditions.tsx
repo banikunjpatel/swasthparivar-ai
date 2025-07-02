@@ -52,8 +52,10 @@ const StepHealthConditions: React.FC<StepHealthConditionsProps> = ({
       fullName: formState.fullName,
       age: formState.age,
       gender: formState.gender,
-      dietaryPreference: formState.dietaryPreference,
+      dietaryPreferences: formState.dietaryPreferences,
       prakriti: formState.prakriti,
+      userId: formState.userId, // Added userId to match MemberFormState
+      doshaStats: formState.doshaStats, // Added doshaStats to match MemberFormState
     });
   };
 

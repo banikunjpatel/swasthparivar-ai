@@ -4,7 +4,7 @@ import React from 'react';
 import { MemberFormState } from '../AddFamilyMemberModal';
 
 interface FormState {
-    dietaryPreference: string;
+  dietaryPreferences: string;
     [key: string]: any;
   }
   interface StepDietaryPreferenceProps {
@@ -29,12 +29,15 @@ const StepDietaryPreference: React.FC<StepDietaryPreferenceProps> = ({
     const handleChange = (preference: string) => {
         setFormState({ 
           ...formState, 
-          dietaryPreference: preference,
+          dietaryPreferences: preference,
           fullName: formState.fullName || '',
           age: formState.age || 0,
           gender: formState.gender || '',
           medicalConditions: formState.medicalConditions || [],
-          prakriti: formState.prakriti || ''
+          prakriti: formState.prakriti || '',
+          allergies: formState.allergies || [],
+          userId: formState.userId || '',
+          doshaStats: formState.doshaStats || { vata: 0, pitta: 0, kapha: 0 } // Default value for doshaStats
         });
       };
   return (
@@ -47,16 +50,16 @@ const StepDietaryPreference: React.FC<StepDietaryPreferenceProps> = ({
           <label
             key={option}
             className={`flex items-center space-x-3 p-4 border rounded-lg shadow-md cursor-pointer transition ${
-                formState.dietaryPreference === option
+                formState.dietaryPreferences === option
                 ? 'bg-green-50 border-green-600'
                 : 'bg-white hover:bg-green-50'
             }`}
           >
             <input
               type="radio"
-              name="dietaryPreference"
+              name="dietaryPreferences"
               value={option}
-              checked={formState.dietaryPreference === option}
+              checked={formState.dietaryPreferences === option}
               onChange={() => handleChange(option)}
               className="h-5 w-5 text-green-600 border-gray-300 focus:ring-green-500"
             />

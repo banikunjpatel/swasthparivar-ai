@@ -6,9 +6,10 @@ import AddFamilyMemberModal from './AddFamilyMemberModal';
 
 interface Props {
   onAddFamily: () => void;
+  onRefresh:() => void;
 }
 
-const NoFamilyMemberPrompt: React.FC<Props> = ({ onAddFamily }) => {
+const NoFamilyMemberPrompt: React.FC<Props> = ({ onAddFamily, onRefresh }) => {
     const [modalOpen, setModalOpen] = useState(false);
   return (
     <div className="flex flex-col items-center justify-cente rounded-xl px-6 py-12 text-center">
@@ -25,7 +26,7 @@ const NoFamilyMemberPrompt: React.FC<Props> = ({ onAddFamily }) => {
        >
         + Add First Member
       </button>
-      <AddFamilyMemberModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <AddFamilyMemberModal open={modalOpen} onClose={() => { setModalOpen(false); onRefresh(); }} />
     </div>
     
     // className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-all"

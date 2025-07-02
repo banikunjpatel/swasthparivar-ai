@@ -13,6 +13,7 @@ export const useRequireAuth = () => {
   const { user, loading } = useAuth();
   
   if (loading) {
+   
     return { user: null, loading: true, isAuthenticated: false };
   }
   
