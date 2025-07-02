@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel,EmailStr
 from typing import List
 from fastapi.responses import JSONResponse
 from datetime import datetime
 from bson import ObjectId
 from app.dependencies.auth_dependency import get_current_user
 from fastapi import Depends
+import bcrypt
 
 from app.db.mongo import families_collection, members_collection
 from app.models.mongo_schemas import FamilyModel, MemberModel
@@ -19,43 +20,48 @@ logger = get_logger(__name__)
 
 # 🧾 Request model for registering family and members
 class FamilyWithMembers(BaseModel):
-    family: FamilyModel
-    members: List[MemberModel]
+    name: str
+    email: EmailStr
+    password: str
 
 
 # ✅ Register family + members into MongoDB
-@router.post("/register-family", summary="Register family with members")
-async def register_family(data: FamilyWithMembers, current_user: str = Depends(get_current_user)):
+@router.post("/register-family", summary="Register family account")
+async def register_family(data: FamilyWithMembers):
     try:
-        # 🔍 Check if email already registered
-        existing = await families_collection.find_one({"email": data.family.email})
+        # 🔍 Check if email already exists
+        existing = await families_collection.find_one({"email": data.email})
         if existing:
             raise HTTPException(status_code=409, detail="Email already registered")
 
         now = datetime.utcnow()
 
-        # 🏠 Prepare and insert family document
-        family_doc = data.family.model_dump()
-        family_doc["createdAt"] = now
-        family_doc["updatedAt"] = now
-        family_doc["isVerified"] = False
+        # 🔐 Hash password before saving (if not done already)
+        hashed_password =  bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode('utf-8')
+
+        family_doc = {
+            "name": data.name,
+            "email": data.email,
+            "password": hashed_password,
+            "createdAt": now,
+            "updatedAt": now,
+            "isVerified": False,
+        }
 
         result = await families_collection.insert_one(family_doc)
         user_id = str(result.inserted_id)
-
-        # 👥 Insert all members
-        for member in data.members:
-            member_doc = member.model_dump()
-            member_doc["userId"] = user_id
-            member_doc["createdAt"] = now
-            member_doc["updatedAt"] = now
-            member_doc["isVerified"] = False
-            await members_collection.insert_one(member_doc)
-
-        return {"message": "Family registered successfully", "userId": user_id}
+        response_data = {
+            "userId": user_id,
+            "name": data.name,
+            "email": data.email,
+            "isVerified": False,
+            "createdAt": now,
+            "updatedAt": now
+        }
+        return { "status": 200,"message": "User registered successfully","user": response_data}
 
     except Exception as e:
-        logger.exception("❌ Failed to register family.")
+        logger.exception("❌ Failed to register user.")
         raise HTTPException(status_code=500, detail="Registration failed")
 
 

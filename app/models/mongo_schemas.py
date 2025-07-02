@@ -14,14 +14,20 @@ class FamilyModel(BaseModel):
     createdAt: Optional[datetime] = Field(default_factory=datetime.utcnow)
     updatedAt: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
+class DoshaStats(BaseModel):
+    vata: int = Field(ge=0, le=100)
+    pitta: int = Field(ge=0, le=100)
+    kapha: int = Field(ge=0, le=100)
+
 class MemberModel(BaseModel):
     userId: str
     fullName: StrippedStr
     age: Optional[int]
     gender: Optional[str]
     dietaryPreferences: Optional[str]
+    medicalConditions: List[str]
     allergies: List[str] = []
     prakriti: Optional[str]
-    isVerified: bool = False
+    doshaStats: Optional[DoshaStats] = None
     createdAt: Optional[datetime] = Field(default_factory=datetime.utcnow)
     updatedAt: Optional[datetime] = Field(default_factory=datetime.utcnow)

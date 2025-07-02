@@ -333,6 +333,21 @@ export const SAMPLE_RECIPES: Recipe[] = [
   }
 ];
 
+// export const SAMPLE_MEAL_PLAN = {
+//   weekStart: new Date(), // Replace with the actual start date
+//   days: [
+//     {
+//       date: new Date(), // Replace with actual date
+//       meals: [
+//         {
+//           name: 'Sample Meal',
+//           ingredients: ['Ingredient 1', 'Ingredient 2'],
+//           instructions: 'Sample instructions',
+//         },
+//       ],
+//     },
+//   ],
+// };
 export const SAMPLE_MEAL_PLAN = {
   "userId": "665f0d8e4d62d7a1f4c23a88",
   "weekStart": "2025-07-01",

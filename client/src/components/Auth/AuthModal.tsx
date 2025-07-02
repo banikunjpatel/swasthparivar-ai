@@ -27,9 +27,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     try {
       let result;
+      console.log('Submitting form:', { isLogin, email, password, name });
       if (isLogin) {
         result = await signIn(email, password);
         if (!result.error) {
+          console.log ('Login successful:', result);
           setSuccess('Welcome back! Redirecting to your dashboard...');
         }
       } else {

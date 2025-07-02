@@ -22,8 +22,16 @@ async def create_member(member: MemberModel):
 # 🔹 Get members by userId (family ID)
 @router.get("/members/{user_id}", summary="Get all members for a family")
 async def get_members(user_id: str):
-    members = await members_collection.find({"userId": user_id}).to_list(length=10)
-    return members
+    try:
+        members_cursor = members_collection.find({"userId": user_id})
+        members = []
+        async for member in members_cursor:
+            member["_id"] = str(member["_id"])  # Convert ObjectId to string
+            members.append(member)
+        return members
+    except Exception as e:
+        print("Error fetching members:", e)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.put("/members/{member_id}", summary="Update a member by ID")
 async def update_member(member_id: str, updated_data: MemberModel):

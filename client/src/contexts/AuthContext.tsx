@@ -54,13 +54,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const initializeAuth = async () => {
     try {
       const token = localStorage.getItem('accessToken');
+      console.log('Initializing auth with token:', token);
       if (token) {
         const response = await apiClient.getCurrentUser();
+        console.log('Current user fetched:', response.data);
         if (response.data) {
-          setUser(response.data.user);
+          
+          setUser(response.data);
         } else {
           // Token is invalid, clear it
-          apiClient.logout();
+          // apiClient.logout();
         }
       }
     } catch (error) {
@@ -79,9 +82,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error: response.error };
       }
 
-      if (response.data) {
-        const { user: newUser, tokens } = response.data;
-        apiClient.setTokens(tokens.accessToken, tokens.refreshToken);
+      if (response) {
+        const newUser = response.data?.user;
+        // apiClient.setTokens(tokens.accessToken, tokens.refreshToken);
         setUser(newUser);
         localStorage.setItem('user', JSON.stringify(newUser));
       }
