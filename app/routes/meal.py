@@ -7,7 +7,8 @@ from app.db.mongo import members_collection
 from app.prompts.meal_plan import build_meal_plan_prompt
 from app.services.openai_client import call_gpt
 from app.utils.logger import get_logger
-from app.utils.formatting import title_case_meals
+from app.utils.formatting import title_case_meals, convert_list_to_day_dict
+from app.utils.compliance import tag_meal_compliance  # ✅ NEW
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -41,7 +42,18 @@ async def generate_meal(member_id: str):
             cleaned = re.sub(r"^```(?:json)?|```$", "", cleaned.strip(), flags=re.MULTILINE).strip()
 
         parsed = json.loads(cleaned)
-        return title_case_meals(parsed)
+        meal_plan = title_case_meals(parsed)
+
+        # ✅ Convert to day dictionary if it's a list of dicts
+        if isinstance(meal_plan, list):
+            meal_plan = convert_list_to_day_dict(meal_plan)
+
+        # ✅ Apply compliance checking if healthConditions exist
+        health_conditions = member.get("healthConditions", [])
+        if health_conditions:
+            meal_plan = tag_meal_compliance(meal_plan, health_conditions)
+
+        return meal_plan
 
     except json.JSONDecodeError as e:
         logger.error(f"Meal plan parsing error for member {member_id}: {e}")

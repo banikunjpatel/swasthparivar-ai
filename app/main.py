@@ -2,6 +2,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+import json
 import time
 import logging
 
@@ -42,6 +45,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class AuditLogMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        body = await request.body()
+        masked = body.decode("utf-8").replace("password", "***")
+        logger.info(f"📥 Incoming {request.method} {request.url.path} | Payload: {masked}")
+
+        response = await call_next(request)
+
+        logger.info(f"📤 Response status: {response.status_code}")
+        return response
+    
+app.add_middleware(AuditLogMiddleware)
 # ──────────────────────────────────────────────────
 class TimerMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):

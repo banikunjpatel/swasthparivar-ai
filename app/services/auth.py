@@ -4,15 +4,13 @@ from jose import jwt, JWTError
 import os
 from dotenv import load_dotenv
 import secrets
-# from fastapi import Depends, HTTPException
-# from app.services.auth import decode_access_token
 print(secrets.token_hex(32))
 
 load_dotenv()
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 7
-REFRESH_TOKEN_EXPIRE_DAYS = 7
+REFRESH_TOKEN_EXPIRE_DAYS = 30  # Set refresh token expiry days as needed
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
