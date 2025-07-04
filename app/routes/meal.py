@@ -8,7 +8,7 @@ from app.prompts.meal_plan import build_meal_plan_prompt
 from app.services.openai_client import call_gpt
 from app.utils.logger import get_logger
 from app.utils.formatting import title_case_meals, convert_list_to_day_dict
-from app.utils.compliance import tag_meal_compliance  # ✅ NEW
+from app.utils.compliance import check_meal_compliance
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -51,7 +51,7 @@ async def generate_meal(member_id: str):
         # ✅ Apply compliance checking if healthConditions exist
         health_conditions = member.get("healthConditions", [])
         if health_conditions:
-            meal_plan = tag_meal_compliance(meal_plan, health_conditions)
+            meal_plan = check_meal_compliance(meal_plan, health_conditions)
 
         return meal_plan
 
