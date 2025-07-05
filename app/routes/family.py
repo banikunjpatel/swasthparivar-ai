@@ -26,10 +26,11 @@ class FamilyWithMembers(BaseModel):
     family: FamilyModel
     members: List[MemberModel]
 
-# ✅ Utility: Get Monday as week start
-def get_week_start_date():
-    now_utc = datetime.now(pytz.UTC)
-    return now_utc - timedelta(days=now_utc.weekday())
+# ✅ Utility to get Monday of the week
+def get_week_start_dates(n=2):
+    now = datetime.now(pytz.UTC)
+    current = now - timedelta(days=now.weekday())
+    return [(current - timedelta(weeks=i)).replace(hour=0, minute=0, second=0, microsecond=0) for i in range(n)]
 
 # ✅ Register family + members into MongoDB
 @router.post("/register-family", summary="Register family with members")
@@ -68,44 +69,64 @@ async def register_family(data: FamilyWithMembers, current_user: str = Depends(g
 
 
 @router.get("/generate-family-meal/{user_id}", summary="Generate meal plan for all family members")
-async def generate_family_meal(user_id: str):
+async def generate_family_meal(user_id: str, force: bool = False):
     try:
+        # 🔍 Step 1: Check if members exist
         members = await members_collection.find({"userId": user_id}).to_list(length=10)
         if not members:
             raise HTTPException(status_code=404, detail="No members found for this family")
 
-        # Build family meal prompt
-        prompt = build_family_meal_prompt(members)
+        # 🗓 Step 2: Week tracking
+        current_week_start, last_week_start = get_week_start_dates(2)
 
-        # Call GPT
+        if not force:
+            # Return existing plan for this week if available
+            existing = await family_meal_collection.find_one({
+                "userId": user_id,
+                "weekStart": current_week_start
+            })
+            if existing:
+                logger.info(f"🔁 Returning existing plan for user_id={user_id}, week={current_week_start}")
+                return existing["plan"]
+
+        # 📦 Step 3: Get last week's plan to avoid repetition
+        last_week_plan = await family_meal_collection.find_one({
+            "userId": user_id,
+            "weekStart": last_week_start
+        })
+
+        # 🧠 Step 4: Build prompt with last week’s plan (if exists)
+        prompt = build_family_meal_prompt(
+            family=members,
+            previous_plan=last_week_plan.get("plan") if last_week_plan else None
+        )
+
+        # 🧠 Step 5: Call GPT
         raw_output = call_gpt(prompt)
 
-        # Remove ```json if present
+        # 🧼 Step 6: Clean and parse GPT response
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
         meal_plan = json.loads(cleaned)
 
-        # ✅ Prepare timestamps
+        # 💾 Step 7: Save meal plan with current week's start
         now_utc = datetime.now(pytz.UTC)
-        week_start = get_week_start_date()
-
-        # ✅ Save to DB using updated model
         meal_doc = FamilyMealPlanModel(
             userId=user_id,
             plan=meal_plan,
             createdAt=now_utc,
-            weekStart=week_start
+            weekStart=current_week_start
         )
         await family_meal_collection.insert_one(meal_doc.model_dump())
 
-        logger.info(f"✅ Family meal plan generated successfully for user_id={user_id}")
+        logger.info(f"✅ New family meal plan saved for user_id={user_id}, week={current_week_start}")
         return meal_plan
 
     except json.JSONDecodeError as e:
-        logger.error(f"JSON parsing failed: {e}")
+        logger.error(f"❌ JSON parsing failed: {e}")
         raise HTTPException(status_code=500, detail="Meal plan output could not be parsed")
 
     except Exception as e:
-        logger.exception("❌ Error generating family meal plan")
+        logger.exception("❌ Unexpected error during meal generation")
         raise HTTPException(status_code=500, detail="Family meal generation failed")
     
 @router.get("/get-family-meal/{user_id}", summary="Fetch latest saved family meal plan by user ID")

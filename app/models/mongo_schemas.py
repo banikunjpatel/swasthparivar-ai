@@ -28,6 +28,7 @@ class MemberModel(BaseModel):
     medicalConditions: List[str]
     allergies: List[str] = []
     prakriti: Optional[str]
+    state: Optional[str]
     doshaStats: Optional[DoshaStats] = None
     createdAt: Optional[datetime] = Field(default_factory=datetime.utcnow)
     updatedAt: Optional[datetime] = Field(default_factory=datetime.utcnow)
