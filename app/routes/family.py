@@ -95,3 +95,22 @@ async def generate_family_meal(user_id: str):
     except Exception as e:
         logger.exception("❌ Error generating family meal plan")
         raise HTTPException(status_code=500, detail="Family meal generation failed")
+    
+@router.get("/get-family-meal/{user_id}", summary="Fetch latest saved family meal plan by user ID")
+async def get_family_meal(user_id: str):
+    try:
+        latest_plan = await family_meal_collection.find_one(
+            {"userId": user_id},
+            sort=[("createdAt", -1)]
+        )
+
+        if not latest_plan:
+            raise HTTPException(status_code=404, detail="No meal plan found for this user")
+
+        # Convert ObjectId to string for JSON serialization
+        latest_plan["_id"] = str(latest_plan["_id"])
+
+        return latest_plan
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to fetch family meal plan")
