@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List
-from fastapi.responses import JSONResponse
+from datetime import datetime, timedelta
+import pytz
 from datetime import datetime
-from bson import ObjectId
 from app.dependencies.auth_dependency import get_current_user
 from fastapi import Depends
 import re
@@ -26,6 +26,10 @@ class FamilyWithMembers(BaseModel):
     family: FamilyModel
     members: List[MemberModel]
 
+# ✅ Utility: Get Monday as week start
+def get_week_start_date():
+    now_utc = datetime.now(pytz.UTC)
+    return now_utc - timedelta(days=now_utc.weekday())
 
 # ✅ Register family + members into MongoDB
 @router.post("/register-family", summary="Register family with members")
@@ -63,7 +67,6 @@ async def register_family(data: FamilyWithMembers, current_user: str = Depends(g
         raise HTTPException(status_code=500, detail="Registration failed")
 
 
-# ✅ Generate a combined family meal plan from stored MongoDB data
 @router.get("/generate-family-meal/{user_id}", summary="Generate meal plan for all family members")
 async def generate_family_meal(user_id: str):
     try:
@@ -81,8 +84,17 @@ async def generate_family_meal(user_id: str):
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
         meal_plan = json.loads(cleaned)
 
-        # Save to DB
-        meal_doc = FamilyMealPlanModel(userId=user_id, plan=meal_plan)
+        # ✅ Prepare timestamps
+        now_utc = datetime.now(pytz.UTC)
+        week_start = get_week_start_date()
+
+        # ✅ Save to DB using updated model
+        meal_doc = FamilyMealPlanModel(
+            userId=user_id,
+            plan=meal_plan,
+            createdAt=now_utc,
+            weekStart=week_start
+        )
         await family_meal_collection.insert_one(meal_doc.model_dump())
 
         logger.info(f"✅ Family meal plan generated successfully for user_id={user_id}")
