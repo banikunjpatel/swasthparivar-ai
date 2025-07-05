@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
 from datetime import datetime
 from app.dependencies.auth_dependency import get_current_user
@@ -16,6 +16,7 @@ from app.db.mongo import family_meal_collection
 from app.models.family_meal_model import FamilyMealPlanModel
 from app.models.mongo_schemas import FamilyModel
 from app.models.mongo_schemas import MemberModel
+from app.models.request_modals import MealGenerationRequest
 import logging
 
 logger = logging.getLogger(__name__)
@@ -28,17 +29,6 @@ class FamilyWithMembers(BaseModel):
 
 from datetime import datetime, timedelta
 import pytz
-
-def get_week_start_date(week_offset: int = 0) -> datetime:
-    """
-    Returns the Monday of the current or future week in UTC, starting at 00:00:00.
-    week_offset = 0 → current week
-    week_offset = 1 → next week
-    """
-    now_utc = datetime.now(pytz.UTC)
-    monday = now_utc - timedelta(days=now_utc.weekday())  # current week's Monday
-    monday = monday.replace(hour=0, minute=0, second=0, microsecond=0)
-    return monday + timedelta(weeks=week_offset)
 
 # ✅ Register family + members into MongoDB
 @router.post("/register-family", summary="Register family with members")
@@ -76,19 +66,16 @@ async def register_family(data: FamilyWithMembers, current_user: str = Depends(g
         raise HTTPException(status_code=500, detail="Registration failed")
 
 
-@router.get("/generate-family-meal/{user_id}", summary="Generate meal plan for all family members")
-async def generate_family_meal(user_id: str, week: str = "current", force: bool = False):
+@router.post("/generate-family-meal/{user_id}", summary="Generate meal plan for a specific week")
+async def generate_family_meal(user_id: str, request: MealGenerationRequest):
     try:
+        week_start = request.weekStart.replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=pytz.UTC)
+
         members = await members_collection.find({"userId": user_id}).to_list(length=10)
         if not members:
             raise HTTPException(status_code=404, detail="No members found for this family")
 
-        # ✅ Choose current or next week based on query
-        week_offset = 0 if week == "current" else 1
-        week_start = get_week_start_date(week_offset)
-
-        # ✅ Check if plan already exists for that week
-        if not force:
+        if not request.force:
             existing = await family_meal_collection.find_one({
                 "userId": user_id,
                 "weekStart": week_start
@@ -97,24 +84,23 @@ async def generate_family_meal(user_id: str, week: str = "current", force: bool 
                 logger.info(f"🔁 Returning existing plan for user_id={user_id}, week={week_start}")
                 return existing["plan"]
 
-        # 🔁 Optional: fetch previous week's plan to avoid repeats
+        # Look for previous week's plan
         previous_plan = None
-        if week_offset > 0:
-            last_week_start = get_week_start_date(week_offset - 1)
-            last_week_doc = await family_meal_collection.find_one({
-                "userId": user_id,
-                "weekStart": last_week_start
-            })
-            if last_week_doc:
-                previous_plan = last_week_doc.get("plan")
+        previous_doc = await family_meal_collection.find_one({
+            "userId": user_id
+        }, sort=[("weekStart", -1)])
 
-        # 🧠 Build prompt and generate plan
-        prompt = build_family_meal_prompt(family=members, previous_plan=previous_plan)
+        if previous_doc and previous_doc["weekStart"] < week_start:
+            previous_plan = previous_doc.get("plan")
+
+        # Build prompt
+        prompt = build_family_meal_prompt(members, previous_plan=previous_plan)
         raw_output = call_gpt(prompt)
+
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
         meal_plan = json.loads(cleaned)
 
-        # 💾 Save to DB
+        # Save to DB
         now_utc = datetime.now(pytz.UTC)
         meal_doc = FamilyMealPlanModel(
             userId=user_id,
