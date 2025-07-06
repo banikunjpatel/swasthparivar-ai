@@ -8,23 +8,20 @@ You are an expert Indian Ayurvedic nutritionist and meal planner.
 Generate a **shared 7-day family meal plan** with **Breakfast, Lunch, and Dinner** for each day.
 
 Each meal must have:
-- A single common **base dish** for all (if suitable)
-- **Customizations** for each family member based on:
-  - Age
-  - Gender (if relevant)
-  - Prakriti type
-  - Health conditions (e.g., diabetes, thyroid, etc.)
-  - Dietary preferences (e.g., vegetarian)
-  - Allergies
-  - State-wise regional preferences (e.g., South Indian families prefer dosa, idli, etc.)
+- A single common **base dish** for all members (if suitable)
+- **Customizations** for each family member that are based on BOTH:
+  1. Their personal profile (prakriti, health conditions, age, preferences, allergies)
+  2. The specific base dish (e.g., Upma gets chutney, Khichdi gets ghee, etc.)
+
+⚠️ Avoid applying the same customization across all meals or dishes.
 
 🎯 Key guidelines:
 - Avoid restricted ingredients based on health and allergies
-- Follow Ayurvedic principles for balancing prakriti
-- Reflect regional food culture (state-wise) when choosing base dishes
-- Avoid conflicts — use flexible meals with per-person customizations
-- Mention specific modifications (e.g., "with fenugreek chutney", "extra ghee", "no sugar", etc.)
-- Prioritize diversity — avoid repeating meals from recent weeks
+- Follow Ayurvedic principles for prakriti balance
+- Reflect regional food culture (state-wise preferences)
+- Ensure diversity of base dishes across the week (no repeats)
+- Ensure **customizations vary by meal and dish**
+- Customizations should make Ayurvedic and practical sense (e.g., "extra ginger in lentils for Vata")
 
 🧾 Format the output in this strict JSON format:
 
@@ -38,14 +35,27 @@ Each meal must have:
         "Child": "with ghee (Vata balancing, for energy)"
       }
     },
-    "lunch": { ... },
-    "dinner": { ... }
+    "lunch": {
+      "base": "Vegetable pulao",
+      "customizations": {
+        "Father": "with brown rice (low glycemic)",
+        "Mother": "with steamed vegetables",
+        "Child": "with extra peas and carrots"
+      }
+    },
+    "dinner": {
+      "base": "Toor dal with roti",
+      "customizations": {
+        "Father": "with extra turmeric (for inflammation)",
+        "Mother": "with ajwain (Kapha aiding digestion)",
+        "Child": "with ghee and soft rice"
+      }
+    }
   },
   ...
 }
 
-❗ Do not include Markdown. Do not return comments outside the JSON. Do not repeat meals across days.
-
+❗ Output ONLY JSON. No Markdown. No extra explanation.
 """
 
     if previous_plan:

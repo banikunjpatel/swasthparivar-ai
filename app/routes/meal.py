@@ -3,7 +3,7 @@ import re
 from fastapi import APIRouter, HTTPException
 from bson import ObjectId
 
-from app.db.mongo import members_collection
+from app.db.mongo import members_collection, family_meal_collection
 from app.prompts.meal_plan import build_meal_plan_prompt
 from app.services.openai_client import call_gpt
 from app.utils.logger import get_logger
@@ -28,9 +28,19 @@ async def generate_meal(member_id: str):
         member.pop("_id", None)
         member.pop("createdAt", None)
         member.pop("updatedAt", None)
+        
+        user_id = member.get("userId")  # get the family userId
+
+        # Find most recent family plan
+        last_plan_doc = await family_meal_collection.find_one(
+            {"userId": user_id},
+            sort=[("weekStart", -1)]
+        )
+
+        previous_plan = last_plan_doc["plan"] if last_plan_doc else None
 
         # 🧠 Build prompt and call GPT
-        prompt = build_meal_plan_prompt(member)
+        prompt = build_meal_plan_prompt(member, previous_plan=previous_plan)
         raw_output = call_gpt(prompt)
 
         logger.debug("=== /generate-meal endpoint called ===")

@@ -1,6 +1,7 @@
 from app.utils.compliance import MEAL_COMPLIANCE_RULES
+import json
 
-def build_meal_plan_prompt(user):
+def build_meal_plan_prompt(user, previous_plan: dict = None):
     health_conditions = user.get("health_conditions", [])
     allergies = user.get("allergies", [])
     preferences = user.get("preferences", [])
@@ -19,7 +20,6 @@ def build_meal_plan_prompt(user):
         health_notes += f"User is allergic to: {', '.join(allergies)}.\n"
         restricted_ingredients.update(allergies)
 
-    # Final list of restricted ingredients to avoid
     if restricted_ingredients:
         avoid_text = ", ".join(sorted(restricted_ingredients))
         health_notes += f"\n❌ Avoid these ingredients: {avoid_text}\n"
@@ -52,4 +52,14 @@ Return response in JSON format like:
 ]
 Do not use Markdown. No extra commentary.
 """
+
+    if previous_plan:
+        previous_json = json.dumps(previous_plan, indent=2)
+        prompt += f"""
+
+Here is last week's meal plan. ⚠️ Please avoid repeating the same dishes in the new plan:
+
+{previous_json}
+"""
+
     return prompt.strip()
