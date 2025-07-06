@@ -14,6 +14,7 @@ logger = get_logger(__name__)
 # 🧾 Input model for grocery generation with optional metadata
 class MealPlanInput(BaseModel):
     plan: dict
+    userId: Optional[str] = None
     memberId: Optional[str] = None
     mealPlanVersion: Optional[int] = None
     week: Optional[str] = None  # optional: "2025-W27"
@@ -38,6 +39,7 @@ async def generate_grocery_list(data: MealPlanInput):
 
         # 🧾 Compose document to store
         grocery_doc = {
+            "userId": data.userId,
             "memberId": data.memberId,
             "mealPlanVersion": data.mealPlanVersion,
             "week": data.week,
