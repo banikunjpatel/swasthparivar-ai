@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 
 # 🧾 Model for grocery generation input
 class MealPlanInput(BaseModel):
-    plan: list
+    plan: dict
     userId: Optional[str] = None
     week: Optional[str] = None
 
