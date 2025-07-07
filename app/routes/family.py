@@ -27,7 +27,7 @@ class FamilyWithMembers(BaseModel):
     family: FamilyModel
     members: List[MemberModel]
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import pytz
 
 # ✅ Register family + members into MongoDB
@@ -90,7 +90,11 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
             "userId": user_id
         }, sort=[("weekStart", -1)])
 
-        if previous_doc and previous_doc["weekStart"] < week_start:
+        prev_week_start = previous_doc["weekStart"]
+        if prev_week_start.tzinfo is None:
+            prev_week_start = prev_week_start.replace(tzinfo=timezone.utc)
+        if previous_doc and prev_week_start < week_start:
+ 
             previous_plan = previous_doc.get("plan")
 
         # Build prompt
@@ -121,21 +125,23 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
         logger.exception("❌ Unexpected error during meal generation")
         raise HTTPException(status_code=500, detail="Family meal generation failed")
     
-@router.get("/get-family-meal/{user_id}", summary="Fetch latest saved family meal plan by user ID")
-async def get_family_meal(user_id: str):
+@router.get("/get-all-family-meals/{user_id}", summary="Fetch all saved family meal plans by user ID")
+async def get_all_family_meals(user_id: str):
     try:
-        latest_plan = await family_meal_collection.find_one(
-            {"userId": user_id},
-            sort=[("createdAt", -1)]
-        )
-
-        if not latest_plan:
-            raise HTTPException(status_code=404, detail="No meal plan found for this user")
-
-        # Convert ObjectId to string for JSON serialization
-        latest_plan["_id"] = str(latest_plan["_id"])
-
-        return latest_plan
-
+        cursor = family_meal_collection.find({"userId": user_id}).sort("createdAt", -1)
+        meal_plans = []
+ 
+        async for plan in cursor:
+            # Convert all ObjectId to str
+            if "_id" in plan:
+                plan["_id"] = str(plan["_id"])
+            # Optional: Convert nested ObjectIds if any
+            meal_plans.append(plan)
+ 
+        if not meal_plans:
+            raise HTTPException(status_code=404, detail="No meal plans found for this user")
+ 
+        return meal_plans
+ 
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to fetch family meal plan")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch meal plans: {str(e)}")
