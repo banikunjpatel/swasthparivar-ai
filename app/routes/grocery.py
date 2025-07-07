@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
 import json
@@ -16,15 +16,20 @@ logger = get_logger(__name__)
 
 # 🧾 Model for grocery generation input
 class MealPlanInput(BaseModel):
-    plan: dict
-    userId: Optional[str] = None
-    week: Optional[str] = None
+    mealPlan: list = Field(..., alias="mealPlan")
+    user_id: Optional[str] = Field(None, alias="userId")
+    member_id: Optional[str] = Field(None, alias="memberId")
+    meal_plan_version: Optional[int] = Field(None, alias="mealPlanVersion")
+    week_start: Optional[str] = Field(None, alias="weekStart")
+
+    class Config:
+        allow_population_by_field_name = True
 
 # ✅ POST: Generate & save grocery list
 @router.post("/generate-grocery", summary="Generate and save grocery list from meal plan")
 async def generate_grocery_list(data: MealPlanInput):
     try:
-        logger.info("🛒 Generating grocery list from submitted meal plan...")
+        logger.info("Grocery list parsed successfully ✔")
 
         prompt = build_grocery_prompt(data.plan)
         raw_output = call_gpt(prompt)
