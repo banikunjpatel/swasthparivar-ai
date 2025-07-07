@@ -71,42 +71,55 @@ async def generate_grocery_list(data: MealPlanInput):
     except Exception as e:
         logger.exception("❌ Grocery generation failed")
         raise HTTPException(status_code=500, detail="Grocery list generation failed")
- 
- 
-# ✅ GET: Fetch or generate recipe by name
-@router.get("/get-recipe", summary="Fetch or generate detailed recipe by name")
-async def get_recipe(name: str = Query(..., description="Recipe name to generate or fetch")):
+    
+class RecipeRequest(BaseModel):
+    mealName: str
+    mealType: Optional[str] = None
+    
+# ✅ POST: Fetch or generate recipe
+@router.post("/get-recipe", summary="Fetch or generate detailed recipe by name and type")
+async def get_recipe(payload: RecipeRequest):
     try:
-        recipe_name = name.strip().lower()
- 
-        # 🔍 Check if recipe exists in MongoDB
-        existing = await recipes_collection.find_one({"name": recipe_name})
+        meal_name = payload.mealName.strip().lower()
+        meal_type = payload.mealType.strip().lower() if payload.mealType else None
+
+        # 🔍 Check if recipe already exists
+        query = {"name": meal_name}
+        if meal_type:
+            query["mealType"] = meal_type
+
+        existing = await recipes_collection.find_one(query)
         if existing:
             existing["_id"] = str(existing["_id"])
-            return [existing]  # ✅ Return as list for frontend
- 
-        logger.info(f"🧠 Generating new recipe for: {recipe_name}")
- 
+            logger.info(f"🔁 Returning existing recipe for: {meal_name} ({meal_type})")
+            return [existing]
+
+        logger.info(f"🧠 Generating new recipe for: {meal_name} ({meal_type})")
+
         # 🧠 Build GPT prompt and call
-        prompt = build_recipe_prompt(recipe_name)
+        prompt = build_recipe_prompt(meal_name)
         raw_output = call_gpt(prompt)
- 
+
         # 🧼 Clean GPT output and parse JSON
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
         recipe_data = json.loads(cleaned)
- 
-        # ✅ Normalize and save
-        recipe_data["name"] = recipe_name  # use lower-case name for lookup
+
+        # ✅ Save to MongoDB
+        recipe_data["name"] = meal_name
+        if meal_type:
+            recipe_data["mealType"] = meal_type
+        recipe_data["createdAt"] = datetime.utcnow()
+
         result = await recipes_collection.insert_one(recipe_data)
         recipe_data["_id"] = str(result.inserted_id)
- 
+
         logger.info(f"📦 New recipe saved with ID: {result.inserted_id}")
         return [recipe_data]
- 
+
     except json.JSONDecodeError as e:
         logger.error(f"❌ Failed to parse recipe JSON: {e}")
         raise HTTPException(status_code=500, detail="Invalid JSON from GPT")
- 
+
     except Exception as e:
         logger.exception("❌ Recipe generation failed")
         raise HTTPException(status_code=500, detail="Recipe generation failed")
