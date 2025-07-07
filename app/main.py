@@ -7,6 +7,7 @@ from starlette.requests import Request
 import json
 import time
 import logging
+import sys
 
 # Import routers from your routes folder
 from app.routes.meal import router as meal_router
@@ -22,6 +23,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("swasthparivar")
 logger.info("🚀 SwasthParivar API is initializing...")
 
+sys.stdout.reconfigure(encoding='utf-8')
 # ─────────────────────────────────────────────
 # ⚙️ FastAPI App Config
 app = FastAPI(

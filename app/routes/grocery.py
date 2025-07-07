@@ -38,8 +38,17 @@ async def generate_grocery_list(data: MealPlanInput):
         if not raw_output.strip():
             raise HTTPException(status_code=502, detail="GPT returned an empty grocery list.")
 
-        grocery_items = json.loads(raw_output)
-        logger.info("✅ Grocery list parsed successfully")
+        if not raw_output or not raw_output.strip():
+            logger.error("⚠️ GPT returned empty or whitespace response.")
+            raise HTTPException(status_code=502, detail="GPT returned empty grocery list.")
+
+        try:
+            grocery_items = json.loads(raw_output)
+        except json.JSONDecodeError as e:
+            logger.error(f"❌ JSON parsing error: {e}")
+            logger.debug(f"🔴 Raw Output:\n{raw_output}")
+            raise HTTPException(status_code=500, detail="Grocery list output could not be parsed.")
+        logger.info("Grocery list parsed successfully")
 
         grocery_doc = {
             "userId": data.userId,
