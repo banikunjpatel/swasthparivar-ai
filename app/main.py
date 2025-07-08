@@ -16,6 +16,7 @@ from app.routes.dosha import router as dosha_router
 from app.routes.family import router as family_router
 from app.routes.members import router as member_router
 from app.routes.auth import router as auth_router
+from app.routes.wellness import router as wellness_router
 
 # ─────────────────────────────────────────────
 # 📋 Logging setup
@@ -78,6 +79,7 @@ app.include_router(dosha_router, prefix="/api", tags=["Dosha Detection"])
 app.include_router(family_router, prefix="/api", tags=["Family Plan"])
 app.include_router(member_router, prefix="/api", tags=["Member"])
 app.include_router(auth_router, prefix="/api", tags=["Auth"])
+app.include_router(wellness_router.router, prefix="/api", tags=["Wellness Tips"])
 
 # ─────────────────────────────────────────────
 # ✅ Root Endpoint

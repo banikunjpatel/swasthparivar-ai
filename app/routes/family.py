@@ -75,6 +75,7 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
         if not members:
             raise HTTPException(status_code=404, detail="No members found for this family")
 
+        # ⛔ Check if already exists unless force
         if not request.force:
             existing = await family_meal_collection.find_one({
                 "userId": user_id,
@@ -84,33 +85,53 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
                 logger.info(f"🔁 Returning existing plan for user_id={user_id}, week={week_start}")
                 return existing["plan"]
 
-        # Look for previous week's plan
+        # 📦 Fetch previous plan (to avoid duplicates)
         previous_plan = None
-        previous_doc = await family_meal_collection.find_one({
-            "userId": user_id
-        }, sort=[("weekStart", -1)])
+        previous_doc = await family_meal_collection.find_one(
+            {"userId": user_id},
+            sort=[("weekStart", -1)]
+        )
+        if previous_doc:
+            prev_week_start = previous_doc["weekStart"]
+            if prev_week_start.tzinfo is None:
+                prev_week_start = prev_week_start.replace(tzinfo=timezone.utc)
+            if prev_week_start < week_start:
+                previous_plan = previous_doc.get("plan")
 
-        prev_week_start = previous_doc["weekStart"]
-        if prev_week_start.tzinfo is None:
-            prev_week_start = prev_week_start.replace(tzinfo=timezone.utc)
-        if previous_doc and prev_week_start < week_start:
- 
-            previous_plan = previous_doc.get("plan")
+        # 🌿 Build seasonal wellness goals (optional)
+        wellness_goals = {}
+        if request.season:
+            from app.routes.wellness import get_member_wellness_tips  # or move to shared utility
+            for m in members:
+                name = m.get("fullName")
+                prakriti = m.get("prakriti")
+                conditions = m.get("medicalConditions", [])
+                if prakriti:
+                    tips = get_member_wellness_tips(prakriti, request.season, conditions)
+                    if tips:
+                        wellness_goals[name] = tips
 
-        # Build prompt
-        prompt = build_family_meal_prompt(members, previous_plan=previous_plan)
+        # 🧠 Build GPT prompt
+        prompt = build_family_meal_prompt(
+            family=members,
+            previous_plan=previous_plan,
+            wellness_goals=wellness_goals
+        )
+
         raw_output = call_gpt(prompt)
 
+        # 🧹 Clean and parse JSON
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
         meal_plan = json.loads(cleaned)
 
-        # Save to DB
+        # 💾 Save plan to DB
         now_utc = datetime.now(pytz.UTC)
         meal_doc = FamilyMealPlanModel(
             userId=user_id,
             plan=meal_plan,
             createdAt=now_utc,
-            weekStart=week_start
+            weekStart=week_start,
+            wellnessTips=wellness_goals if wellness_goals else None  # only store if available
         )
         await family_meal_collection.insert_one(meal_doc.model_dump())
 
