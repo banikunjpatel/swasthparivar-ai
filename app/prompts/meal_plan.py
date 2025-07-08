@@ -1,11 +1,13 @@
-from app.utils.compliance import MEAL_COMPLIANCE_RULES
-import json
+from typing import Optional
 
-def build_meal_plan_prompt(user, previous_plan: dict = None):
-    health_conditions = user.get("health_conditions", [])
+def build_meal_plan_prompt(user: dict, previous_plan: Optional[dict] = None) -> str:
+    import json
+    from app.utils.compliance import MEAL_COMPLIANCE_RULES
+
+    health_conditions = user.get("healthConditions", [])
     allergies = user.get("allergies", [])
-    preferences = user.get("preferences", [])
-    calorie_goal = user.get("calorie_goal", "unspecified")
+    preferences = user.get("dietaryPreferences", [])
+    calorie_goal = user.get("calorieGoal", "unspecified")
 
     health_notes = ""
     restricted_ingredients = set()
@@ -28,6 +30,7 @@ def build_meal_plan_prompt(user, previous_plan: dict = None):
 You are an expert Indian Ayurvedic dietician.
 
 Generate a personalized 7-day Indian meal plan for a person with:
+- Name: {user.get("fullName", "Not specified")}
 - Prakriti: {user.get("prakriti", "Not specified")}
 - Dietary preferences: {", ".join(preferences) if preferences else "Not specified"}
 - Calorie goal: {calorie_goal} kcal/day
@@ -54,12 +57,11 @@ Do not use Markdown. No extra commentary.
 """
 
     if previous_plan:
-        previous_json = json.dumps(previous_plan, indent=2)
         prompt += f"""
 
-Here is last week's meal plan. ⚠️ Please avoid repeating the same dishes in the new plan:
+Here is last week's meal plan. ⚠️ Please avoid repeating the same dishes:
 
-{previous_json}
+{json.dumps(previous_plan, indent=2)}
 """
 
     return prompt.strip()
