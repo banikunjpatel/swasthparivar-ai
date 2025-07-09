@@ -16,6 +16,7 @@ from app.db.mongo import family_meal_collection
 from app.models.family_meal_model import FamilyMealPlanModel
 from app.models.mongo_schemas import FamilyModel
 from app.models.mongo_schemas import MemberModel
+from app.db.mongo import wellness_logs_collection
 from app.models.request_modals import MealGenerationRequest
 import logging
 
@@ -131,9 +132,19 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
             plan=meal_plan,
             createdAt=now_utc,
             weekStart=week_start,
-            wellnessTips=wellness_goals if wellness_goals else None  # only store if available
+            wellnessTips={}
         )
         await family_meal_collection.insert_one(meal_doc.model_dump())
+        
+        # NEW: Log seasonal tips
+        if wellness_goals:
+            await wellness_logs_collection.insert_one({
+                "userId": user_id,
+                "season": request.season,
+                "weekStart": week_start,
+                "wellnessTips": wellness_goals,
+                "timestamp": now_utc
+            })
 
         logger.info(f"✅ New meal plan saved for user_id={user_id}, week={week_start}")
         return meal_plan

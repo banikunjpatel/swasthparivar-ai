@@ -43,16 +43,24 @@ Each day must include:
 - Meals suitable for the person's prakriti and health
 - Strictly avoid any ingredients listed above
 
-Return response in JSON format like:
-[
-  {{
-    "day": "Monday",
+Return response in this strict JSON format:
+
+{
+  "Monday": {
     "breakfast": "Idli with coconut chutney",
     "lunch": "Vegetable khichdi",
     "dinner": "Tofu curry with roti"
-  }},
+  },
+  "Tuesday": {
+    "breakfast": "...",
+    "lunch": "...",
+    "dinner": "..."
+  },
   ...
-]
+}
+
+⚠️ Output only JSON. No Markdown. No extra commentary.
+
 Do not use Markdown. No extra commentary.
 """
 

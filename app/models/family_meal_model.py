@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime
 
 class FamilyMealPlanModel(BaseModel):
@@ -7,4 +7,4 @@ class FamilyMealPlanModel(BaseModel):
     plan: Dict[str, Any]  # Each day → meals → base + customizations
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     weekStart: datetime
-    wellnessTips: Optional[dict]
+    wellnessTips: Optional[Dict[str, List[str]]] = Field(default_factory=dict)
