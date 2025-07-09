@@ -20,4 +20,3 @@ def build_dosha_prompt(quiz_answers: list[str]) -> list[dict]:
             "content": f"{quiz_json}"
         }
     ]
-

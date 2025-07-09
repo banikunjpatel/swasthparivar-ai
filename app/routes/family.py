@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict
 from datetime import datetime
 import pytz
 from datetime import datetime
@@ -177,3 +177,50 @@ async def get_all_family_meals(user_id: str):
  
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch meal plans: {str(e)}")
+    
+    # Household Dosha Aggregation
+
+def determine_household_dosha(average: Dict[str, float]) -> str:
+    sorted_doshas = sorted(average.items(), key=lambda x: x[1], reverse=True)
+    top_score = sorted_doshas[0][1]
+    top_doshas = [dosha for dosha, score in sorted_doshas if score == top_score]
+
+    if len(top_doshas) == 1:
+        return top_doshas[0]
+    elif len(top_doshas) == 2:
+        return "+".join(top_doshas)
+    else:
+        return "tri-doshic"
+
+@router.get("/family/{family_id}/household-dosha")
+async def get_household_dosha(family_id: str):
+    try:
+        members = await members_collection.find({"userId": family_id}).to_list(length=100)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching members: {str(e)}")
+
+    if not members:
+        raise HTTPException(status_code=404, detail="No members found")
+
+    total = {"vata": 0, "pitta": 0, "kapha": 0}
+    count = 0
+
+    for member in members:
+        stats = member.get("doshaStats")
+        if stats:
+            total["vata"] += stats.get("vata", 0)
+            total["pitta"] += stats.get("pitta", 0)
+            total["kapha"] += stats.get("kapha", 0)
+            count += 1
+
+    if count == 0:
+        raise HTTPException(status_code=404, detail="No dosha stats available")
+
+    average = {k: round(v / count, 2) for k, v in total.items()}
+    dominant = determine_household_dosha(average)
+
+    return {
+        "household_dosha": dominant,
+        "average_scores": average,
+        "member_count": count
+    }
