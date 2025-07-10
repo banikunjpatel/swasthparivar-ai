@@ -11,63 +11,90 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const { signIn, signUp } = useAuth();
+
+  const validateFields = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,10}$/.test(password)) {
+      newErrors.password = 'Password must be 8-10 characters with uppercase, lowercase, number, and special character';
+    }
+
+    if (!isLogin && password !== confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    if (!isLogin && name.trim().length === 0) {
+      newErrors.name = 'Full name is required';
+    }
+
+    setFieldErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
     setSuccess('');
 
+    if (!validateFields()) return;
+
+    setLoading(true);
     try {
       let result;
-      console.log('Submitting form:', { isLogin, email, password, name });
       if (isLogin) {
         result = await signIn(email, password);
         if (!result.error) {
-          console.log ('Login successful:', result);
           setSuccess('Welcome back! Redirecting to your dashboard...');
         }
       } else {
         result = await signUp({ name, email, password });
         if (!result.error) {
-          setSuccess('Account created successfully! Welcome to AyurMeal.');
+          setSuccess('Account created successfully! Welcome to Swasth Pariwar.');
         }
       }
-      
+
       if (result.error) {
         setError(result.error);
       } else {
         setTimeout(() => {
           onClose();
-          setSuccess('');
+          resetForm();
         }, 2000);
       }
-    } catch (error: any) {
-      setError(error.message || 'An unexpected error occurred');
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
   };
-
   const resetForm = () => {
+    setIsLogin(true);
     setEmail('');
     setPassword('');
     setName('');
     setError('');
     setSuccess('');
     setShowPassword(false);
+    setFieldErrors({ name: '', email: '', password: '', confirmPassword: '' });
   };
 
   const switchMode = () => {
-    setIsLogin(!isLogin);
     resetForm();
+    setIsLogin(!isLogin);
+    console.log('Switching mode:', isLogin ? 'to Sign Up' : 'to Sign In');
+
   };
 
   if (!isOpen) return null;
@@ -90,8 +117,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             {isLogin ? 'Welcome Back' : 'Begin Your Journey'}
           </h2>
           <p className="text-gray-600 mt-2">
-            {isLogin 
-              ? 'Continue your Ayurvedic wellness journey' 
+            {isLogin
+              ? 'Continue your Ayurvedic wellness journey'
               : 'Discover personalized nutrition for your unique constitution'
             }
           </p>
@@ -108,12 +135,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <input
                   type="text"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (e.target.value.trim()) setFieldErrors(prev => ({ ...prev, name: '' }));
+                  }}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
                   placeholder="Enter your full name"
                   required={!isLogin}
                 />
               </div>
+              {fieldErrors.name && (
+                <p className="text-sm text-red-500 mt-1">{fieldErrors.name}</p>
+              )}
             </div>
           )}
 
@@ -126,12 +159,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value)) {
+                    console.log('Valid email:', e.target.value);
+                    setFieldErrors(prev => ({ ...prev, email: '' }));
+                  }
+                }}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
                 placeholder="Enter your email"
                 required
               />
+
             </div>
+            {fieldErrors.email && (
+              <p className="text-sm text-red-500 mt-1">{fieldErrors.email}</p>
+            )}
           </div>
 
           <div>
@@ -143,7 +186,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,10}$/.test(e.target.value)) {
+                    setFieldErrors(prev => ({ ...prev, password: '' }));
+                  }
+                }}
                 className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
                 placeholder={isLogin ? "Enter your password" : "Create a strong password"}
                 required
@@ -156,12 +204,36 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-            {!isLogin && (
-              <div className="mt-2 text-xs text-gray-500">
-                Password must contain at least 8 characters with uppercase, lowercase, and numbers
-              </div>
+            {fieldErrors.password && (
+              <p className="text-sm text-red-500 mt-1">{fieldErrors.password}</p>
             )}
           </div>
+          <>{!isLogin && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    if (e.target.value === password) {
+                      setFieldErrors(prev => ({ ...prev, confirmPassword: '' }));
+                    }
+                  }}
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
+                  placeholder="Re-enter your password"
+                  required
+                />
+              </div>
+              {fieldErrors.confirmPassword && (
+                <p className="text-sm text-red-500 mt-1">{fieldErrors.confirmPassword}</p>
+              )}
+            </div>
+          )}</>
 
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -199,7 +271,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
         <div className="mt-6 text-center">
           <p className="text-gray-600">
-            {isLogin ? "New to AyurMeal?" : 'Already have an account?'}
+            {isLogin ? "New to Swasth Pariwar?" : 'Already have an account?'}
             <button
               onClick={switchMode}
               className="ml-2 text-green-600 hover:text-green-700 font-semibold transition-colors"

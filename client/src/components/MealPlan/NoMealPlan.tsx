@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
 import { Users, Award, Sparkles } from 'lucide-react';
 import apiClient from '../../lib/api';
+import LoginPromptDialog from '../../utils/LoginPromptDialog';
 interface NoMealPlanProps {
   members: any[]; // You can replace `any` with `FamilyMember[]` if you have that type
   userId: string;
   onPlanGenerated: (data: any) => void;
 }
-const NoMealPlan: React.FC<NoMealPlanProps> = ({ members,userId, onPlanGenerated }) => {
+const NoMealPlan: React.FC<NoMealPlanProps> = ({ members, userId, onPlanGenerated }) => {
   const [loading, setLoading] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const handleGenerate = async () => {
+    const currentUserId = userId;
+
+    if (!currentUserId) {
+      setShowLoginPrompt(true);
+      return;
+    }
     try {
       setLoading(true);
       const response = await apiClient.getMealPlan(userId);
@@ -69,13 +77,19 @@ const NoMealPlan: React.FC<NoMealPlanProps> = ({ members,userId, onPlanGenerated
         </div>
       )}
 
-<button
+      <button
         onClick={handleGenerate}
         disabled={loading}
         className="mt-10 px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors shadow"
       >
         {loading ? 'Generating...' : '✚ Generate Your First Meal Plan'}
       </button>
+      <LoginPromptDialog
+        open={showLoginPrompt}
+        title="Login Required"
+        description="You need to be signed in to generate a personalized meal plan."
+        onClose={() => setShowLoginPrompt(false)}
+      />
     </div>
   );
 };

@@ -11,15 +11,21 @@ export const useAuth = () => {
 
 export const useRequireAuth = () => {
   const { user, loading } = useAuth();
-  
   if (loading) {
-   
     return { user: null, loading: true, isAuthenticated: false };
   }
-  
-  return { 
-    user, 
-    loading: false, 
-    isAuthenticated: !!user 
+  return {
+    user,
+    loading: false,
+    isAuthenticated: !!user
   };
+};
+
+export const getUserId = (): string | null => {
+  const user = localStorage.getItem('user');
+  try {
+    return user ? JSON.parse(user).userId : null;
+  } catch {
+    return null;
+  }
 };

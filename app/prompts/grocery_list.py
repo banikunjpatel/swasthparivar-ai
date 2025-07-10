@@ -16,9 +16,19 @@ Your task is to extract a **weekly grocery list** from the following 7-day meal 
   - total quantity for the week (estimated)
   - unit (e.g., "g", "ml", "cup", "piece", etc.)
   - category (one of: Vegetables, Grains & Pulses, Spices & Herbs, Dairy & Substitutes, Fruits, Miscellaneous)
+  - price (estimated based on average Indian market rates, e.g., ₹40 per kg of tomato)
 
 🧠 Combine duplicate ingredients and estimate total quantities practically, using Indian kitchen measurements.
+Estimate **realistic prices based on Indian grocery markets (2025)**.
 Avoid repeating items.
+
+🧠 Use common Indian prices:
+- Vegetables: ₹30–₹80 per kg
+- Grains & Pulses: ₹60–₹120 per kg
+- Spices & Herbs: ₹500–₹1000 per kg (use small practical units like 10g)
+- Dairy: ₹50–₹80 per litre
+- Fruits: ₹40–₹100 per kg
+- Misc: Oil ~₹150/ltr, Salt ~₹20/kg, etc.
 
 🧾 Meal Plan:
 {meal_plan_text}
@@ -27,12 +37,12 @@ Avoid repeating items.
 
 {{
   "items": [
-    {{ "name": "Tomato", "quantity": "4 medium", "unit": "piece", "category": "Vegetables" }},
-    {{ "name": "Rice", "quantity": "500g", "unit": "g", "category": "Grains & Pulses" }},
-    {{ "name": "Turmeric", "quantity": "10g", "unit": "g", "category": "Spices & Herbs" }},
-    {{ "name": "Curd", "quantity": "500ml", "unit": "ml", "category": "Dairy & Substitutes" }},
-    {{ "name": "Banana", "quantity": "6", "unit": "piece", "category": "Fruits" }},
-    {{ "name": "Oil", "quantity": "200ml", "unit": "ml", "category": "Miscellaneous" }}
+    {{ "name": "Tomato", "quantity": "4 medium", "category": "Vegetables", "price": "₹20" }},
+    {{ "name": "Rice", "quantity": "500g", "category": "Grains & Pulses", "price": "₹40" }},
+    {{ "name": "Turmeric", "quantity": "10g",  "category": "Spices & Herbs", "price": "₹10" }},
+    {{ "name": "Curd", "quantity": "500ml","category": "Dairy & Substitutes", "price": "₹30" }},
+    {{ "name": "Banana", "quantity": "6", "category": "Fruits", "price": "₹60" }},
+    {{ "name": "Oil", "quantity": "200ml", "category": "Miscellaneous", "price": "₹80" }}
   ]
 }}
 

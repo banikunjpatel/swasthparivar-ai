@@ -79,7 +79,7 @@ app.include_router(dosha_router, prefix="/api", tags=["Dosha Detection"])
 app.include_router(family_router, prefix="/api", tags=["Family Plan"])
 app.include_router(member_router, prefix="/api", tags=["Member"])
 app.include_router(auth_router, prefix="/api", tags=["Auth"])
-app.include_router(wellness_router.router, prefix="/api", tags=["Wellness Tips"])
+app.include_router(wellness_router, prefix="/api", tags=["Wellness Tips"])
 
 # ─────────────────────────────────────────────
 # ✅ Root Endpoint

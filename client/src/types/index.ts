@@ -21,7 +21,7 @@ export interface DoshaBalance {
 
 export type DoshaType = 'vata' | 'pitta' | 'kapha' | 'vata-pitta' | 'pitta-kapha' | 'vata-kapha';
 
-export type Season = 'spring' | 'summer' | 'monsoon' | 'autumn' | 'winter' | 'late-winter';
+export type Season = 'spring' | 'summer' | 'monsoon' | 'autumn' | 'winter' | 'pre-winter';
 
 export interface Food {
   id: string;

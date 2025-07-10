@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import apiClient from '../lib/api';
 
 interface User {
-  _id: string;
+  userId: string;
   name: string;
   email: string;
   age?: number;
@@ -31,6 +31,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   updateUser: (userData: Partial<User>) => void;
+  isAuthenticated?: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,29 +47,31 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     initializeAuth();
   }, []);
 
   const initializeAuth = async () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      setLoading(false);
+      return;
+    }
     try {
-      const token = localStorage.getItem('accessToken');
-      console.log('Initializing auth with token:', token);
-      if (token) {
-        const response = await apiClient.getCurrentUser();
-        console.log('Current user fetched:', response.data);
-        if (response.data) {
-          
-          setUser(response.data);
-        } else {
-          // Token is invalid, clear it
-          // apiClient.logout();
-        }
+      const response = await apiClient.getCurrentUser();
+      if (response.data) {
+        setUser(response.data);
+        setIsAuthenticated(true);
+      } else {
+        apiClient.logout();
+        setIsAuthenticated(false);
       }
     } catch (error) {
       console.error('Auth initialization error:', error);
       apiClient.logout();
+      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }
@@ -77,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (userData: { name: string; email: string; password: string }) => {
     try {
       const response = await apiClient.register(userData);
-      
+
       if (response.error) {
         return { error: response.error };
       }
@@ -86,6 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const newUser = response.data?.user;
         // apiClient.setTokens(tokens.accessToken, tokens.refreshToken);
         setUser(newUser);
+        setIsAuthenticated(true);
         localStorage.setItem('user', JSON.stringify(newUser));
       }
 
@@ -99,7 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     try {
       const response = await apiClient.login({ email, password });
-      
+
       if (response.error) {
         return { error: response.error };
       }
@@ -108,6 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { user: loggedInUser, tokens } = response.data;
         apiClient.setTokens(tokens.accessToken, tokens.refreshToken);
         setUser(loggedInUser);
+        setIsAuthenticated(true);
         localStorage.setItem('user', JSON.stringify(loggedInUser));
       }
 
@@ -126,6 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Sign out error:', error);
     } finally {
       apiClient.logout();
+      setIsAuthenticated(false);
       setUser(null);
     }
   };
@@ -145,6 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signOut,
     updateUser,
+    isAuthenticated
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

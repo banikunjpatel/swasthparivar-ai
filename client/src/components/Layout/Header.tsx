@@ -17,9 +17,9 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'family', label: 'Family Members' },
     { id: 'meal-plan', label: 'Meal Plan' },
-    { id: 'recipes', label: 'Recipes' },
     { id: 'grocery', label: 'Grocery' },
-    { id: 'guidance', label: 'Guidance' }
+    { id: 'guidance', label: 'Guidance' },
+    { id: 'wellness', label: 'Wellness' }
   ];
 
   const handleSignOut = async () => {
@@ -43,7 +43,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
                 <Leaf className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-800">AyurMeal</h1>
+                <h1 className="text-xl font-bold text-gray-800">Swasth Pariwar</h1>
                 <p className="text-xs text-gray-500">Personalized Ayurvedic Nutrition</p>
               </div>
             </div>
@@ -54,11 +54,10 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    currentSection === item.id
-                      ? 'bg-green-100 text-green-700 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentSection === item.id
+                    ? 'bg-green-100 text-green-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                    }`}
                 >
                   {item.label}
                 </button>
@@ -109,7 +108,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
                   Sign In
                 </button>
               )}
-              
+
               <button className="md:hidden p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
                 <Menu className="h-5 w-5" />
               </button>
@@ -124,11 +123,10 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
-                className={`block w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  currentSection === item.id
-                    ? 'bg-green-100 text-green-700'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-white'
-                }`}
+                className={`block w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${currentSection === item.id
+                  ? 'bg-green-100 text-green-700'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-white'
+                  }`}
               >
                 {item.label}
               </button>

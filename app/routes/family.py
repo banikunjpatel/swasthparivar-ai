@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel,EmailStr
 from typing import List, Dict
 from datetime import datetime
 import pytz
 from datetime import datetime
 from app.dependencies.auth_dependency import get_current_user
 from fastapi import Depends
+from datetime import timezone
 import re
 import json
 
@@ -23,48 +24,55 @@ import logging
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# 🧾 Request model for registering family and members
-class FamilyWithMembers(BaseModel):
-    family: FamilyModel
-    members: List[MemberModel]
-
-from datetime import datetime, timedelta, timezone
-import pytz
+from datetime import datetime, timedelta
+import bcrypt
 
 # ✅ Register family + members into MongoDB
-@router.post("/register-family", summary="Register family with members")
-async def register_family(data: FamilyWithMembers, current_user: str = Depends(get_current_user)):
+class FamilyWithMembers(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+
+
+# ✅ Register family + members into MongoDB
+@router.post("/register-family", summary="Register family account")
+async def register_family(data: FamilyWithMembers):
     try:
-        # 🔍 Check if email already registered
-        existing = await families_collection.find_one({"email": data.family.email})
+        # 🔍 Check if email already exists
+        existing = await families_collection.find_one({"email": data.email})
         if existing:
-            raise HTTPException(status_code=409, detail="Email already registered")
+            raise HTTPException(status_code=400, detail="Email already registered")
 
         now = datetime.utcnow()
 
-        # 🏠 Prepare and insert family document
-        family_doc = data.family.model_dump()
-        family_doc["createdAt"] = now
-        family_doc["updatedAt"] = now
-        family_doc["isVerified"] = False
+        # 🔐 Hash password before saving (if not done already)
+        hashed_password =  bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode('utf-8')
+
+        family_doc = {
+            "name": data.name,
+            "email": data.email,
+            "password": hashed_password,
+            "createdAt": now,
+            "updatedAt": now,
+            "isVerified": False,
+        }
 
         result = await families_collection.insert_one(family_doc)
         user_id = str(result.inserted_id)
-
-        # 👥 Insert all members
-        for member in data.members:
-            member_doc = member.model_dump()
-            member_doc["userId"] = user_id
-            member_doc["createdAt"] = now
-            member_doc["updatedAt"] = now
-            member_doc["isVerified"] = False
-            await members_collection.insert_one(member_doc)
-
-        return {"message": "Family registered successfully", "userId": user_id}
+        response_data = {
+            "userId": user_id,
+            "name": data.name,
+            "email": data.email,
+            "isVerified": False,
+            "createdAt": now,
+            "updatedAt": now
+        }
+        return { "status_code": 200,"detail": "User registered successfully","user": response_data}
 
     except Exception as e:
-        logger.exception("❌ Failed to register family.")
+        logger.exception("❌ Failed to register user.")
         raise HTTPException(status_code=500, detail="Registration failed")
+
 
 
 @router.post("/generate-family-meal/{user_id}", summary="Generate meal plan for a specific week")
@@ -88,16 +96,15 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
 
         # 📦 Fetch previous plan (to avoid duplicates)
         previous_plan = None
-        previous_doc = await family_meal_collection.find_one(
-            {"userId": user_id},
-            sort=[("weekStart", -1)]
-        )
+        previous_doc = await family_meal_collection.find_one({
+            "userId": user_id
+        }, sort=[("weekStart", -1)])
         if previous_doc:
             prev_week_start = previous_doc["weekStart"]
-            if prev_week_start.tzinfo is None:
-                prev_week_start = prev_week_start.replace(tzinfo=timezone.utc)
-            if prev_week_start < week_start:
-                previous_plan = previous_doc.get("plan")
+        if previous_doc and prev_week_start.tzinfo is None:
+            prev_week_start = prev_week_start.replace(tzinfo=timezone.utc)
+        if previous_doc and prev_week_start < week_start:
+            previous_plan = previous_doc.get("plan")
 
         # 🌿 Build seasonal wellness goals (optional)
         wellness_goals = {}
@@ -157,24 +164,43 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
         logger.exception("❌ Unexpected error during meal generation")
         raise HTTPException(status_code=500, detail="Family meal generation failed")
     
+@router.get("/get-family-meal/{user_id}", summary="Fetch latest saved family meal plan by user ID")
+async def get_family_meal(user_id: str):
+    try:
+        latest_plan = await family_meal_collection.find_one(
+            {"userId": user_id},
+            sort=[("createdAt", -1)]
+        )
+
+        if not latest_plan:
+            raise HTTPException(status_code=404, detail="No meal plan found for this user")
+
+        # Convert ObjectId to string for JSON serialization
+        latest_plan["_id"] = str(latest_plan["_id"])
+
+        return latest_plan
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to fetch family meal plan")
+    
 @router.get("/get-all-family-meals/{user_id}", summary="Fetch all saved family meal plans by user ID")
 async def get_all_family_meals(user_id: str):
     try:
         cursor = family_meal_collection.find({"userId": user_id}).sort("createdAt", -1)
         meal_plans = []
- 
+
         async for plan in cursor:
             # Convert all ObjectId to str
             if "_id" in plan:
                 plan["_id"] = str(plan["_id"])
             # Optional: Convert nested ObjectIds if any
             meal_plans.append(plan)
- 
+
         if not meal_plans:
             raise HTTPException(status_code=404, detail="No meal plans found for this user")
- 
+
         return meal_plans
- 
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch meal plans: {str(e)}")
     

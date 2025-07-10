@@ -33,32 +33,33 @@ export interface MemberFormState {
   prakriti: string;
   userId: string;
   doshaStats: DoshaStats;
+  state?: string;
 }
 const defaultFormState: MemberFormState = {
-  _id: undefined, 
+  _id: undefined,
   fullName: '',
-  age: 0,
+  age: 1,
   gender: 'male',
   dietaryPreferences: '', // Added default value for the new property
   medicalConditions: [],
   prakriti: 'unknown',
   allergies: [],
-  userId:userId,
+  userId: userId,
   doshaStats: {
     vata: 0,
     pitta: 0,
     kapha: 0
-  }
+  },
+  state: ''
 };
 
-const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClose, initialData  }) => {
+const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClose, initialData }) => {
   const [step, setStep] = useState(0);
   const [formState, setFormState] = useState<MemberFormState>(defaultFormState);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>(Array(9).fill(''));
 
   useEffect(() => {
     if (open) {
-      console.log('Modal opened with initial data:', initialData);
       if (initialData) {
         setFormState(initialData);
       } else {
@@ -67,29 +68,29 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
           try {
             const user = JSON.parse(storedUser);
             if (user?.name) {
-              setFormState(prev => ({ ...prev, fullName: user.name,userId: user.userId || '', }));
+              setFormState(prev => ({ ...prev, fullName: user.name, userId: user.userId || '', }));
             }
           } catch {
             console.warn('Invalid user data in localStorage');
           }
         }
       }
-      
+
     }
   }, [open, initialData]);
 
   const handleNext = async () => {
     if (step === 3) {
       try {
+        const isComplete = selectedAnswers.every((answer) => answer && answer.trim() !== "");
+
+        if (!isComplete) {
+          alert("Please answer all Prakriti assessment questions.");
+          return;
+        }
         const res = await apiClient.calculatePrakriti(selectedAnswers);
-        // Assuming the API returns the prakriti directly
-        console.log('Prakriti calculation response:', res);
-        const { prakriti, doshaStats } = res.data;       
-        // setFormState(prev => ({ ...prev, prakriti: res.data.prakriti }));
-        // const prakriti = calculatePrakriti(selectedAnswers.map(answer => parseInt(answer, 10)));
-        console.log('Calculated Prakriti:', prakriti, doshaStats);
-        setFormState(prev => ({ ...prev, prakriti,doshaStats }));
-        console.log('Updated Form State:', formState);
+        const { prakriti, doshaStats } = res.data;
+        setFormState(prev => ({ ...prev, prakriti, doshaStats }));
         setStep(step + 1);
       } catch (err) {
         console.error('Failed to calculate prakriti', err);
@@ -109,12 +110,14 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
         if (initialData?._id) {
           await apiClient.updateFamilyMember(initialData._id, formState);
         } else {
-          console.error('Error: Family member ID is undefined.');
+          console.error('Error: Family member ID is undefined.')
+          return;
         }
       } else {
         await apiClient.addFamilyMember(formState);
       }
       onClose();
+
     } catch (error) {
       console.error('Error submitting form', error);
     }

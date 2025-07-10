@@ -24,11 +24,11 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onClose }) => {
           >
             <X className="h-6 w-6" />
           </button>
-          
+
           <div className="pr-12">
             <h1 className="text-3xl font-bold text-white mb-2">{recipe.name}</h1>
             <p className="text-green-100 mb-4">{recipe.description}</p>
-            
+
             <div className="flex items-center space-x-6 text-white">
               <div className="flex items-center space-x-2">
                 <Clock className="h-5 w-5" />
@@ -93,8 +93,8 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onClose }) => {
                     <span>{recipe.doshaBalance.vata}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-blue-500 h-2 rounded-full transition-all duration-500" 
+                    <div
+                      className="bg-blue-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${recipe.doshaBalance.vata}%` }}
                     />
                   </div>
@@ -105,8 +105,8 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onClose }) => {
                     <span>{recipe.doshaBalance.pitta}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-orange-500 h-2 rounded-full transition-all duration-500" 
+                    <div
+                      className="bg-orange-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${recipe.doshaBalance.pitta}%` }}
                     />
                   </div>
@@ -117,8 +117,8 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onClose }) => {
                     <span>{recipe.doshaBalance.kapha}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-green-500 h-2 rounded-full transition-all duration-500" 
+                    <div
+                      className="bg-green-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${recipe.doshaBalance.kapha}%` }}
                     />
                   </div>
@@ -131,7 +131,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onClose }) => {
           <div>
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Ingredients</h3>
             <div className="bg-white border border-gray-200 rounded-xl p-6">
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-1">
                 {recipe.ingredients.map((ingredient, index) => (
                   <div key={index} className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
                     <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
