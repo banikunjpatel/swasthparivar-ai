@@ -1,6 +1,6 @@
 from typing import Optional
 
-def build_meal_plan_prompt(user: dict, previous_plan: Optional[dict] = None) -> str:
+def build_meal_plan_prompt(user: dict, previous_plan: Optional[dict] = None, wellness_tips: Optional[list[str]] = None) -> str:
     import json
     from app.utils.compliance import MEAL_COMPLIANCE_RULES
 
@@ -78,6 +78,9 @@ Return response in this strict JSON format:
 
 Do not use Markdown. No extra commentary.
 """
+    if wellness_tips:
+      prompt += "\n🌿 Seasonal Ayurvedic Wellness Suggestions:\n"
+      prompt += "\n".join(f"- {tip}" for tip in wellness_tips)
 
     if previous_plan:
         prompt += f"""
@@ -85,6 +88,8 @@ Do not use Markdown. No extra commentary.
 Here is last week's meal plan. ⚠️ Please avoid repeating the same dishes:
 
 {json.dumps(previous_plan, indent=2)}
+
+Please generate a new meal plan that does not repeat any of these meals.
 """
 
     return prompt.strip()

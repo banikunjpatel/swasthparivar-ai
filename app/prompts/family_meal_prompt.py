@@ -1,7 +1,7 @@
 import json
 from typing import Optional
 
-def   build_family_meal_prompt(family: list, previous_plan: Optional[dict] = None) -> str:
+def build_family_meal_prompt(family: list, previous_plan: Optional[dict] = None, wellness_goals: Optional[dict] = None) -> str:
     prompt = """
 You are an expert Indian Ayurvedic nutritionist and meal planner.
 
@@ -62,6 +62,11 @@ Each meal must have:
         prompt += "\nHere is the family's previous week's meal plan. Please avoid repeating these meals:\n"
         prompt += json.dumps(previous_plan, indent=2)
         prompt += "\n"
+        
+    if wellness_goals:
+      prompt += "\n🌿 Seasonal Ayurvedic Focus (wellness goals):\n"
+      for name, tips in wellness_goals.items():
+          prompt += f"- {name}: {', '.join(tips)}\n"
 
     prompt += "Now, here is the family profile:\n"
 
