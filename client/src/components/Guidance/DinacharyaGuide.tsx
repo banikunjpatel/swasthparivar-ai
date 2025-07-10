@@ -17,7 +17,7 @@ const DinacharyaGuide: React.FC<DinacharyaGuideProps> = ({ userDosha }) => {
   };
 
   const getDoshaSpecificGuidance = (recommendation: any) => {
-    const primaryDosha = userDosha.split('-')[0] as 'vata' | 'pitta' | 'kapha';
+    const primaryDosha = userDosha.charAt(0).toLowerCase() + userDosha.slice(1).split('-')[0] as 'vata' | 'pitta' | 'kapha';
     return recommendation.doshaSpecific[primaryDosha] || recommendation.description;
   };
 
@@ -31,7 +31,7 @@ const DinacharyaGuide: React.FC<DinacharyaGuideProps> = ({ userDosha }) => {
       <div className="space-y-4">
         {DINACHARYA_RECOMMENDATIONS.map((recommendation, index) => {
           const TimeIcon = getTimeIcon(recommendation.time);
-          
+
           return (
             <div key={index} className="flex space-x-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl hover:shadow-md transition-shadow">
               <div className="flex-shrink-0">
@@ -39,7 +39,7 @@ const DinacharyaGuide: React.FC<DinacharyaGuideProps> = ({ userDosha }) => {
                   <TimeIcon className="h-6 w-6 text-white" />
                 </div>
               </div>
-              
+
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-lg font-semibold text-gray-800">{recommendation.activity}</h3>
@@ -48,9 +48,9 @@ const DinacharyaGuide: React.FC<DinacharyaGuideProps> = ({ userDosha }) => {
                     <span>{recommendation.time}</span>
                   </div>
                 </div>
-                
+
                 <p className="text-gray-600 mb-2">{recommendation.description}</p>
-                
+
                 <div className="bg-white bg-opacity-70 rounded-lg p-3">
                   <p className="text-sm font-medium text-gray-800 mb-1">For your {userDosha} constitution:</p>
                   <p className="text-sm text-gray-700">{getDoshaSpecificGuidance(recommendation)}</p>

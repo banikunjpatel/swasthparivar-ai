@@ -5,13 +5,13 @@ import { MemberFormState } from '../AddFamilyMemberModal';
 
 interface FormState {
   dietaryPreferences: string;
-    [key: string]: any;
-  }
-  interface StepDietaryPreferenceProps {
-    formState: FormState;
-    setFormState: React.Dispatch<React.SetStateAction<MemberFormState>>;
-  }
-  
+  [key: string]: any;
+}
+interface StepDietaryPreferenceProps {
+  formState: FormState;
+  setFormState: React.Dispatch<React.SetStateAction<MemberFormState>>;
+}
+
 
 const OPTIONS = [
   'Vegetarian',
@@ -23,23 +23,23 @@ const OPTIONS = [
 ];
 
 const StepDietaryPreference: React.FC<StepDietaryPreferenceProps> = ({
-    formState,
-    setFormState,
+  formState,
+  setFormState,
 }) => {
-    const handleChange = (preference: string) => {
-        setFormState({ 
-          ...formState, 
-          dietaryPreferences: preference,
-          fullName: formState.fullName || '',
-          age: formState.age || 0,
-          gender: formState.gender || '',
-          medicalConditions: formState.medicalConditions || [],
-          prakriti: formState.prakriti || '',
-          allergies: formState.allergies || [],
-          userId: formState.userId || '',
-          doshaStats: formState.doshaStats || { vata: 0, pitta: 0, kapha: 0 } // Default value for doshaStats
-        });
-      };
+  const handleChange = (preference: string) => {
+    setFormState({
+      ...formState,
+      dietaryPreferences: preference,
+      fullName: formState.fullName || '',
+      age: formState.age || 1,
+      gender: formState.gender || '',
+      medicalConditions: formState.medicalConditions || [],
+      prakriti: formState.prakriti || '',
+      allergies: formState.allergies || [],
+      userId: formState.userId || '',
+      doshaStats: formState.doshaStats || { vata: 0, pitta: 0, kapha: 0 } // Default value for doshaStats
+    });
+  };
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold text-gray-800">Dietary Preference</h2>
@@ -49,11 +49,10 @@ const StepDietaryPreference: React.FC<StepDietaryPreferenceProps> = ({
         {OPTIONS.map(option => (
           <label
             key={option}
-            className={`flex items-center space-x-3 p-4 border rounded-lg shadow-md cursor-pointer transition ${
-                formState.dietaryPreferences === option
+            className={`flex items-center space-x-3 p-4 border rounded-lg shadow-md cursor-pointer transition ${formState.dietaryPreferences === option
                 ? 'bg-green-50 border-green-600'
                 : 'bg-white hover:bg-green-50'
-            }`}
+              }`}
           >
             <input
               type="radio"

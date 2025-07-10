@@ -24,7 +24,7 @@ const CulturalWellnessCard: React.FC<CulturalWellnessCardProps> = ({ userDosha, 
       monsoon: { icon: '🌧️', message: 'Boost immunity with warming spices', color: 'from-blue-400 to-indigo-500' },
       autumn: { icon: '🍂', message: 'Ground yourself with nourishing foods', color: 'from-orange-400 to-red-500' },
       winter: { icon: '❄️', message: 'Warm your body and soul', color: 'from-blue-500 to-purple-600' },
-      'late-winter': { icon: '🌨️', message: 'Prepare for spring awakening', color: 'from-gray-400 to-slate-500' }
+      'pre-winter': { icon: '🌨️', message: 'Prepare for spring awakening', color: 'from-gray-400 to-slate-500' }
     };
     return wisdom[season];
   };
@@ -113,7 +113,7 @@ const CulturalWellnessCard: React.FC<CulturalWellnessCardProps> = ({ userDosha, 
                 {currentSeason === 'monsoon' && 'Warm spices like ginger help boost immunity'}
                 {currentSeason === 'autumn' && 'Root vegetables and warming oils support grounding'}
                 {currentSeason === 'winter' && 'Hearty stews and warm oils nourish deeply'}
-                {currentSeason === 'late-winter' && 'Begin lightening diet for spring transition'}
+                {currentSeason === 'pre-winter' && 'Begin lightening diet for spring transition'}
               </p>
             </div>
           </div>

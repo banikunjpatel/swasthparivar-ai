@@ -1,37 +1,61 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MealType } from '../../types';
+import apiClient from '../../lib/api';
+import {
+  getWeekStartDate, normalizeToWeekStart, transformMealPlan
+
+} from '../../utils/transformMealPlan';
 
 type ViewMode = 'day' | 'week' | 'month';
 
-interface UserMealPlan {
+interface MealPlan {
   weekStart: string;
   days: {
     day: string;
     meals: {
-      breakfast?: string;
-      lunch?: string;
-      dinner?: string;
-      snack?: string;
+      breakfast?: { base: string; customizations: any };
+      lunch?: { base: string; customizations: any };
+      dinner?: { base: string; customizations: any };
     };
   }[];
 }
 
 interface MealPlanViewProps {
-  mealPlan: UserMealPlan;
-  onSelectRecipe: (recipe: any) => void; 
+  mealPlan: MealPlan[]; // Array of meal plans for the week
+  members: any[]; // Array of family members
+  onSelectRecipe: (recipe: any, mealType: string) => void;
+  setMealPlan: React.Dispatch<React.SetStateAction<MealPlan[]>>
 }
 
-const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, onSelectRecipe }) => {
+const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelectRecipe, setMealPlan }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [currentDate, setCurrentDate] = useState(new Date());
+  const mealTypes: MealType[] = ['breakfast', 'lunch', 'dinner'];
+  const [isGenerateDisabled, setIsGenerateDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [loadingMeal, setLoadingMeal] = useState(false);
+  useEffect(() => {
+    const fetchMealPlan = async () => {
+      try {
+        const selectedWeekStart = getWeekStartDate(currentDate);
+        const matchedPlan = mealPlan.find(plan => plan.weekStart === selectedWeekStart)
+        const isCurrentWeekPlanned = matchedPlan?.weekStart === selectedWeekStart;
+        setIsGenerateDisabled(isCurrentWeekPlanned);
+      } catch (err) {
+        console.error('Failed to fetch meal plan', err);
+      }
+    };
 
-  const mealTypes: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
+    fetchMealPlan();
+  }, [currentDate]);
 
-  const getMealForSlot = (date: Date, mealType: MealType): string => {
+  const getMealForSlot = (date: Date, mealType: MealType): any => {
     const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-    const dayEntry = mealPlan.days.find((d) => d.day === dayName);
-    return dayEntry?.meals?.[mealType] || 'Not planned';
+    const selectedWeekStart = getWeekStartDate(date);
+    const weekPlan = mealPlan.find((plan) => plan.weekStart === selectedWeekStart);
+    const dayEntry = weekPlan?.days.find((d) => d.day === dayName);
+    return dayEntry?.meals?.[mealType as 'breakfast' | 'lunch' | 'dinner'] || null;
   };
 
   const formatDate = (date: Date) => {
@@ -67,41 +91,73 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, onSelectRecipe })
     });
   };
 
-  const MealCard: React.FC<{ mealName: string; mealType: MealType; compact?: boolean }> = ({
-    mealName,
+  const MealCard: React.FC<{ mealData: any; mealType: MealType; compact?: boolean }> = ({
+    mealData,
     mealType,
     compact = false,
   }) => {
     const mealColors = {
-      breakfast: 'bg-yellow-100 border-yellow-300',
-      lunch: 'bg-green-100 border-green-300',
-      dinner: 'bg-purple-100 border-purple-300',
-      snack: 'bg-pink-100 border-pink-300',
+      breakfast: 'bg-yellow-50 border-yellow-200',
+      lunch: 'bg-green-50 border-green-200',
+      dinner: 'bg-purple-50 border-purple-200'
+    };
+
+    const iconBackgrounds = {
+      breakfast: 'bg-yellow-300',
+      lunch: 'bg-green-300',
+      dinner: 'bg-purple-300'
     };
 
     const mealIcons = {
       breakfast: '🌅',
       lunch: '☀️',
-      dinner: '🌙',
-      snack: '🍎',
+      dinner: '🌙'
     };
+
+    if (!mealData) {
+      return (
+        <div
+          className={`border-2 border-dashed rounded-lg p-4 text-center text-sm text-gray-400 italic ${compact ? 'h-[100px]' : 'h-[120px]'
+            }`}
+        >
+          Not planned
+        </div>
+      );
+    }
 
     return (
       <div
-        className={`${mealColors[mealType]} border-2 rounded-lg p-3 ${
-          compact ? 'h-[100px]' : 'h-[120px]'
-        }`}
-        onClick={() => onSelectRecipe(mealName)}
+        className={`${mealColors[mealType as 'breakfast' | 'lunch' | 'dinner']} border rounded-xl shadow-sm p-4 space-y-2 transition hover:shadow-md cursor-pointer`}
+        onClick={() => onSelectRecipe(mealData.base, mealType)}
       >
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center space-x-2">
-            <span className="text-lg">{mealIcons[mealType]}</span>
-            <span className="text-xs font-medium capitalize text-gray-600">{mealType}</span>
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <div
+            className={`${iconBackgrounds[mealType as 'breakfast' | 'lunch' | 'dinner']} rounded-full p-2 w-8 h-8 flex items-center justify-center text-white text-sm`}
+          >
+            {mealIcons[mealType as 'breakfast' | 'lunch' | 'dinner']}
           </div>
+          <h4 className="text-md font-bold text-gray-800 capitalize">{mealType}</h4>
         </div>
-        <h4 className={`font-semibold text-gray-800 ${compact ? 'text-xs' : 'text-sm'}`}>
-          {mealName}
-        </h4>
+
+        {/* Base meal name */}
+        <div>
+          <h5 className="text-sm font-semibold text-gray-900">{mealData.base}</h5>
+        </div>
+
+        {/* Customizations */}
+        {mealData?.customizations && (typeof mealData?.customizations === "string" ? (
+          <p className="text-sm text-gray-700">{mealData?.customizations}</p>
+        ) : (
+          <ul className="text-xs text-gray-700 pl-4 list-disc space-y-1">
+            {Object.entries(mealData?.customizations).map(([member, customization]) => (
+              <li key={member}>
+                <strong className="capitalize">{member}:</strong> {String(customization)}
+              </li>
+            ))}
+          </ul>
+        ))}
+
       </div>
     );
   };
@@ -115,46 +171,188 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, onSelectRecipe })
         {mealTypes.map((mealType) => (
           <div key={mealType} className="bg-white rounded-xl shadow-lg p-6">
             <h4 className="text-lg font-semibold text-gray-800 mb-4 capitalize">{mealType}</h4>
-            <MealCard mealName={getMealForSlot(currentDate, mealType)} mealType={mealType} />
+            <MealCard mealData={getMealForSlot(currentDate, mealType)} mealType={mealType} />
           </div>
         ))}
       </div>
     </div>
   );
-
   const renderWeekView = () => {
     const weekDates = getWeekDates();
+
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-7 gap-4">
-          {weekDates.map((date, index) => (
-            <div key={index} className="text-center">
-              <h4 className="font-semibold text-gray-800 mb-4">
-                {date.toLocaleDateString('en-US', { weekday: 'short' })}
-              </h4>
-              <p className="text-sm text-gray-600 mb-4">
-                {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-              </p>
-              <div className="space-y-3">
-                {mealTypes.map((mealType) => (
-                  <MealCard
-                    key={mealType}
-                    mealName={getMealForSlot(date, mealType)}
-                    mealType={mealType}
-                    compact
-                  />
-                ))}
+        {/* Generate Button */}
+        <div className="flex justify-end">
+          <button
+            onClick={async () => {
+              try {
+                setLoading(true);
+                const userId = await apiClient.getCurrentUserId();
+                const weekStartDate = normalizeToWeekStart(new Date(weekDates[0]));
+                setLoadingMeal(true);
+                try {
+                  if (members.length === 1) {
+                    await apiClient.getMealPlanByMember(members, weekStartDate);
+
+                  } else {
+                    await apiClient.generateMealPlan(userId, weekStartDate);
+                  }
+
+                  setIsGenerateDisabled(true);
+                  const res = await apiClient.getMealPlan(userId);
+                  const transformed = transformMealPlan(res.data);
+                  setMealPlan(transformed);
+                } catch (err) {
+                  console.error("Failed to fetch meal plan", err);
+                } finally {
+                  // console.log("Grocery items fetched:", response.data?.items);
+                  setLoadingMeal(false);
+                }
+
+              } catch (error) {
+                console.error("Failed to generate meal plan", error);
+              } finally {
+                setLoading(false);
+              }
+            }}
+            disabled={isGenerateDisabled && loading}
+            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${isGenerateDisabled
+              ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+              : 'bg-green-600 text-white hover:bg-green-700'
+              }`}
+          >
+            {loading ? 'Generating...' : '✚ Generate New Plan'}
+          </button>
+        </div>
+
+        {/* ✅ Desktop Grid View */}
+        <div className="hidden md:block">
+          <div className="grid grid-cols-7 gap-4">
+            {weekDates.map((date, index) => (
+              <div key={index} className="text-center">
+                <h4 className="font-semibold text-gray-800 mb-4">
+                  {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                </h4>
+                <p className="text-sm text-gray-600 mb-4">
+                  {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </p>
+                <div className="space-y-3">
+                  {mealTypes.map((mealType) => {
+                    const mealData = getMealForSlot(date, mealType);
+                    return (
+                      <div key={mealType} title={mealData?.base || 'Not planned'}>
+                        <MealCard mealData={mealData} mealType={mealType} compact />
+                      </div>
+                    );
+                  })}
+                  {/* ss */}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* ✅ Mobile Grid View */}
+        <div className="block md:hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {weekDates.map((date, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-xl shadow-md p-4"
+              >
+                <h4 className="font-semibold text-gray-800 mb-2 text-center">
+                  {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                </h4>
+                <p className="text-sm text-gray-600 mb-4 text-center">
+                  {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </p>
+                <div className="space-y-3">
+                  {mealTypes.map((mealType) => {
+                    const mealData = getMealForSlot(date, mealType);
+                    return (
+                      <div key={mealType} title={mealData?.base || 'Not planned'}>
+                        <MealCard mealData={mealData} mealType={mealType} compact />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
   };
 
+
+
+  // const renderWeekView = () => {
+  //   const weekDates = getWeekDates();
+
+  //   return (
+  //     <div className="space-y-6">
+  //       {/* Generate Button */}
+  //       <div className="flex justify-end">
+  //         <button
+  //           onClick={async () => {
+  //             try {
+  //               const userId = await apiClient.getCurrentUserId();
+  //               await apiClient.generateMealPlan(userId); // call your backend
+  //               setIsGenerateDisabled(true); // disable after generation
+  //               const res = await apiClient.getMealPlan(userId);
+  //               const transformed = transformMealPlan(res.data);
+  //               setMealPlan(transformed);
+  //             } catch (error) {
+  //               console.error("Failed to generate meal plan", error);
+  //             }
+  //           }}
+  //           disabled={isGenerateDisabled}
+  //           className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${
+  //             isGenerateDisabled
+  //               ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+  //               : 'bg-green-600 text-white hover:bg-green-700'
+  //           }`}
+  //         >
+  //           ✚ Generate Meal Plan
+  //         </button>
+  //       </div>
+
+  //       {/* Responsive Horizontal Scroll Container */}
+  //       <div className="overflow-x-auto pb-2">
+  //         <div className="flex md:grid md:grid-cols-7 gap-4 min-w-[700px] md:min-w-full">
+  //           {weekDates.map((date, index) => (
+  //             <div
+  //               key={index}
+  //               className="flex-shrink-0 w-[240px] md:w-auto bg-white rounded-xl shadow-md p-4"
+  //             >
+  //               <h4 className="font-semibold text-gray-800 mb-2 text-center">
+  //                 {date.toLocaleDateString('en-US', { weekday: 'short' })}
+  //               </h4>
+  //               <p className="text-sm text-gray-600 mb-4 text-center">
+  //                 {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+  //               </p>
+  //               <div className="space-y-3">
+  //                 {mealTypes.map((mealType) => (
+  //                   <MealCard
+  //                     key={mealType}
+  //                     mealData={getMealForSlot(date, mealType)}
+  //                     mealType={mealType}
+  //                     compact
+  //                   />
+  //                 ))}
+  //               </div>
+  //             </div>
+  //           ))}
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // };
+
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-lg p-6">
+      {!loadingMeal && (<><div className="bg-white rounded-xl shadow-lg p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">Meal Plan</h2>
@@ -165,11 +363,9 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, onSelectRecipe })
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  viewMode === mode
-                    ? 'bg-white text-green-700 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === mode
+                  ? 'bg-white text-green-700 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-800'}`}
               >
                 {mode.charAt(0).toUpperCase() + mode.slice(1)}
               </button>
@@ -198,13 +394,32 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, onSelectRecipe })
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
-      </div>
+      </div><div className="bg-white rounded-xl shadow-lg p-6">
+          {viewMode === 'day' && renderDayView()}
+          {viewMode === 'week' && renderWeekView()}
+        </div></>)}
 
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        {viewMode === 'day' && renderDayView()}
-        {viewMode === 'week' && renderWeekView()}
-      </div>
+      {loadingMeal && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
+          <div className="flex items-center gap-3 bg-white px-6 py-4 rounded-lg shadow-lg">
+            <svg className="animate-spin h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle
+                className="opacity-25"
+                cx="12" cy="12" r="10"
+                stroke="currentColor" strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              />
+            </svg>
+            <span className="text-sm font-medium text-gray-700">Loading Meal Plan...</span>
+          </div>
+        </div>
+      )}
     </div>
+
   );
 };
 

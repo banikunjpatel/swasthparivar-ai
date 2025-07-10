@@ -1,3 +1,4 @@
+from app.dependencies.auth_dependency import get_current_user
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from app.db.mongo import users_collection,families_collection
@@ -21,15 +22,18 @@ async def signup(user: UserSignup):
         raise HTTPException(status_code=400, detail="Email already registered")
     hashed = hash_password(user.password)
     await users_collection.insert_one({"email": user.email, "password": hashed})
-    return {"message": "User created successfully"}
+    return {"detail": "User created successfully"}
 
 @router.post("/login")
 async def login(user: UserLogin):
     db_user = await families_collection.find_one({"email": user.email})
     # print("Provided password:", user.password)
     # print("Stored hashed password:", db_user.get("password"))
-    if not db_user or not verify_password(user.password, db_user["password"]):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User does not exist")
+
+    if not verify_password(user.password, db_user["password"]):
+        raise HTTPException(status_code=401, detail="Invalid password")
     token = create_access_token({"sub": user.email})
     refresh_token = create_refresh_token(data={"sub": user.email})
     response_data = {
@@ -44,9 +48,9 @@ async def login(user: UserLogin):
             "accessToken": token,
             "refreshToken": refresh_token
     }
-    
-    return {"status": 200,"message": "User login successfully","user": response_data,"tokens": tokens, "expires_in_days": 7}
 
-# @router.post("/logout", status_code=status.HTTP_200_OK)
-# async def logout(current_user: str = Depends(get_current_user)):
-#     return {"message": f"User '{current_user}' logged out (client should discard token)."}
+    return {"status_code": 200,"detail": "User login successfully","user": response_data,"tokens": tokens, "expires_in_days": 7}
+
+@router.post("/logout", status_code=status.HTTP_200_OK)
+async def logout(current_user: str = Depends(get_current_user)):
+    return {"detail": f"User '{current_user}' logged out (client should discard token)."}

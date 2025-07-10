@@ -1,8 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from bson import ObjectId
 from app.logic.wellness import get_member_wellness_tips
-
-from app.db import members_collection, families_collection
+from app.db.mongo import members_collection, families_collection
 
 router = APIRouter()
 

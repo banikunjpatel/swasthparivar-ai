@@ -9,6 +9,7 @@ interface RutucharyaGuideProps {
 }
 
 const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSeason }) => {
+  console.log(currentSeason)
   const [selectedSeason, setSelectedSeason] = useState<Season>(currentSeason);
 
   const seasonInfo = {
@@ -17,7 +18,7 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
     monsoon: { icon: CloudRain, color: 'blue', name: 'Monsoon', gradient: 'from-blue-400 to-indigo-500' },
     autumn: { icon: Wind, color: 'orange', name: 'Autumn', gradient: 'from-orange-400 to-red-500' },
     winter: { icon: Snowflake, color: 'blue', name: 'Winter', gradient: 'from-blue-500 to-purple-600' },
-    'late-winter': { icon: Cloud, color: 'gray', name: 'Late Winter', gradient: 'from-gray-400 to-slate-500' }
+    'pre-winter': { icon: Cloud, color: 'gray', name: 'Pre Winter', gradient: 'from-gray-400 to-slate-500' }
   };
 
   const guidance = RUTUCHARYA_GUIDANCE[selectedSeason];
@@ -25,8 +26,10 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
   const SeasonIcon = seasonConfig.icon;
 
   const getDoshaSpecificGuidance = (season: Season) => {
-    const primaryDosha = userDosha.split('-')[0] as 'vata' | 'pitta' | 'kapha';
-    return RUTUCHARYA_GUIDANCE[season].dosha_considerations[primaryDosha];
+    const primaryDosha = userDosha.charAt(0).toLowerCase() + userDosha.slice(1).split('-')[0] as 'vata' | 'pitta' | 'kapha';
+    console.log(primaryDosha)
+    console.log(RUTUCHARYA_GUIDANCE[currentSeason]?.dosha_considerations?.[primaryDosha])
+    return RUTUCHARYA_GUIDANCE[currentSeason]?.dosha_considerations?.[primaryDosha];
   };
 
   return (
@@ -45,11 +48,10 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
               <button
                 key={season}
                 onClick={() => setSelectedSeason(season as Season)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                  selectedSeason === season
-                    ? `bg-gradient-to-r ${config.gradient} text-white shadow-lg`
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${selectedSeason === season
+                  ? `bg-gradient-to-r ${config.gradient} text-white shadow-lg`
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
               >
                 <Icon className="h-4 w-4" />
                 <span className="text-sm font-medium">{config.name}</span>
@@ -133,7 +135,7 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
       {selectedSeason === currentSeason && (
         <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
           <p className="text-sm text-yellow-800">
-            <strong>Current Season:</strong> These recommendations are specifically for the current {seasonConfig.name.toLowerCase()} season. 
+            <strong>Current Season:</strong> These recommendations are specifically for the current {seasonConfig.name.toLowerCase()} season.
             Remember to gradually transition your diet and lifestyle as seasons change.
           </p>
         </div>

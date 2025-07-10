@@ -9,7 +9,7 @@
     "dev:server": "nodemon server/index.js",
     "build": "vite build",
     "lint": "eslint .",
-    "python":"python -m uvicorn app.main:app --reload",
+    "python": "python -m uvicorn app.main:app --reload",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.14.0",
     "@headlessui/react": "^2.2.4",
     "@mui/material": "^7.1.2",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

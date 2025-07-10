@@ -24,16 +24,14 @@ export const calculateDoshaFromAssessment = (scores: { vata: number; pitta: numb
 };
 
 export const getCurrentSeason = (location?: string): Season => {
-  const month = new Date().getMonth() + 1; // 1-12
-  
-  // Northern hemisphere seasons (default)
-  if (month >= 3 && month <= 5) return 'spring';
-  if (month >= 6 && month <= 8) return 'summer';
-  if (month >= 9 && month <= 11) return 'autumn';
-  if (month === 12 || month <= 2) return 'winter';
-  
-  // In a real app, you'd use location to determine hemisphere and adjust accordingly
-  return 'spring';
+  const month = new Date().getMonth() + 1; // 1 to 12
+
+  if (month >= 2 && month <= 3) return 'spring';       // Feb–Mar → Basant
+  if (month >= 4 && month <= 5) return 'summer';       // Apr–May → Grishma
+  if (month >= 6 && month <= 7) return 'monsoon';      // Jun–Jul → Varsha
+  if (month >= 8 && month <= 9) return 'autumn';       // Aug–Sep → Sharad
+  if (month >= 10 && month <= 11) return 'pre-winter'; // Oct–Nov → Hemant
+  return 'winter'; 
 };
 
 export const calculateRecipeDoshaAlignment = (recipe: Recipe, userDosha: DoshaBalance): number => {

@@ -1,5 +1,9 @@
+import pytz
+from datetime import datetime, timezone
 import json
 import re
+from app.models.family_meal_model import FamilyMealPlanModel
+from app.models.request_modals import MealGenerationRequest
 from fastapi import APIRouter, HTTPException
 from bson import ObjectId
 
@@ -14,14 +18,26 @@ logger = get_logger(__name__)
 router = APIRouter()
 
 # ✅ Generate meal plan using stored member profile
-@router.get("/generate-meal/{member_id}", summary="Generate meal plan for one member by ID")
-async def generate_meal(member_id: str):
+@router.post("/generate-meal/{member_id}", summary="Generate meal plan for one member by ID")
+async def generate_meal(member_id: str, request: MealGenerationRequest):
     try:
         # ✅ Retrieve member profile from MongoDB
+        week_start = request.weekStart.replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=pytz.UTC)
         member = await members_collection.find_one({"_id": ObjectId(member_id)})
         if not member:
             raise HTTPException(status_code=404, detail="Member not found")
-
+        
+        user_id = member.get("userId")  # get the family userId
+        
+        if not request.force:
+            existing = await family_meal_collection.find_one({
+                "userId": user_id,
+                "weekStart": week_start
+            })
+        if existing:
+                logger.info(f"🔁 Returning existing plan for user_id={user_id}, week={week_start}")
+                return existing["plan"]
+        
         logger.info(f"Generating meal plan for member: {member.get('fullName')}")
 
         # Clean Mongo-specific fields
@@ -29,15 +45,19 @@ async def generate_meal(member_id: str):
         member.pop("createdAt", None)
         member.pop("updatedAt", None)
         
-        user_id = member.get("userId")  # get the family userId
+       
 
         # Find most recent family plan
-        last_plan_doc = await family_meal_collection.find_one(
-            {"userId": user_id},
-            sort=[("weekStart", -1)]
-        )
-
-        previous_plan = last_plan_doc["plan"] if last_plan_doc else None
+        previous_plan = None
+        previous_doc = await family_meal_collection.find_one({
+            "userId": user_id
+        }, sort=[("weekStart", -1)])
+        if previous_doc:
+            prev_week_start = previous_doc["weekStart"]
+        if previous_doc and prev_week_start.tzinfo is None:
+            prev_week_start = prev_week_start.replace(tzinfo=timezone.utc)
+        if previous_doc and prev_week_start < week_start:
+            previous_plan = previous_doc.get("plan")
 
         # 🧠 Build prompt and call GPT
         prompt = build_meal_plan_prompt(member, previous_plan=previous_plan)
@@ -47,21 +67,27 @@ async def generate_meal(member_id: str):
         logger.debug(f"Raw GPT output:\n{raw_output}")
 
         # ✅ Strip Markdown code block (```json ... ```) if present
-        cleaned = raw_output.strip()
-        if cleaned.startswith("```"):
-            cleaned = re.sub(r"^```(?:json)?|```$", "", cleaned.strip(), flags=re.MULTILINE).strip()
-
-        parsed = json.loads(cleaned)
-        meal_plan = title_case_meals(parsed)
+        cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
+        meal_plan = json.loads(cleaned)
 
         # ✅ Convert to day dictionary if it's a list of dicts
-        if isinstance(meal_plan, list):
-            meal_plan = convert_list_to_day_dict(meal_plan)
+        # if isinstance(meal_plan, list):
+        #     meal_plan = convert_list_to_day_dict(meal_plan)
 
         # ✅ Apply compliance checking if healthConditions exist
-        health_conditions = member.get("healthConditions", [])
-        if health_conditions:
-            meal_plan = check_meal_compliance(meal_plan, health_conditions)
+        # health_conditions = member.get("healthConditions", [])
+        # if health_conditions:
+        #     meal_plan = check_meal_compliance(meal_plan, health_conditions)
+
+        # Save to DB
+        now_utc = datetime.now(pytz.UTC)
+        meal_doc = FamilyMealPlanModel(
+            userId=user_id,
+            plan=meal_plan,
+            createdAt=now_utc,
+            weekStart=week_start
+        )
+        await family_meal_collection.insert_one(meal_doc.model_dump())
 
         return meal_plan
 

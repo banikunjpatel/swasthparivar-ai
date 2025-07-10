@@ -8,6 +8,7 @@ def build_meal_plan_prompt(user: dict, previous_plan: Optional[dict] = None) -> 
     allergies = user.get("allergies", [])
     preferences = user.get("dietaryPreferences", [])
     calorie_goal = user.get("calorieGoal", "unspecified")
+    state = user.get("state", "Not specified")
 
     health_notes = ""
     restricted_ingredients = set()
@@ -34,6 +35,7 @@ Generate a personalized 7-day Indian meal plan for a person with:
 - Prakriti: {user.get("prakriti", "Not specified")}
 - Dietary preferences: {", ".join(preferences) if preferences else "Not specified"}
 - Calorie goal: {calorie_goal} kcal/day
+- State: {state}
 
 {health_notes}
 
@@ -42,22 +44,35 @@ Each day must include:
 - Meal names only (no recipes)
 - Meals suitable for the person's prakriti and health
 - Strictly avoid any ingredients listed above
+ Ensure variety across the week — do not repeat meals.
+- **Add meal-level Ayurvedic customizations** like:
+  - "with ghee for Vata"
+  - "add ajwain for Kapha digestion"
+  - "steamed version for weight loss"
+  - "ginger added for immunity"
+- Each meal (breakfast/lunch/dinner) must include a **base dish** and a **customizations** string.
+
 
 Return response in this strict JSON format:
 
-{
-  "Monday": {
-    "breakfast": "Idli with coconut chutney",
-    "lunch": "Vegetable khichdi",
-    "dinner": "Tofu curry with roti"
-  },
-  "Tuesday": {
-    "breakfast": "...",
-    "lunch": "...",
-    "dinner": "..."
-  },
+
+{{
+  "Monday": {{
+    "breakfast": {{
+      "base": "Ragi porridge",
+      "customizations": "with cardamom and jaggery (for Vata balance)"
+    }},
+    "lunch": {{
+       "base": "Lauki sabzi with jowar roti",
+      "customizations": "with extra turmeric (for inflammation)"
+    }},
+    "dinner": {{
+       "base": "Moong dal khichdi",
+      "customizations": "with ghee and cumin seeds (Vata pacifying)"
+    }}
+  }},
   ...
-}
+}}
 
 ⚠️ Output only JSON. No Markdown. No extra commentary.
 
