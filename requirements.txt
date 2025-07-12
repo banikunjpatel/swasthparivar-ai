@@ -6,3 +6,4 @@ python-dotenv
 pymongo[srv]
 uvicorn[standard]
 pytz
+motor
