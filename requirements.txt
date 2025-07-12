@@ -11,3 +11,4 @@ openai
 bcrypt
 jose
 python-jose
+pydantic>=2.0
