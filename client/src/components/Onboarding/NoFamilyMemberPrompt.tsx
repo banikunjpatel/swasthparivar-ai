@@ -37,7 +37,7 @@ const NoFamilyMemberPrompt: React.FC<Props> = ({ onAddFamily, onRefresh }) => {
       >
         + Add First Member
       </button>
-      <AddFamilyMemberModal open={modalOpen} onClose={() => { setModalOpen(false); onRefresh(); }} />
+      <AddFamilyMemberModal open={modalOpen} onClose={() => { setModalOpen(false); onRefresh(); }} membersCount={0} />
       <div>
         {showLoginPrompt && (
           <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

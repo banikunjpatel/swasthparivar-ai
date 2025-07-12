@@ -14,6 +14,7 @@ interface AddFamilyMemberModalProps {
   open: boolean;
   onClose: () => void;
   initialData?: any | null;
+  membersCount: number
 }
 const storedUser = localStorage.getItem('user');
 const userId = storedUser ? JSON.parse(storedUser)?.userId : '';
@@ -53,10 +54,11 @@ const defaultFormState: MemberFormState = {
   state: ''
 };
 
-const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClose, initialData }) => {
+const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClose, initialData, membersCount }) => {
   const [step, setStep] = useState(0);
   const [formState, setFormState] = useState<MemberFormState>(defaultFormState);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>(Array(9).fill(''));
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -68,7 +70,7 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
           try {
             const user = JSON.parse(storedUser);
             if (user?.name) {
-              setFormState(prev => ({ ...prev, fullName: user.name, userId: user.userId || '', }));
+              setFormState(prev => ({ ...prev, fullName: (user.name && membersCount === 1) ? user.name : '', userId: user.userId || '', }));
             }
           } catch {
             console.warn('Invalid user data in localStorage');
@@ -88,12 +90,15 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
           alert("Please answer all Prakriti assessment questions.");
           return;
         }
+        setLoading(true);
         const res = await apiClient.calculatePrakriti(selectedAnswers);
         const { prakriti, doshaStats } = res.data;
         setFormState(prev => ({ ...prev, prakriti, doshaStats }));
         setStep(step + 1);
       } catch (err) {
         console.error('Failed to calculate prakriti', err);
+      } finally {
+        setLoading(false); // 🔵 Hide loader
       }
     } else {
       setStep(step + 1);
@@ -156,14 +161,25 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
           >
             Back
           </button>
-          {step < 4 ? (
+          {step < 4 ? (loading ? (
+            <button
+              disabled
+              className="px-6 py-2 bg-green-500 text-white rounded flex items-center justify-center gap-2"
+            >
+              <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+              Calculating...
+            </button>
+          ) : (
             <button
               onClick={handleNext}
               className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
             >
               Next
             </button>
-          ) : (
+          )) : (
             <button
               onClick={handleSubmit}
               className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"

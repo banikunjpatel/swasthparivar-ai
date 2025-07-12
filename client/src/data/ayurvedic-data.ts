@@ -289,7 +289,7 @@ export const SAMPLE_RECIPES: Recipe[] = [
     ],
     prepTime: 10,
     cookTime: 35,
-    servings: 4,
+    servings: 2,
     mealType: 'lunch',
     doshaBalance: { vata: 80, pitta: 85, kapha: 70 },
     season: ['spring', 'summer', 'monsoon', 'autumn', 'winter', 'pre-winter'],
