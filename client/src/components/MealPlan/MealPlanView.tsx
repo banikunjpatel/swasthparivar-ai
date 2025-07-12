@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MealType } from '../../types';
-import apiClient from '../../lib/api';
+import apiClient from '../../apiCall/api';
 import {
   getWeekStartDate, normalizeToWeekStart, transformMealPlan
 
@@ -205,7 +205,6 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
                 } catch (err) {
                   console.error("Failed to fetch meal plan", err);
                 } finally {
-                  // console.log("Grocery items fetched:", response.data?.items);
                   setLoadingMeal(false);
                 }
 
@@ -239,7 +238,6 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
                 <div className="space-y-3">
                   {mealTypes.map((mealType) => {
                     const mealData = getMealForSlot(new Date(date), mealType);
-                    // console.log('Meal Data for week render:', mealData);
                     return (
                       <div key={mealType} title={mealData?.base || 'Not planned'}>
                         <MealCard mealData={mealData} mealType={mealType} compact />
@@ -356,7 +354,7 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">Meal Plan</h2>
-            <p className="text-gray-600">Your personalized Ayurvedic nutrition plan</p>
+            <p className="text-gray-600">Your personalized Ayurvedic meal plan</p>
           </div>
           <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
             {(['day', 'week'] as ViewMode[]).map((mode) => (

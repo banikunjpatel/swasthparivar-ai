@@ -5,10 +5,11 @@ import { useAuth } from '../../hooks/useAuth';
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  hasLogin?: boolean;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  const [isLogin, setIsLogin] = useState(true);
+const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, hasLogin }) => {
+  const [isLogin, setIsLogin] = useState(() => hasLogin === true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -162,7 +163,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 onChange={(e) => {
                   setEmail(e.target.value);
                   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value)) {
-                    console.log('Valid email:', e.target.value);
                     setFieldErrors(prev => ({ ...prev, email: '' }));
                   }
                 }}
@@ -288,7 +288,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <span className="font-semibold">🌿 Ancient Wisdom, Modern Science</span>
             </p>
             <p className="text-xs text-gray-600">
-              Personalized nutrition based on your unique Ayurvedic constitution
+              Personalized wellness based on your Ayurvedic constitution
             </p>
           </div>
         </div>

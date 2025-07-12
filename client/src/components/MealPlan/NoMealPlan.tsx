@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Users, Award, Sparkles } from 'lucide-react';
-import apiClient from '../../lib/api';
+import apiClient from '../../apiCall/api';
 import LoginPromptDialog from '../../utils/LoginPromptDialog';
 interface NoMealPlanProps {
   members: any[]; // You can replace `any` with `FamilyMember[]` if you have that type

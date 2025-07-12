@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { RUTUCHARYA_GUIDANCE } from '../../data/ayurvedic-data';
-import { Season, DoshaType } from '../../types';
+import { Season } from '../../types';
 import { Leaf, Snowflake, Sun, Cloud, CloudRain, Wind } from 'lucide-react';
 
 interface RutucharyaGuideProps {
@@ -9,8 +9,14 @@ interface RutucharyaGuideProps {
 }
 
 const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSeason }) => {
-  console.log(currentSeason)
   const [selectedSeason, setSelectedSeason] = useState<Season>(currentSeason);
+  const initialDosha = userDosha && typeof userDosha === 'string'
+    ? userDosha.split('-')[0].toLowerCase()
+    : 'vata'; // fallback to 'vata'
+
+  const [selectedDosha, setSelectedDosha] = useState<'vata' | 'pitta' | 'kapha'>(
+    ['vata', 'pitta', 'kapha'].includes(initialDosha) ? (initialDosha as 'vata' | 'pitta' | 'kapha') : 'vata'
+  );
 
   const seasonInfo = {
     spring: { icon: Leaf, color: 'green', name: 'Spring', gradient: 'from-green-400 to-emerald-500' },
@@ -25,11 +31,8 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
   const seasonConfig = seasonInfo[selectedSeason];
   const SeasonIcon = seasonConfig.icon;
 
-  const getDoshaSpecificGuidance = (season: Season) => {
-    const primaryDosha = userDosha.charAt(0).toLowerCase() + userDosha.slice(1).split('-')[0] as 'vata' | 'pitta' | 'kapha';
-    console.log(primaryDosha)
-    console.log(RUTUCHARYA_GUIDANCE[currentSeason]?.dosha_considerations?.[primaryDosha])
-    return RUTUCHARYA_GUIDANCE[currentSeason]?.dosha_considerations?.[primaryDosha];
+  const getDoshaSpecificGuidance = () => {
+    return RUTUCHARYA_GUIDANCE[selectedSeason]?.dosha_considerations?.[selectedDosha] || [];
   };
 
   return (
@@ -39,7 +42,25 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
         <p className="text-gray-600">Align your lifestyle with nature's rhythms</p>
       </div>
 
-      {/* Season Selector */}
+      {/* 🔘 Dosha Selector */}
+      <div className="mb-4">
+        <div className="flex gap-2 mb-2">
+          {['vata', 'pitta', 'kapha'].map((dosha) => (
+            <button
+              key={dosha}
+              onClick={() => setSelectedDosha(dosha as 'vata' | 'pitta' | 'kapha')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedDosha === dosha
+                ? 'bg-purple-600 text-white shadow'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+            >
+              {dosha.charAt(0).toUpperCase() + dosha.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 🌦️ Season Selector */}
       <div className="mb-8">
         <div className="flex flex-wrap gap-2">
           {Object.entries(seasonInfo).map(([season, config]) => {
@@ -61,7 +82,7 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
         </div>
       </div>
 
-      {/* Current Season Header */}
+      {/* 🌿 Current Season Header */}
       <div className={`bg-gradient-to-r ${seasonConfig.gradient} p-6 rounded-xl text-white mb-6`}>
         <div className="flex items-center space-x-3 mb-3">
           <SeasonIcon className="h-8 w-8" />
@@ -71,10 +92,11 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
           )}
         </div>
         <p className="text-green-100">
-          Seasonal wisdom to balance your {userDosha} constitution during {seasonConfig.name.toLowerCase()}
+          Seasonal wisdom to balance your {selectedDosha.charAt(0).toUpperCase() + selectedDosha.slice(1)} constitution during {seasonConfig.name.toLowerCase()}
         </p>
       </div>
 
+      {/* 🍽️ Food & Lifestyle Sections */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Foods to Favor */}
         <div className="bg-green-50 border border-green-200 rounded-xl p-6">
@@ -103,7 +125,7 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
         </div>
       </div>
 
-      {/* Lifestyle Tips */}
+      {/* 💡 Lifestyle Tips */}
       <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-6">
         <h4 className="text-lg font-semibold text-blue-800 mb-4">🌟 Lifestyle Recommendations</h4>
         <div className="grid md:grid-cols-2 gap-4">
@@ -116,13 +138,13 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
         </div>
       </div>
 
-      {/* Dosha-Specific Guidance */}
+      {/* 🧘 Personalized Dosha Guidance */}
       <div className="mt-6 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-6">
         <h4 className="text-lg font-semibold text-purple-800 mb-4">
-          🧘 Personalized for Your {userDosha.charAt(0).toUpperCase() + userDosha.slice(1)} Constitution
+          🧘 Personalized for Your {selectedDosha.charAt(0).toUpperCase() + selectedDosha.slice(1)} Constitution
         </h4>
         <ul className="space-y-3">
-          {getDoshaSpecificGuidance(selectedSeason).map((guidance, index) => (
+          {getDoshaSpecificGuidance().map((guidance, index) => (
             <li key={index} className="flex items-start space-x-3 text-purple-700">
               <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0" />
               <span>{guidance}</span>
@@ -131,7 +153,7 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
         </ul>
       </div>
 
-      {/* Seasonal Transition Notice */}
+      {/* 🌤️ Transition Notice */}
       {selectedSeason === currentSeason && (
         <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
           <p className="text-sm text-yellow-800">

@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -37,12 +38,10 @@ app = FastAPI(
 
 # ─────────────────────────────────────────────
 # 🌐 CORS Middleware
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5174",
-           "http://localhost:5173",  # ✅ React/Vite frontend during development
-    ],  # 🔐 Replace with frontend URL in production
+    allow_origins=allowed_origins, # 🔐 Replace with frontend URL in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

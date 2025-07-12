@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { startOfWeek, format, addWeeks } from "date-fns";
 import { IndianRupee, ShoppingCart } from "lucide-react";
-import apiClient from "../../lib/api";
+import apiClient from "../../apiCall/api";
 import { getWeekStartDate } from "../../utils/transformMealPlan";
 
 type GroceryListProps = {
@@ -42,15 +42,11 @@ export const GroceryList: React.FC<GroceryListProps> = ({ userId, mealPlan }) =>
 
 
     useEffect(() => {
-        // if (effectRan.current) return;
-        console.log("Fetching grocery list for user:", userId, "weekStart:", weekStart, mealPlan);
         if (!userId || !mealPlan || !weekStart) return;
         const matchedPlan = mealPlan.find((plan: any) => plan.weekStart === weekStart);
         if (!matchedPlan) return;
 
         const fetchGroceryList = async () => {
-
-            console.log("Fetching grocery list for user:", userId, "weekStart:", weekStart);
             const obj = {
                 userId,
                 weekStart: weekStart,
@@ -59,27 +55,20 @@ export const GroceryList: React.FC<GroceryListProps> = ({ userId, mealPlan }) =>
             setLoadingGrocery(true);
             try {
                 const response = await apiClient.getGroceryList(obj);
-                // const data = await response.json();
                 setItems(response.data?.itemsFlat || []);
                 setHasFetched(true);
             } catch (err) {
                 console.error("Failed to fetch grocery list", err);
             } finally {
-                // console.log("Grocery items fetched:", response.data?.items);
                 setLoadingGrocery(false);
             }
-            // if (!hasFetched) {
-            //     fetchGroceryList();
-            // }
         };
 
         fetchGroceryList();
-        // effectRan.current = true;
     }, [userId, mealPlan, weekStart, hasFetched]);
 
     const handleWeekChange = (weeksOffset: number) => {
         const newDate = addWeeks(new Date(weekStart), weeksOffset);
-        // effectRan.current = false;
         setWeekStart(newDate.toISOString().split('T')[0]);
     };
     const handleToggleCollected = (index: number) => {
