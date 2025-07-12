@@ -30,7 +30,7 @@ interface MealPlanViewProps {
 
 const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelectRecipe, setMealPlan }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('week');
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(Date.now());
   const mealTypes: MealType[] = ['breakfast', 'lunch', 'dinner'];
   const [isGenerateDisabled, setIsGenerateDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -38,9 +38,11 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
   useEffect(() => {
     const fetchMealPlan = async () => {
       try {
-        const selectedWeekStart = getWeekStartDate(currentDate);
+        const date = new Date(currentDate)
+        const selectedWeekStart = getWeekStartDate(date);
+        const todayWeekStart = getWeekStartDate(new Date());
         const matchedPlan = mealPlan.find(plan => plan.weekStart === selectedWeekStart)
-        const isCurrentWeekPlanned = matchedPlan?.weekStart === selectedWeekStart;
+        const isCurrentWeekPlanned = (matchedPlan?.weekStart === selectedWeekStart) || (selectedWeekStart < todayWeekStart);
         setIsGenerateDisabled(isCurrentWeekPlanned);
       } catch (err) {
         console.error('Failed to fetch meal plan', err);
@@ -68,25 +70,22 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
 
   const navigateDate = (direction: 'prev' | 'next') => {
     const newDate = new Date(currentDate);
-    if (viewMode === 'day') {
-      newDate.setDate(newDate.getDate() + (direction === 'next' ? 1 : -1));
-    } else if (viewMode === 'week') {
-      newDate.setDate(newDate.getDate() + (direction === 'next' ? 7 : -7));
-    } else {
-      newDate.setMonth(newDate.getMonth() + (direction === 'next' ? 1 : -1));
-    }
-    setCurrentDate(newDate);
+    if (viewMode === 'day') newDate.setDate(newDate.getDate() + (direction === 'next' ? 1 : -1));
+    else if (viewMode === 'week') newDate.setDate(newDate.getDate() + (direction === 'next' ? 7 : -7));
+    else newDate.setMonth(newDate.getMonth() + (direction === 'next' ? 1 : -1));
+    setCurrentDate(newDate.getTime());
   };
 
   const getWeekDates = () => {
-    const startOfWeek = new Date(currentDate);
-    const day = startOfWeek.getDay();
-    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
-    startOfWeek.setDate(diff);
+    const baseDate = new Date(currentDate);
+    const day = baseDate.getDay();
+    const diff = baseDate.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(baseDate);
+    monday.setDate(diff);
 
     return Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(startOfWeek);
-      date.setDate(startOfWeek.getDate() + i);
+      const date = new Date(monday); // clone to avoid mutation
+      date.setDate(monday.getDate() + i);
       return date;
     });
   };
@@ -165,20 +164,20 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
   const renderDayView = () => (
     <div className="space-y-6">
       <div className="text-center">
-        <h3 className="text-2xl font-bold text-gray-800">{formatDate(currentDate)}</h3>
+        <h3 className="text-2xl font-bold text-gray-800">{formatDate(new Date(currentDate))}</h3>
       </div>
       <div className="grid gap-6">
         {mealTypes.map((mealType) => (
           <div key={mealType} className="bg-white rounded-xl shadow-lg p-6">
             <h4 className="text-lg font-semibold text-gray-800 mb-4 capitalize">{mealType}</h4>
-            <MealCard mealData={getMealForSlot(currentDate, mealType)} mealType={mealType} />
+            <MealCard mealData={getMealForSlot(new Date(currentDate), mealType)} mealType={mealType} />
           </div>
         ))}
       </div>
     </div>
   );
   const renderWeekView = () => {
-    const weekDates = getWeekDates();
+    const weekDates = JSON.parse(JSON.stringify([...getWeekDates()]));
 
     return (
       <div className="space-y-6">
@@ -229,17 +228,18 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
         {/* ✅ Desktop Grid View */}
         <div className="hidden md:block">
           <div className="grid grid-cols-7 gap-4">
-            {weekDates.map((date, index) => (
+            {weekDates.map((date: any, index: number) => (
               <div key={index} className="text-center">
                 <h4 className="font-semibold text-gray-800 mb-4">
-                  {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                  {new Date(date).toLocaleDateString('en-US', { weekday: 'short' })}
                 </h4>
                 <p className="text-sm text-gray-600 mb-4">
-                  {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  {new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </p>
                 <div className="space-y-3">
                   {mealTypes.map((mealType) => {
-                    const mealData = getMealForSlot(date, mealType);
+                    const mealData = getMealForSlot(new Date(date), mealType);
+                    // console.log('Meal Data for week render:', mealData);
                     return (
                       <div key={mealType} title={mealData?.base || 'Not planned'}>
                         <MealCard mealData={mealData} mealType={mealType} compact />
@@ -256,20 +256,20 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
         {/* ✅ Mobile Grid View */}
         <div className="block md:hidden">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {weekDates.map((date, index) => (
+            {weekDates.map((date: any, index: number) => (
               <div
                 key={index}
                 className="bg-white rounded-xl shadow-md p-4"
               >
                 <h4 className="font-semibold text-gray-800 mb-2 text-center">
-                  {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                  {new Date(date).toLocaleDateString('en-US', { weekday: 'short' })}
                 </h4>
                 <p className="text-sm text-gray-600 mb-4 text-center">
-                  {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  {new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </p>
                 <div className="space-y-3">
                   {mealTypes.map((mealType) => {
-                    const mealData = getMealForSlot(date, mealType);
+                    const mealData = getMealForSlot(new Date(date), mealType);
                     return (
                       <div key={mealType} title={mealData?.base || 'Not planned'}>
                         <MealCard mealData={mealData} mealType={mealType} compact />
@@ -383,7 +383,7 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
           <div className="flex items-center space-x-2">
             <Calendar className="h-5 w-5 text-gray-600" />
             <span className="text-lg font-semibold text-gray-800">
-              {viewMode === 'day' && formatDate(currentDate)}
+              {viewMode === 'day' && formatDate(new Date(currentDate))}
               {viewMode === 'week' && `Week of ${formatDate(getWeekDates()[0])}`}
             </span>
           </div>

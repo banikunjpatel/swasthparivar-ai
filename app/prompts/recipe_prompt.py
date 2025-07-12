@@ -34,7 +34,7 @@ Generate a detailed, structured recipe for the following dish:
   ],
   "prepTime": 10,
   "cookTime": 25,
-  "servings": 4,
+  "servings": 2,
   "mealType": "lunch",
   "doshaBalance": {{ "vata": 80, "pitta": 70, "kapha": 60 }},
   "season": ["spring", "summer", "winter"],

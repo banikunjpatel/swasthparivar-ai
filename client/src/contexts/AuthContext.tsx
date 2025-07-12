@@ -61,10 +61,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     try {
       const response = await apiClient.getCurrentUser();
+      console.log('Auth initialization response:', response);
       if (response.data) {
         setUser(response.data);
         setIsAuthenticated(true);
       } else {
+        console.log('ekse')
         apiClient.logout();
         setIsAuthenticated(false);
       }
