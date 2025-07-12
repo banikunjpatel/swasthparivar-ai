@@ -11,7 +11,7 @@ import RutucharyaGuide from './components/Guidance/RutucharyaGuide';
 import { DoshaType, DoshaBalance, Recipe, Season } from './types';
 import { getCurrentSeason } from './utils/ayurvedic-logic';
 import { TrendingUp, Calendar, BookOpen, Activity, UserIcon, CalendarCheck, Heart } from 'lucide-react';
-import apiClient from './lib/api';
+import apiClient from './apiCall/api';
 import NoMealPlan from './components/MealPlan/NoMealPlan';
 import FamilyMembers from './components/FamilyMember/FamilyMembers';
 import { Users, Sparkles } from 'lucide-react';
@@ -19,6 +19,7 @@ import { GroceryList } from './components/Grocery/GroceryList';
 import { getWeekStartDate, transformMealPlan } from './utils/transformMealPlan';
 import { format } from 'date-fns';
 import WellnessTips from './components/Guidance/WellnessTips';
+import AuthModal from './components/Auth/AuthModal';
 
 
 function AppContent() {
@@ -37,6 +38,7 @@ function AppContent() {
   const [guestData, setGuestData] = useState<{ prakriti: DoshaType; currentDosha: DoshaBalance } | null>(null);
   const [members, setMembers] = useState([]);
   const { user, loading, isAuthenticated } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
   type Meal = {
     base: string;
     customizations: string;
@@ -81,24 +83,8 @@ function AppContent() {
       description: 'Daily tips for yoga, meditation, and seasonal wellness practices',
     },
   ];
-
-  // useEffect(() => {
-  //     const fetchUser = async () => {
-  //       try {
-  //         const userRes = await apiClient.getCurrentUser();
-  //         setUser(userRes.data);
-  //         setIsAssessmentDone(userRes.data ? true : false);
-  //         console.log('Current user fetched:', userRes);
-  //       } catch (err) {
-  //         setUser(null);
-  //       }
-  //     };
-  //     fetchUser();
-  //   }, []);
   const fetchMembers = async () => {
     try {
-      console.log("Fetching family members...");
-      // const userRes = await apiClient.getCurrentUser(); // Adjust based on your user object structure
       const userId = await apiClient.getCurrentUserId();
       const res = await apiClient.getFamilyMembers(userId);
       const highestDosha = Object.entries(res.data[0].doshaStats).reduce((max: any, current: any) => {
@@ -116,10 +102,7 @@ function AppContent() {
     }
   };
   const fetchMealPlan = async () => {
-    // console.log('Fetching meal plan for userId:', userId);
-    // console.log('fetchMealPlan:', members);
     if (userId && members && members.length > 0) {
-      // console.log('Fetching meal plan for userId:', userId);
       try {
         const res = await apiClient.getMealPlan(userId);
         const transformed = transformMealPlan(res.data);
@@ -128,13 +111,8 @@ function AppContent() {
         const matchedWeek = transformed.find(item =>
           format(new Date(item.weekStart), "yyyy-MM-dd") === getWeekStartDate(new Date())
         );
-
-        console.log("Matched Week:", matchedWeek);
         const todayData = matchedWeek?.days?.find((dayObj: any) => dayObj.day === today);
-        console.log("Today’s plan:", todayData);
-
         setTodayMealPlan(todayData);
-
       } catch (err) {
         setMealPlan([]);
         setTodayMealPlan(undefined);
@@ -174,16 +152,7 @@ function AppContent() {
 
   const prakriti: any = user?.prakriti || guestData?.prakriti || null;
   const currentDosha = user?.currentDosha || guestData?.currentDosha;
-
-
-  // const currentTodayMeal = () => {
-  //   console.log('Fetching current today meal...');
-
-  // };
-  // currentTodayMeal();
-  // console.log('Current Today Meal:', currentTodayMeal());
   const TodayMealCard: React.FC<Props> = ({ todayPlan }) => {
-    console.log('Rendering TodayMealCard with todayPlan:', todayPlan);
     const meals = ["breakfast", "lunch", "dinner"] as const;
 
     return (
@@ -194,7 +163,6 @@ function AppContent() {
 
         {meals.map((mealKey) => {
           const meal = todayPlan.meals[mealKey];
-          console.log(mealKey, meal);
           return (
             <div
               key={mealKey}
@@ -243,12 +211,12 @@ function AppContent() {
                 Namaste, {user?.name || 'Wellness Seeker'}
               </h1>
               <p className="text-green-100 text-lg">
-                Your personalized Ayurvedic nutrition companion for optimal health and balance.
+                Personalized family wellness based on your Ayurvedic constitution
               </p>
               {isAuthenticated && (
                 <>
                   <p className="text-sm sm:text-base text-white/90">
-                    Wednesday 25 June, 2025 • {currentSeason} Season
+                    {format(new Date(), 'EEEE dd MMMM, yyyy')} • {currentSeason} Season
                   </p>
                   <div className="flex items-center left-4 gap-4 text-sm sm:text-base font-medium text-white">
                     <div className="flex items-center gap-1">
@@ -265,12 +233,18 @@ function AppContent() {
             </div>
           </div>
 
-          {!isAssessmentDone && (
+          {!isAssessmentDone && !members.length && (
             <button
-              onClick={() => setCurrentSection('family')}
+              onClick={() => {
+                if (isAuthenticated) {
+                  setCurrentSection('family')
+                } else {
+                  setShowAuthModal(true)
+                }
+              }}
               className="mt-4 bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors shadow-lg"
             >
-              🧘‍♀️ Discover Your Constitution
+              🧘‍♀️ Start Your Journey
             </button>
           )}
         </div>
@@ -305,7 +279,7 @@ function AppContent() {
               <div className="px-4 py-10 md:px-10">
                 <div className="text-center max-w-3xl mx-auto mb-10">
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
-                    🧘‍♂️ Welcome to Swasth Ayur AI
+                    🧘‍♂️ Welcome to Swasth Parivar AI
                   </h1>
                   <p className="text-gray-600 text-md md:text-lg">
                     Discover the perfect harmony between ancient Ayurvedic wisdom and modern AI technology.
@@ -329,7 +303,7 @@ function AppContent() {
               </div>
             </div>
           </section>
-          <section className="bg-white py-12 px-4 md:px-10">
+          {/* <section className="bg-white py-12 px-4 md:px-10">
             <div className="max-w-6xl mx-auto text-center">
               <h2 className="text-2xl md:text-3xl font-bold text-green-800 mb-8">✨ What Our Users Say</h2>
 
@@ -348,7 +322,7 @@ function AppContent() {
                 </div>
               </div>
             </div>
-          </section>
+          </section> */}
           {/* <section className="bg-gradient-to-r from-green-700 to-green-500 py-12 px-4 md:px-10 text-white">
             <div className="max-w-6xl mx-auto text-center">
               <h2 className="text-2xl md:text-3xl font-bold mb-4">🧘 Transform Your Diet with Ayurvedic Wisdom</h2>
@@ -507,8 +481,6 @@ function AppContent() {
           <NoMealPlan userId={userId}
             members={members}
             onPlanGenerated={(data) => {
-              // console.log('New meal plan generated:', data);
-              // setMealPlan(data);
             }} />
         );
       case 'grocery':
@@ -522,16 +494,11 @@ function AppContent() {
         );
 
       case 'guidance':
-        return isAuthenticated && doshaName ? (
+        return <div className="space-y-8">
+          <RutucharyaGuide userDosha={doshaName} currentSeason={currentSeason} />
+          {/* <DinacharyaGuide userDosha={doshaName} /> */}
 
-          <div className="space-y-8">
-            <RutucharyaGuide userDosha={doshaName} currentSeason={currentSeason} />
-            {/* <DinacharyaGuide userDosha={doshaName} /> */}
-
-          </div>
-        ) : (
-          <div className="text-center py-12 text-gray-600">Complete assessment to get personalized guidance.</div>
-        );
+        </div>
       case 'wellness':
         return <WellnessTips members={members} season={currentSeason} />
 
@@ -567,6 +534,7 @@ function AppContent() {
       {selectedRecipe && !loadingRecipe && (
         <RecipeDetail recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
       )}
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} hasLogin={false} />
     </div>
   );
 }

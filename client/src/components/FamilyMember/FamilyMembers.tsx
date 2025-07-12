@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Pencil, Trash } from 'lucide-react';
 import NoFamilyMemberPrompt from '../Onboarding/NoFamilyMemberPrompt';
 import AddFamilyMemberModal from '../Onboarding/AddFamilyMemberModal';
-import apiClient from '../../lib/api';
+import apiClient from '../../apiCall/api';
 
 interface FamilyMembersProps {
   members: FamilyMember[];
@@ -58,7 +58,7 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({ members, onRefresh }) => 
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-800">Family Profile</h2>
-              <p className="text-gray-600 text-sm">Manage your family members and their Ayurvedic profiles</p>
+              <p className="text-gray-600 text-sm">Manage your family members and their profiles</p>
             </div>
             <button
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-semibold shadow"

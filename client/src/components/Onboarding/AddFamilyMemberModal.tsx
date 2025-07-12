@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-import apiClient from '../../lib/api';
+import apiClient from '../../apiCall/api';
 import StepBasicInfo from './steps/StepBasicInfo';
 import StepHealthConditions from './steps/StepHealthConditions';
 import StepPrakritiAssessment from './steps/StepPrakritiAssessment';

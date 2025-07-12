@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import apiClient from '../lib/api';
+import apiClient from '../apiCall/api';
 
 interface User {
   userId: string;
@@ -66,7 +66,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(response.data);
         setIsAuthenticated(true);
       } else {
-        console.log('ekse')
         apiClient.logout();
         setIsAuthenticated(false);
       }

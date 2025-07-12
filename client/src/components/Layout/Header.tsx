@@ -11,16 +11,21 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, isAuthenticated, signOut } = useAuth();
+  const navItems = isAuthenticated
+    ? [
+      { id: 'dashboard', label: 'Dashboard' },
+      { id: 'family', label: 'Family Members' },
+      { id: 'meal-plan', label: 'Meal Plan' },
+      { id: 'grocery', label: 'Grocery' },
+      { id: 'guidance', label: 'Guidance' },
+      { id: 'wellness', label: 'Wellness' }
+    ]
+    : [
+      { id: 'dashboard', label: 'Dashboard' },
+      { id: 'guidance', label: 'Guidance' },
+    ];
 
-  const navItems = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'family', label: 'Family Members' },
-    { id: 'meal-plan', label: 'Meal Plan' },
-    { id: 'grocery', label: 'Grocery' },
-    { id: 'guidance', label: 'Guidance' },
-    { id: 'wellness', label: 'Wellness' }
-  ];
 
   const handleSignOut = async () => {
     try {
@@ -43,8 +48,8 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
                 <Leaf className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-800">Swasth Pariwar</h1>
-                <p className="text-xs text-gray-500">Personalized Ayurvedic Nutrition</p>
+                <h1 className="text-xl font-bold text-gray-800">Swasth Parivar AI</h1>
+                <p className="text-xs text-gray-500">Personalized Family Wellness</p>
               </div>
             </div>
 
@@ -135,7 +140,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
         </div>
       </header>
 
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} hasLogin={true} />
     </>
   );
 };
