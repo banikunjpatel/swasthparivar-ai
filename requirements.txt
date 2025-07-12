@@ -7,3 +7,5 @@ pymongo[srv]
 uvicorn[standard]
 pytz
 motor
+openai
+bcrypt
