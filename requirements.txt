@@ -9,3 +9,5 @@ pytz
 motor
 openai
 bcrypt
+jose
+python-jose
