@@ -5,3 +5,4 @@ httpx<0.25
 python-dotenv
 pymongo[srv]
 uvicorn[standard]
+pytz
