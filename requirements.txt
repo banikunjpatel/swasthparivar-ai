@@ -9,6 +9,6 @@ pytz
 motor
 openai
 bcrypt
-jose
+python-jose[cryptography]
 pydantic
 email-validator
