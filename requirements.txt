@@ -10,5 +10,5 @@ motor
 openai
 bcrypt
 jose
-python-jose
-pydantic>=2.0
+pydantic
+email-validator
