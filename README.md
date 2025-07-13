@@ -112,6 +112,8 @@
     Open your browser and go to:  
     [http://localhost:3000](http://localhost:3000)
 
+---
+
 ## 🤖 AI/ML Implementation
 
 GPT-4 is used to generate personalized Indian meal plans by considering:
