@@ -20,6 +20,7 @@ import { getWeekStartDate, transformMealPlan } from './utils/transformMealPlan';
 import { format } from 'date-fns';
 import WellnessTips from './components/Guidance/WellnessTips';
 import AuthModal from './components/Auth/AuthModal';
+import Footer from './components/Layout/Footer';
 
 
 function AppContent() {
@@ -87,7 +88,7 @@ function AppContent() {
     try {
       const userId = await apiClient.getCurrentUserId();
       const res = await apiClient.getFamilyMembers(userId);
-      const highestDosha = Object.entries(res.data[0].doshaStats).reduce((max: any, current: any) => {
+      const highestDosha = Object.entries(res?.data[0]?.doshaStats).reduce((max: any, current: any) => {
         return current[1] > max[1] ? current : max;
       }, ["", 0]);
 
@@ -198,27 +199,28 @@ function AppContent() {
   const renderDashboard = () => (
     <div className="space-y-8">
       {/* Main Greeting Section */}
-      <div className="bg-gradient-to-r from-green-600 to-teal-600 rounded-xl p-8 text-white relative overflow-hidden">
+      <div className="bg-gradient-to-r from-green-600 to-teal-600 rounded-xl p-4 sm:p-6 md:p-8 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10" />
 
-        <div className="absolute top-4 right-4 opacity-20 text-4xl sm:text-5xl">🕉️</div>
-        <div className="relative">
+        <div className="absolute top-2 sm:top-4 right-2 sm:right-4 opacity-20 text-3xl sm:text-5xl">🕉️</div>
 
-          <div className="flex items-center space-x-3 mb-4">
-            <span className="text-4xl">🙏</span>
-            <div>
-              <h1 className="text-3xl font-bold">
+        <div className="relative">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-3 sm:space-y-0 mb-4">
+            <span className="text-3xl sm:text-4xl">🙏</span>
+            <div className="space-y-1">
+              <h1 className="text-2xl sm:text-3xl font-bold">
                 Namaste, {user?.name || 'Wellness Seeker'}
               </h1>
-              <p className="text-green-100 text-lg">
+              <p className="text-green-100 text-base sm:text-lg">
                 Personalized family wellness based on your Ayurvedic constitution
               </p>
+
               {isAuthenticated && (
                 <>
                   <p className="text-sm sm:text-base text-white/90">
                     {format(new Date(), 'EEEE dd MMMM, yyyy')} • {currentSeason} Season
                   </p>
-                  <div className="flex items-center left-4 gap-4 text-sm sm:text-base font-medium text-white">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm sm:text-base font-medium text-white">
                     <div className="flex items-center gap-1">
                       <Users className="w-4 h-4" />
                       {members.length} Family Members
@@ -237,18 +239,19 @@ function AppContent() {
             <button
               onClick={() => {
                 if (isAuthenticated) {
-                  setCurrentSection('family')
+                  setCurrentSection('family');
                 } else {
-                  setShowAuthModal(true)
+                  setShowAuthModal(true);
                 }
               }}
-              className="mt-4 bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors shadow-lg"
+              className="mt-4 bg-white text-green-600 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors shadow-lg text-sm sm:text-base"
             >
               🧘‍♀️ Start Your Journey
             </button>
           )}
         </div>
       </div>
+
       <> {!isAuthenticated && (
         <>
           {/* <section className="bg-green-50 py-12 px-4 md:px-10">
@@ -276,11 +279,11 @@ function AppContent() {
           </section> */}
           <section className="bg-gradient-to-r from-green-100 to-green-50 py-12 px-4 md:px-10">
             <div className="max-w-6xl mx-auto text-center">
-              <div className="px-4 py-10 md:px-10">
+              <div className="px-4 md:px-10">
                 <div className="text-center max-w-3xl mx-auto mb-10">
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
-                    🧘‍♂️ Welcome to Swasth Parivar AI
-                  </h1>
+                  <h3 className="text-l md:text-4xl font-bold text-gray-800 mb-3">
+                    🧘‍♂️ Swasth Parivar AI
+                  </h3>
                   <p className="text-gray-600 text-md md:text-lg">
                     Discover the perfect harmony between ancient Ayurvedic wisdom and modern AI technology.
                     Create personalized wellness plans for your entire family based on individual constitutions,
@@ -511,7 +514,9 @@ function AppContent() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-teal-50">
       <Header onNavigate={setCurrentSection} currentSection={currentSection} />
 
-      <main className="max-w-7xl mx-auto px-4 py-8">{renderContent()}</main>
+      <main className="max-w-7xl mx-auto px-4 py-8">{renderContent()}
+        <Footer />
+      </main>
       {loadingRecipe && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
           <div className="flex items-center gap-3 bg-white px-6 py-4 rounded-lg shadow-lg">
@@ -531,6 +536,7 @@ function AppContent() {
           </div>
         </div>
       )}
+
       {selectedRecipe && !loadingRecipe && (
         <RecipeDetail recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
       )}

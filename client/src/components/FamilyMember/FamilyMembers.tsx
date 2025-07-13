@@ -62,7 +62,13 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({ members, onRefresh }) => 
             </div>
             <button
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-semibold shadow"
-              onClick={() => setModalOpen(true)}
+              onClick={() => {
+                if (members.length >= 5) {
+                  alert("You can only add up to 5 family members.");
+                  return;
+                }
+                setModalOpen(true);
+              }}
             >
               + Add Family Member
             </button>

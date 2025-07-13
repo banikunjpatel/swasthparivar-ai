@@ -86,14 +86,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { error: response.error };
       }
 
-      if (response) {
-        const newUser = response.data?.user;
-        // apiClient.setTokens(tokens.accessToken, tokens.refreshToken);
-        setUser(newUser);
-        setIsAuthenticated(true);
-        localStorage.setItem('user', JSON.stringify(newUser));
-      }
-
       return {};
     } catch (error) {
       console.error('Sign up error:', error);

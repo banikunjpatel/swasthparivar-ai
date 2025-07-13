@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Leaf, User, Menu, LogOut } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import AuthModal from '../Auth/AuthModal';
@@ -11,7 +11,11 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const mobileMenuRef = useRef(null);
+
   const { user, isAuthenticated, signOut } = useAuth();
+
   const navItems = isAuthenticated
     ? [
       { id: 'dashboard', label: 'Dashboard' },
@@ -26,7 +30,6 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
       { id: 'guidance', label: 'Guidance' },
     ];
 
-
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -36,6 +39,24 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
       console.error('Error signing out:', error);
     }
   };
+
+  // Close mobile menu on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        showMobileMenu &&
+        mobileMenuRef.current &&
+        !(mobileMenuRef.current as any).contains(event.target)
+      ) {
+        setShowMobileMenu(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMobileMenu]);
 
   return (
     <>
@@ -53,15 +74,15 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
               </div>
             </div>
 
-            {/* Navigation */}
+            {/* Desktop Navigation */}
             <nav className="hidden md:flex space-x-1">
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentSection === item.id
-                    ? 'bg-green-100 text-green-700 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                      ? 'bg-green-100 text-green-700 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                     }`}
                 >
                   {item.label}
@@ -114,7 +135,11 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
                 </button>
               )}
 
-              <button className="md:hidden p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
+              {/* Hamburger Menu Button */}
+              <button
+                className="md:hidden p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                onClick={() => setShowMobileMenu((prev) => !prev)}
+              >
                 <Menu className="h-5 w-5" />
               </button>
             </div>
@@ -122,25 +147,38 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden border-t border-gray-200 bg-gray-50">
-          <div className="px-4 py-2 space-y-1">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => onNavigate(item.id)}
-                className={`block w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${currentSection === item.id
-                  ? 'bg-green-100 text-green-700'
-                  : 'text-gray-600 hover:text-gray-800 hover:bg-white'
-                  }`}
-              >
-                {item.label}
-              </button>
-            ))}
+        {showMobileMenu && (
+          <div
+            ref={mobileMenuRef}
+            className="md:hidden border-t border-gray-200 bg-gray-50"
+          >
+            <div className="px-4 py-2 space-y-1">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    onNavigate(item.id);
+                    setShowMobileMenu(false); // close menu
+                  }}
+                  className={`block w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${currentSection === item.id
+                      ? 'bg-green-100 text-green-700'
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-white'
+                    }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </header>
 
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} hasLogin={true} />
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        hasLogin={true}
+      />
     </>
   );
 };
