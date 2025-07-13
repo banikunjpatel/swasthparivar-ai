@@ -96,8 +96,23 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
         </p>
       </div>
 
+      {/* 🧘 Personalized Dosha Guidance */}
+      <div className="mt-6 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-6">
+        <h4 className="text-lg font-semibold text-purple-800 mb-4">
+          🧘 Personalized for Your {selectedDosha.charAt(0).toUpperCase() + selectedDosha.slice(1)} Constitution
+        </h4>
+        <ul className="space-y-3">
+          {getDoshaSpecificGuidance().map((guidance, index) => (
+            <li key={index} className="flex items-start space-x-3 text-purple-700">
+              <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0" />
+              <span>{guidance}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       {/* 🍽️ Food & Lifestyle Sections */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-6 mt-6">
         {/* Foods to Favor */}
         <div className="bg-green-50 border border-green-200 rounded-xl p-6">
           <h4 className="text-lg font-semibold text-green-800 mb-4">🥬 Foods to Favor</h4>
@@ -136,21 +151,6 @@ const RutucharyaGuide: React.FC<RutucharyaGuideProps> = ({ userDosha, currentSea
             </div>
           ))}
         </div>
-      </div>
-
-      {/* 🧘 Personalized Dosha Guidance */}
-      <div className="mt-6 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-6">
-        <h4 className="text-lg font-semibold text-purple-800 mb-4">
-          🧘 Personalized for Your {selectedDosha.charAt(0).toUpperCase() + selectedDosha.slice(1)} Constitution
-        </h4>
-        <ul className="space-y-3">
-          {getDoshaSpecificGuidance().map((guidance, index) => (
-            <li key={index} className="flex items-start space-x-3 text-purple-700">
-              <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0" />
-              <span>{guidance}</span>
-            </li>
-          ))}
-        </ul>
       </div>
 
       {/* 🌤️ Transition Notice */}

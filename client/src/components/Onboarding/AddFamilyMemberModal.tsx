@@ -70,6 +70,7 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
           try {
             const user = JSON.parse(storedUser);
             if (user?.name) {
+              setFormState(defaultFormState)
               setFormState(prev => ({ ...prev, fullName: (user.name && membersCount === 1) ? user.name : '', userId: user.userId || '', }));
             }
           } catch {
@@ -122,6 +123,7 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
         await apiClient.addFamilyMember(formState);
       }
       onClose();
+      setFormState(defaultFormState)
 
     } catch (error) {
       console.error('Error submitting form', error);

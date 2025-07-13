@@ -94,10 +94,6 @@ export const GroceryList: React.FC<GroceryListProps> = ({ userId, mealPlan }) =>
                     <div className="max-w-2xl w-full space-y-5">
                         {[
                             {
-                                title: 'Sign in to your account',
-                                desc: 'Access your personalized features and wellness data.',
-                            },
-                            {
                                 title: 'Add your family members',
                                 desc: 'Create individual profiles for tailored recommendations.',
                             },

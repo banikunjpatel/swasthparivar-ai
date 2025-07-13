@@ -1,52 +1,31 @@
 import json
 
 def build_grocery_prompt(meal_plan_json: dict) -> str:
-    meal_plan_text = json.dumps(meal_plan_json, indent=2)
+    meal_plan_text = json.dumps(meal_plan_json, separators=(",", ":"))  # compact JSON
 
     prompt = f"""
-You are a nutrition assistant specializing in Indian wellness and Ayurveda.
+You are an expert in Ayurveda and Indian nutrition. Your task is to extract a **weekly grocery list** from this 7-day meal plan.
 
-Your task is to extract a **weekly grocery list** from the following 7-day meal plan designed for a family or group.
+🔧 For each ingredient found in any meal (breakfast/lunch/dinner/customization), return:
+- name
+- total quantity (practical for Indian kitchens)
+- category: Vegetables, Grains & Pulses, Spices & Herbs, Dairy & Substitutes, Fruits, Miscellaneous
+- estimated price (₹, based on 2025 Indian grocery market)
 
-✅ Instructions:
-- Go through **all meals** (breakfast, lunch, dinner) for each day
-- Extract every **distinct ingredient** mentioned in base meals and customizations
-- For each ingredient, provide:
-  - name (e.g., "Tomato")
-  - total quantity for the week (estimated)
-  - unit (e.g., "g", "ml", "cup", "piece", etc.)
-  - category (one of: Vegetables, Grains & Pulses, Spices & Herbs, Dairy & Substitutes, Fruits, Miscellaneous)
-  - price (estimated based on average Indian market rates, e.g., ₹40 per kg of tomato)
+🧠 Combine duplicates, and avoid listing any ingredient twice. Estimate quantity realistically.
 
-🧠 Combine duplicate ingredients and estimate total quantities practically, using Indian kitchen measurements.
-Estimate **realistic prices based on Indian grocery markets (2025)**.
-Avoid repeating items.
-
-🧠 Use common Indian prices:
-- Vegetables: ₹30–₹80 per kg
-- Grains & Pulses: ₹60–₹120 per kg
-- Spices & Herbs: ₹500–₹1000 per kg (use small practical units like 10g)
-- Dairy: ₹50–₹80 per litre
-- Fruits: ₹40–₹100 per kg
-- Misc: Oil ~₹150/ltr, Salt ~₹20/kg, etc.
-
-🧾 Meal Plan:
+🧾 Meal Plan JSON:
 {meal_plan_text}
 
-📦 Respond ONLY with valid JSON in the following format:
-
+📦 Output ONLY valid JSON like:
 {{
   "items": [
     {{ "name": "Tomato", "quantity": "4 medium", "category": "Vegetables", "price": "₹20" }},
     {{ "name": "Rice", "quantity": "500g", "category": "Grains & Pulses", "price": "₹40" }},
-    {{ "name": "Turmeric", "quantity": "10g",  "category": "Spices & Herbs", "price": "₹10" }},
-    {{ "name": "Curd", "quantity": "500ml","category": "Dairy & Substitutes", "price": "₹30" }},
-    {{ "name": "Banana", "quantity": "6", "category": "Fruits", "price": "₹60" }},
-    {{ "name": "Oil", "quantity": "200ml", "category": "Miscellaneous", "price": "₹80" }}
+    ...
   ]
 }}
-
-⚠️ Do not include explanations, greetings, or markdown. Return ONLY the JSON object above.
+Do not return any text or explanations.
 """.strip()
 
     return prompt

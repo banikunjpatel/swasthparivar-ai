@@ -62,7 +62,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, hasLogin }) => {
       } else {
         result = await signUp({ name, email, password });
         if (!result.error) {
-          setSuccess('Account created successfully! Welcome to Swasth Pariwar.');
+          setSuccess('Account created! Now please log in to access your Swasth Parivar dashboard.');
         }
       }
 
@@ -70,7 +70,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, hasLogin }) => {
         setError(result.error);
       } else {
         setTimeout(() => {
-          onClose();
+          if (isLogin) {
+            onClose();
+          } else {
+            setIsLogin(true);
+          }
+
           resetForm();
         }, 2000);
       }
