@@ -32,7 +32,6 @@ function AppContent() {
   const [currentSeason, setCurrentSeason] = useState<Season>('spring');
   const [mealPlan, setMealPlan] = useState<any[]>([]);
   const [todayMealPlan, setTodayMealPlan] = useState<any>();
-  // const [user, setUser] = useState<any>(null);
   const [userId, setUserId] = useState<string>('');
   const [doshaName, setDoshaName] = useState<string>('');
   const [doshaPerc, setDoshaPerc] = useState<string>('');
