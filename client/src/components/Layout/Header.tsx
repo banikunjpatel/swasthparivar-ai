@@ -26,8 +26,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
       { id: 'wellness', label: 'Wellness' }
     ]
     : [
-      { id: 'dashboard', label: 'Dashboard' },
-      { id: 'guidance', label: 'Guidance' },
+
     ];
 
   const handleSignOut = async () => {
@@ -81,8 +80,8 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${currentSection === item.id
-                      ? 'bg-green-100 text-green-700 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                    ? 'bg-green-100 text-green-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                     }`}
                 >
                   {item.label}
@@ -91,7 +90,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
             </nav>
 
             {/* User Actions */}
-            <div className="flex items-center space-x-3">
+            {/* <div className="flex items-center space-x-3">
               {user ? (
                 <div className="relative">
                   <button
@@ -135,19 +134,18 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
                 </button>
               )}
 
-              {/* Hamburger Menu Button */}
               <button
                 className="md:hidden p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
                 onClick={() => setShowMobileMenu((prev) => !prev)}
               >
                 <Menu className="h-5 w-5" />
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
 
         {/* Mobile Navigation */}
-        {showMobileMenu && (
+        {/* {showMobileMenu && (
           <div
             ref={mobileMenuRef}
             className="md:hidden border-t border-gray-200 bg-gray-50"
@@ -161,8 +159,8 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
                     setShowMobileMenu(false); // close menu
                   }}
                   className={`block w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${currentSection === item.id
-                      ? 'bg-green-100 text-green-700'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-white'
+                    ? 'bg-green-100 text-green-700'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-white'
                     }`}
                 >
                   {item.label}
@@ -170,7 +168,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
               ))}
             </div>
           </div>
-        )}
+        )} */}
       </header>
 
       {/* Auth Modal */}

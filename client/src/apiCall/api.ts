@@ -3,6 +3,7 @@ interface ApiResponse<T = any> {
   data?: T;
   error?: string;
   message?: string;
+  detail?: string;
 }
 
 class ApiClient {
@@ -127,6 +128,13 @@ class ApiClient {
     return this.request('/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
+    });
+  }
+
+  async joinWaitList(email: string): Promise<ApiResponse> {
+    return this.request('/join-waitlist', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
     });
   }
 

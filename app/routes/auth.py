@@ -1,9 +1,12 @@
+from datetime import datetime
 from app.dependencies.auth_dependency import get_current_user
+from app.models.wait_list_model import WaitlistEntry
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
-from app.db.mongo import users_collection,families_collection
+from app.db.mongo import users_collection,families_collection,wait_lists_collection
 from fastapi import Depends, status
 from app.services.auth import create_refresh_token, hash_password, verify_password, create_access_token
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -14,6 +17,30 @@ class UserSignup(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+@router.post("/join-waitlist")
+async def join_waitlist(email_req: WaitlistEntry):
+    email = email_req.email.lower().strip()
+    # Check if email already exists
+    existing = await wait_lists_collection.find_one({"email": email})
+    if existing:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "This email is already on the waitlist."}
+        )
+
+    # Insert into collection
+    entry = {
+        "email": email,
+        "created_at": datetime.utcnow()
+    }
+    await wait_lists_collection.insert_one(entry)
+
+    return {
+        "message": "Successfully joined the waitlist!",
+        "email": email,
+        "created_at": entry["created_at"]
+    }
 
 @router.post("/signup")
 async def signup(user: UserSignup):
