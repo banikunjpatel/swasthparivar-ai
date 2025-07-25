@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Leaf, User, Menu, LogOut } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext';
 import AuthModal from '../Auth/AuthModal';
 
