@@ -38,7 +38,6 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
     }
   };
 
-  // Close mobile menu on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
