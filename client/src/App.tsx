@@ -6,7 +6,6 @@ import DoshaCard from './components/Dashboard/DoshaCard';
 import CulturalWellnessCard from './components/Dashboard/CulturalWellnessCard';
 import MealPlanView from './components/MealPlan/MealPlanView';
 import RecipeDetail from './components/Recipes/RecipeDetail';
-import DinacharyaGuide from './components/Guidance/DinacharyaGuide';
 import RutucharyaGuide from './components/Guidance/RutucharyaGuide';
 import { DoshaType, DoshaBalance, Recipe, Season } from './types';
 import { getCurrentSeason } from './utils/ayurvedic-logic';
@@ -21,6 +20,9 @@ import { format } from 'date-fns';
 import WellnessTips from './components/Guidance/WellnessTips';
 import AuthModal from './components/Auth/AuthModal';
 import Footer from './components/Layout/Footer';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 function AppContent() {
@@ -28,7 +30,6 @@ function AppContent() {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [fetchedRecipe, setFetchedRecipe] = useState<Recipe | null>(null);
   const [loadingRecipe, setLoadingRecipe] = useState(false);
-  const [isAssessmentDone, setIsAssessmentDone] = useState(false);
   const [currentSeason, setCurrentSeason] = useState<Season>('spring');
   const [mealPlan, setMealPlan] = useState<any[]>([]);
   const [todayMealPlan, setTodayMealPlan] = useState<any>();
@@ -38,7 +39,7 @@ function AppContent() {
   const [doshaPerc, setDoshaPerc] = useState<string>('');
   const [guestData, setGuestData] = useState<{ prakriti: DoshaType; currentDosha: DoshaBalance } | null>(null);
   const [members, setMembers] = useState([]);
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   type Meal = {
     base: string;
@@ -143,13 +144,37 @@ function AppContent() {
       fetchMembers();
     }
   }, [user]);
-
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   useEffect(() => {
     setCurrentSeason(getCurrentSeason());
     if (user && members && members.length > 0) {
       fetchMealPlan();
     }
   }, [members, user]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (!isValidEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    try {
+      const response: any = await apiClient.joinWaitList(email);
+      if (!response?.data) {
+        toast.error(response.error);
+      } else {
+        toast.success(response.data.message);
+      }
+      setEmail("");
+    } catch (err: any) {
+      console.log(err)
+      toast.error(err);
+    }
+  };
 
   const prakriti: any = user?.prakriti || guestData?.prakriti || null;
   const currentDosha = user?.currentDosha || guestData?.currentDosha;
@@ -202,17 +227,17 @@ function AppContent() {
       <div className="bg-gradient-to-r from-green-600 to-teal-600 rounded-xl p-4 sm:p-6 md:p-8 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10" />
 
-        <div className="absolute top-2 sm:top-4 right-2 sm:right-4 opacity-20 text-3xl sm:text-5xl">🕉️</div>
+        {/* <div className="absolute top-2 sm:top-4 right-2 sm:right-4 opacity-20 text-3xl sm:text-5xl">🕉️</div> */}
 
         <div className="relative">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-3 sm:space-y-0 mb-4">
-            <span className="text-3xl sm:text-4xl">🙏</span>
+          <div className="max-w-6xl mx-auto text-center">
+            {/* <span className="text-3xl sm:text-4xl">🙏</span> */}
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-bold">
-                Namaste, {user?.name || 'Wellness Seeker'}
+                From Recipes to Routines
               </h1>
               <p className="text-green-100 text-base sm:text-lg">
-                Personalized family wellness based on your Ayurvedic constitution
+                AI that understands your family's wellness needs — the Indian way 🌿
               </p>
 
               {isAuthenticated && (
@@ -235,7 +260,7 @@ function AppContent() {
             </div>
           </div>
 
-          {!isAssessmentDone && !members.length && (
+          {/* {!isAssessmentDone && !members.length && (
             <button
               onClick={() => {
                 if (isAuthenticated) {
@@ -248,7 +273,7 @@ function AppContent() {
             >
               🧘‍♀️ Start Your Journey
             </button>
-          )}
+          )} */}
         </div>
       </div>
 
@@ -281,16 +306,68 @@ function AppContent() {
             <div className="max-w-6xl mx-auto text-center">
               <div className="px-4 md:px-10">
                 <div className="text-center max-w-3xl mx-auto mb-10">
-                  <h3 className="text-l md:text-4xl font-bold text-gray-800 mb-3">
-                    🧘‍♂️ Swasth Parivar AI
-                  </h3>
                   <p className="text-gray-600 text-md md:text-lg">
-                    Discover the perfect harmony between ancient Ayurvedic wisdom and modern AI technology.
-                    Create personalized wellness plans for your entire family based on individual constitutions,
-                    seasonal needs, and cultural preferences.
+                    Be the first to experience AI meal & wellness planners rooted in Ayurveda. Join now!
                   </p>
                 </div>
+                <div className="max-w-md mx-auto">
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="relative group">
+                      <div className="flex flex-col sm:flex-row gap-3 p-2 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-wellness-muted/30 group-hover:shadow-2xl transition-all duration-300">
+                        <input
+                          type="email"
+                          placeholder="Enter your email address"
+                          value={email}
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            setError("");
+                          }}
+                          required
+                          className={`flex-grow px-4 py-3 outline-none text-sm text-gray-800 placeholder-gray-400 rounded-full border-0 bg-transparent focus-visible:ring-0 text-center sm:text-left text-lg placeholder:text-muted-foreground/60 ${error ? "border-red-500" : ""
+                            }`}
+                        />
 
+                        {/* <Input
+                          type="email"
+                          placeholder="Enter your email address"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="border-0 bg-transparent focus-visible:ring-0 flex-1 text-center sm:text-left text-lg py-3 placeholder:text-muted-foreground/60"
+                          required
+                        /> */}
+                        <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-full flex items-center justify-center w-full sm:w-auto text-center">
+                          Join  <span className='ml-2'>✨</span>
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                {/* <div className="flex justify-center mb-8">
+                  <div className="flex bg-white shadow-md rounded-full overflow-hidden w-full max-w-xl">
+                    <input
+                      type="email"
+                      placeholder="Enter your email address"
+                      className="flex-grow px-4 py-3 outline-none text-sm text-gray-800 placeholder-gray-400 rounded-l-full"
+                    />
+                    <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-r-full flex items-center gap-1">
+                      Join Waitlist <span>✨</span>
+                    </button>
+                  </div>
+                </div> */}
+                <div className="mt-6 mb-8  space-y-1 text-sm text-gray-600">
+                  <div className="flex justify-center items-center gap-2 mb-4">
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M4.318 6.318a4.5 4.5 0 0 1 6.364 0L12 7.636l1.318-1.318a4.5 4.5 0 0 1 6.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 0 1 0-6.364z" />
+                    </svg>
+                    <span>Join the waitlist to get updates on our launch.</span>
+                  </div>
+                  {/* <div className="flex justify-center items-center gap-2">
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M17 20h5v-2a4 4 0 0 0-4-4h-1M9 20H4v-2a4 4 0 0 1 4-4h1m4-8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z" />
+                    </svg>
+                    <span>Join <strong>2,847 families</strong> already on the waitlist</span>
+                  </div> */}
+                </div>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
                   {features.map((feature, index) => (
                     <div
@@ -540,6 +617,7 @@ function AppContent() {
       {selectedRecipe && !loadingRecipe && (
         <RecipeDetail recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
       )}
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} hasLogin={false} />
     </div>
   );
