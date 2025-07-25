@@ -64,8 +64,8 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-br from-green-600 to-green-700 p-2 rounded-lg">
-                <Leaf className="h-6 w-6 text-white" />
+              <div className=" p-2 rounded-lg">
+                <img src="/assets/img/logo.jpg" alt="Logo" className="h-12 w-12 object-contain" />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-800">Swasth Parivar AI</h1>
