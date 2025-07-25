@@ -158,6 +158,7 @@ function AppContent() {
     e.preventDefault();
     setError("");
     if (!isValidEmail(email)) {
+      console.log(email)
       setError("Please enter a valid email address.");
       return;
     }
