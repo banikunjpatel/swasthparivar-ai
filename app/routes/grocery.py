@@ -8,7 +8,7 @@ import re
 
 from app.prompts.grocery_list import build_grocery_prompt
 from app.prompts.recipe_prompt import build_recipe_prompt
-from app.services.openai_client import call_gpt
+from app.services.openai_client import generate_response_streaming
 from app.utils.logger import get_logger
 from app.db.mongo import grocery_collection, recipes_collection
 
@@ -50,14 +50,21 @@ async def generate_grocery_list(data: MealPlanInput):
 
         # call GPT to generate grocery list
         prompt = build_grocery_prompt(data.mealPlan)
-        raw_output = call_gpt(prompt)
+        # Get full output from streamed chunks
+        raw_output = ""
+        async for chunk in generate_response_streaming(prompt, task_type="meal_plan"):
+            raw_output += chunk
 
         logger.debug(f"[Grocery GPT Output] {raw_output}")
         if not raw_output.strip():
             raise HTTPException(status_code=502, detail="GPT returned an empty grocery list.")
-        cleaned_output = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
-        parsed = json.loads(cleaned_output)
-        grocery_items = parsed.get("items", [])
+        cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
+        try:
+            parsed_json = json.loads(cleaned)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=500, detail="Invalid JSON format from AI response")
+        
+        grocery_items = parsed_json.get("items", [])
         logger.info("✅ Grocery list parsed successfully")
 
         # ✅ Categorize items
@@ -111,7 +118,19 @@ async def get_recipe(payload: RecipeRequest):
 
         # 🧠 Build GPT prompt and call
         prompt = build_recipe_prompt(meal_name)
-        raw_output = call_gpt(prompt)
+        # Get full output from streamed chunks
+        raw_output = ""
+        async for chunk in generate_response_streaming(prompt, task_type="meal_plan"):
+            raw_output += chunk
+            
+        # Clean Markdown formatting if GPT wrapped it in ```json ... ```
+        cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
+
+        # Parse JSON safely
+        try:
+            parsed_json = json.loads(cleaned)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=500, detail="Invalid JSON format from AI response")
 
         # 🧼 Clean GPT output and parse JSON
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()

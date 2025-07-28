@@ -11,7 +11,7 @@ import re
 import json
 
 from app.db.mongo import families_collection, members_collection
-from app.services.openai_client import call_gpt
+from app.services.openai_client import generate_response_streaming
 from app.prompts.family_meal_prompt import build_family_meal_prompt
 from app.db.mongo import family_meal_collection
 from app.models.family_meal_model import FamilyMealPlanModel
@@ -126,7 +126,16 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
             wellness_goals=wellness_goals
         )
 
-        raw_output = call_gpt(prompt)
+        # Get full output from streamed chunks
+        raw_output = ""
+        async for chunk in generate_response_streaming(prompt, task_type="meal_plan"):
+            raw_output += chunk
+        # Clean Markdown formatting if GPT wrapped it in ```json ... ```
+        cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
+        try:
+            parsed_json = json.loads(cleaned)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=500, detail="Invalid JSON format from AI response")
 
         # 🧹 Clean and parse JSON
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()

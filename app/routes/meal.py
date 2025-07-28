@@ -9,7 +9,7 @@ from bson import ObjectId
 
 from app.db.mongo import members_collection, family_meal_collection
 from app.prompts.meal_plan import build_meal_plan_prompt
-from app.services.openai_client import call_gpt
+from app.services.openai_client import generate_response_streaming
 from app.utils.logger import get_logger
 from app.utils.formatting import title_case_meals, convert_list_to_day_dict
 from app.utils.compliance import check_meal_compliance
@@ -44,8 +44,6 @@ async def generate_meal(member_id: str, request: MealGenerationRequest):
         member.pop("_id", None)
         member.pop("createdAt", None)
         member.pop("updatedAt", None)
-        
-       
 
         # Find most recent family plan
         previous_plan = None
@@ -61,7 +59,20 @@ async def generate_meal(member_id: str, request: MealGenerationRequest):
 
         # 🧠 Build prompt and call GPT
         prompt = build_meal_plan_prompt(member, previous_plan=previous_plan)
-        raw_output = call_gpt(prompt)
+        
+        # ¸Get full output from streamed chunks
+        raw_output = ""
+        async for chunk in generate_response_streaming(prompt, task_type="meal_plan"):
+            raw_output += chunk
+            
+        # Clean Markdown formatting if GPT wrapped it in ```json ... ```
+        cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
+
+        # Parse JSON safely
+        try:
+            parsed_json = json.loads(cleaned)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=500, detail="Invalid JSON format from AI response")
 
         logger.debug("=== /generate-meal endpoint called ===")
         logger.debug(f"Raw GPT output:\n{raw_output}")

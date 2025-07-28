@@ -1,10 +1,12 @@
-import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
+from app.services.openai_client import generate_response_streaming
 import json
 import time
 import logging
@@ -38,10 +40,12 @@ app = FastAPI(
 
 # ─────────────────────────────────────────────
 # 🌐 CORS Middleware
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins, # 🔐 Replace with frontend URL in production
+    allow_origins=[
+        "http://localhost:5174",
+           "http://localhost:5173",  # ✅ React/Vite frontend during development
+    ],  # 🔐 Replace with frontend URL in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -111,3 +115,19 @@ async def internal_error_handler(request: Request, exc):
 # ─────────────────────────────────────────────
 # ✅ Confirm Initialization
 logger.info("✅ SwasthParivar AI is ready and running at http://localhost:8000")
+
+
+class GenerateStreamRequest(BaseModel):
+    prompt: str
+    task_type: str = "default"
+
+@app.post("/api/stream_generate", tags=["Streaming"])
+async def stream_generate(request_data: GenerateStreamRequest):
+    prompt = request_data.prompt
+    task_type = request_data.task_type
+
+    async def token_stream():
+        async for chunk in generate_response_streaming(prompt, task_type):
+            yield chunk
+
+    return StreamingResponse(token_stream(), media_type="text/plain")
