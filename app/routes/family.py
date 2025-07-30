@@ -33,19 +33,15 @@ class FamilyWithMembers(BaseModel):
     email: EmailStr
     password: str
 
-
 # ✅ Register family + members into MongoDB
 @router.post("/register-family", summary="Register family account")
 async def register_family(data: FamilyWithMembers):
     try:
-        # 🔍 Check if email already exists
         existing = await families_collection.find_one({"email": data.email})
         if existing:
             raise HTTPException(status_code=400, detail="Email already registered")
 
         now = datetime.utcnow()
-
-        # 🔐 Hash password before saving (if not done already)
         hashed_password =  bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode('utf-8')
 
         family_doc = {
@@ -73,18 +69,14 @@ async def register_family(data: FamilyWithMembers):
         logger.exception("❌ Failed to register user.")
         raise HTTPException(status_code=500, detail="Registration failed")
 
-
-
 @router.post("/generate-family-meal/{user_id}", summary="Generate meal plan for a specific week")
 async def generate_family_meal(user_id: str, request: MealGenerationRequest):
     try:
         week_start = request.weekStart.replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=pytz.UTC)
-
         members = await members_collection.find({"userId": user_id}).to_list(length=10)
         if not members:
             raise HTTPException(status_code=404, detail="No members found for this family")
 
-        # ⛔ Check if already exists unless force
         if not request.force:
             existing = await family_meal_collection.find_one({
                 "userId": user_id,
@@ -94,7 +86,6 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
                 logger.info(f"🔁 Returning existing plan for user_id={user_id}, week={week_start}")
                 return existing["plan"]
 
-        # 📦 Fetch previous plan (to avoid duplicates)
         previous_plan = None
         previous_doc = await family_meal_collection.find_one({
             "userId": user_id
@@ -106,10 +97,9 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
         if previous_doc and prev_week_start < week_start:
             previous_plan = previous_doc.get("plan")
 
-        # 🌿 Build seasonal wellness goals (optional)
         wellness_goals = {}
         if request.season:
-            from app.routes.wellness import get_member_wellness_tips  # or move to shared utility
+            from app.routes.wellness import get_member_wellness_tips
             for m in members:
                 name = m.get("fullName")
                 prakriti = m.get("prakriti")
@@ -119,29 +109,25 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
                     if tips:
                         wellness_goals[name] = tips
 
-        # 🧠 Build GPT prompt
         prompt = build_family_meal_prompt(
             family=members,
             previous_plan=previous_plan,
             wellness_goals=wellness_goals
         )
 
-        # Get full output from streamed chunks
         raw_output = ""
-        async for chunk in generate_response_streaming(prompt, task_type="meal_plan"):
+        async for chunk in generate_response_streaming(prompt, task_type="family_meal_plan"):
             raw_output += chunk
-        # Clean Markdown formatting if GPT wrapped it in ```json ... ```
+
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
         try:
             parsed_json = json.loads(cleaned)
         except json.JSONDecodeError:
             raise HTTPException(status_code=500, detail="Invalid JSON format from AI response")
 
-        # 🧹 Clean and parse JSON
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
         meal_plan = json.loads(cleaned)
 
-        # 💾 Save plan to DB
         now_utc = datetime.now(pytz.UTC)
         meal_doc = FamilyMealPlanModel(
             userId=user_id,
@@ -151,8 +137,7 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
             wellnessTips={}
         )
         await family_meal_collection.insert_one(meal_doc.model_dump())
-        
-        # NEW: Log seasonal tips
+
         if wellness_goals:
             await wellness_logs_collection.insert_one({
                 "userId": user_id,
@@ -172,7 +157,7 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
     except Exception as e:
         logger.exception("❌ Unexpected error during meal generation")
         raise HTTPException(status_code=500, detail="Family meal generation failed")
-    
+
 @router.get("/get-family-meal/{user_id}", summary="Fetch latest saved family meal plan by user ID")
 async def get_family_meal(user_id: str):
     try:
@@ -184,14 +169,12 @@ async def get_family_meal(user_id: str):
         if not latest_plan:
             raise HTTPException(status_code=404, detail="No meal plan found for this user")
 
-        # Convert ObjectId to string for JSON serialization
         latest_plan["_id"] = str(latest_plan["_id"])
-
         return latest_plan
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Failed to fetch family meal plan")
-    
+
 @router.get("/get-all-family-meals/{user_id}", summary="Fetch all saved family meal plans by user ID")
 async def get_all_family_meals(user_id: str):
     try:
@@ -199,10 +182,8 @@ async def get_all_family_meals(user_id: str):
         meal_plans = []
 
         async for plan in cursor:
-            # Convert all ObjectId to str
             if "_id" in plan:
                 plan["_id"] = str(plan["_id"])
-            # Optional: Convert nested ObjectIds if any
             meal_plans.append(plan)
 
         if not meal_plans:
@@ -212,8 +193,6 @@ async def get_all_family_meals(user_id: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch meal plans: {str(e)}")
-    
-    # Household Dosha Aggregation
 
 def determine_household_dosha(average: Dict[str, float]) -> str:
     sorted_doshas = sorted(average.items(), key=lambda x: x[1], reverse=True)

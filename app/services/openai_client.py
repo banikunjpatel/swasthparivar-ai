@@ -1,18 +1,25 @@
-# openai_client.py
-
 import os
 import hashlib
 import openai
 import asyncio
 from typing import List, Optional, AsyncGenerator
+from dotenv import load_dotenv
 
-# Load from environment (fallback to gpt-4o)
+# ✅ Load environment variables (only once in your app, or skip if already in main.py)
+load_dotenv()
+
+# ✅ Set OpenAI API Key securely
+openai.api_key = os.getenv("OPENAI_API_KEY")
+if not openai.api_key:
+    raise RuntimeError("❌ OPENAI_API_KEY not set in environment variables.")
+
+# ✅ Fallback model (e.g., if not specified in task_type)
 DEFAULT_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
 
-# In-memory cache (simple dict — replace with Redis in production)
+# Simple in-memory cache (replace with Redis or DB in production)
 response_cache = {}
 
-# Map tasks to preferred models
+# ✅ Task-to-model mapping
 def choose_model(task_type: str) -> str:
     low_cost_tasks = [
         "grocery_list",
@@ -22,14 +29,14 @@ def choose_model(task_type: str) -> str:
     ]
     if task_type in low_cost_tasks:
         return "gpt-3.5-turbo"
-    return "gpt-4o"  # default high-quality model
+    return DEFAULT_MODEL
 
-# Generate hash-based cache key
+# ✅ Hash-based prompt cache key
 def generate_cache_key(prompt: str, task_type: str) -> str:
     key_string = f"{task_type}:{prompt}"
     return hashlib.md5(key_string.encode()).hexdigest()
 
-# Main async OpenAI generator (streaming)
+# ✅ Streamed GPT response (preferred)
 async def generate_response_streaming(
     prompt: str,
     task_type: str = "default",
@@ -39,12 +46,10 @@ async def generate_response_streaming(
     model = choose_model(task_type)
     cache_key = generate_cache_key(prompt, task_type)
 
-    # Return from cache if exists
     if cache_key in response_cache:
         yield response_cache[cache_key]
         return
 
-    # Stream from OpenAI
     response = await openai.ChatCompletion.acreate(
         model=model,
         messages=[{"role": "user", "content": prompt}],
@@ -59,10 +64,9 @@ async def generate_response_streaming(
         final_output += delta
         yield delta
 
-    # Store in cache after streaming
     response_cache[cache_key] = final_output
 
-# Optional: helper if you just want full response (not streaming)
+# ✅ Full GPT response (non-streamed, fallback or testing)
 async def generate_response_full(
     prompt: str,
     task_type: str = "default",

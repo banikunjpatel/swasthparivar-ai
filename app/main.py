@@ -1,33 +1,24 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from app.services.openai_client import generate_response_streaming
+from dotenv import load_dotenv
 import json
 import time
 import logging
 import sys
 
-# Import routers from your routes folder
-from app.routes.meal import router as meal_router
-from app.routes.grocery import router as grocery_router
-from app.routes.dosha import router as dosha_router
-from app.routes.family import router as family_router
-from app.routes.members import router as member_router
-from app.routes.auth import router as auth_router
-from app.routes.wellness import router as wellness_router
+load_dotenv()
 
 # ─────────────────────────────────────────────
 # 📋 Logging setup
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("swasthparivar")
 logger.info("🚀 SwasthParivar API is initializing...")
-
 sys.stdout.reconfigure(encoding='utf-8')
+
 # ─────────────────────────────────────────────
 # ⚙️ FastAPI App Config
 app = FastAPI(
@@ -44,26 +35,26 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5174",
-           "http://localhost:5173",  # ✅ React/Vite frontend during development
-    ],  # 🔐 Replace with frontend URL in production
+        "http://localhost:5173",  # ✅ React/Vite frontend
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ─────────────────────────────────────────────
+# 🧾 Audit Logger
 class AuditLogMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         body = await request.body()
         masked = body.decode("utf-8").replace("password", "***")
-        logger.info(f"📥 Incoming {request.method} {request.url.path} | Payload: {masked}")
-
+        logger.info(f"📥 {request.method} {request.url.path} | Payload: {masked}")
         response = await call_next(request)
-
         logger.info(f"📤 Response status: {response.status_code}")
         return response
-    
 app.add_middleware(AuditLogMiddleware)
-# ──────────────────────────────────────────────────
+
+# ⏱️ Timer Middleware
 class TimerMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         start = time.time()
@@ -71,11 +62,18 @@ class TimerMiddleware(BaseHTTPMiddleware):
         duration = time.time() - start
         response.headers["X-Process-Time"] = str(round(duration, 4))
         return response
-
 app.add_middleware(TimerMiddleware)
 
 # ─────────────────────────────────────────────
-# 🔗 Router Registration
+# 🔗 Register All Routers
+from app.routes.meal import router as meal_router
+from app.routes.grocery import router as grocery_router
+from app.routes.dosha import router as dosha_router
+from app.routes.family import router as family_router
+from app.routes.members import router as member_router
+from app.routes.auth import router as auth_router
+from app.routes.wellness import router as wellness_router
+
 app.include_router(meal_router, prefix="/api", tags=["Meal Plan"])
 app.include_router(grocery_router, prefix="/api", tags=["Grocery List"])
 app.include_router(dosha_router, prefix="/api", tags=["Dosha Detection"])
@@ -95,28 +93,23 @@ def read_root():
         "status": "✅ OK"
     }
 
-# ─────────────────────────────────────────────
-# 🩺 Healthcheck Endpoint
+# 🩺 Healthcheck
 @app.get("/healthcheck", tags=["Monitoring"])
 def healthcheck():
     return {"status": "healthy"}
 
-# ─────────────────────────────────────────────
-# ❌ Custom 404 Error
+# ❌ 404 Not Found
 @app.exception_handler(404)
 async def not_found_handler(request: Request, exc):
     return JSONResponse(status_code=404, content={"detail": "Endpoint not found."})
 
-# ❌ Custom 500 Error
+# ❌ 500 Internal Error
 @app.exception_handler(500)
 async def internal_error_handler(request: Request, exc):
     return JSONResponse(status_code=500, content={"detail": "Internal server error occurred."})
 
 # ─────────────────────────────────────────────
-# ✅ Confirm Initialization
-logger.info("✅ SwasthParivar AI is ready and running at http://localhost:8000")
-
-
+# 🚀 Streaming Endpoint (Test/Debug)
 class GenerateStreamRequest(BaseModel):
     prompt: str
     task_type: str = "default"
@@ -131,3 +124,7 @@ async def stream_generate(request_data: GenerateStreamRequest):
             yield chunk
 
     return StreamingResponse(token_stream(), media_type="text/plain")
+
+# ─────────────────────────────────────────────
+# ✅ Confirm Startup
+logger.info("✅ SwasthParivar AI is ready and running at http://localhost:8000")

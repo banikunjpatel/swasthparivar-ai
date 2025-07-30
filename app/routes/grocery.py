@@ -15,7 +15,6 @@ from app.db.mongo import grocery_collection, recipes_collection
 router = APIRouter()
 logger = get_logger(__name__)
 
-# 🧾 Model for grocery generation input
 class MealPlanInput(BaseModel):
     mealPlan: list = Field(..., alias="mealPlan")
     userId: Optional[str] = Field(None, alias="userId")
@@ -24,7 +23,6 @@ class MealPlanInput(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
-# ✅ Helper: Group grocery items by category
 def group_items_by_category(items: list[dict]) -> dict:
     grouped = defaultdict(list)
     for item in items:
@@ -32,13 +30,10 @@ def group_items_by_category(items: list[dict]) -> dict:
         grouped[category].append(item)
     return dict(grouped)
 
-# ✅ POST: Generate & save grocery list
 @router.post("/generate-grocery", summary="Generate and save grocery list from meal plan")
 async def generate_grocery_list(data: MealPlanInput):
     try:
         logger.info("Grocery list parsed successfully ✔")
-
-        # 🔍 Check if grocery list already exists for user and week
         existing = await grocery_collection.find_one({
             "userId": data.userId,
             "week": data.weekStart
@@ -48,26 +43,20 @@ async def generate_grocery_list(data: MealPlanInput):
             logger.info(f"🔁 Returning existing grocery list for userId={data.userId}, week={data.weekStart}")
             return existing
 
-        # call GPT to generate grocery list
+        # ✅ Use task_type "grocery_plan"
         prompt = build_grocery_prompt(data.mealPlan)
-        # Get full output from streamed chunks
         raw_output = ""
-        async for chunk in generate_response_streaming(prompt, task_type="meal_plan"):
+        async for chunk in generate_response_streaming(prompt, task_type="grocery_plan"):  # ✅
             raw_output += chunk
 
         logger.debug(f"[Grocery GPT Output] {raw_output}")
         if not raw_output.strip():
             raise HTTPException(status_code=502, detail="GPT returned an empty grocery list.")
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
-        try:
-            parsed_json = json.loads(cleaned)
-        except json.JSONDecodeError:
-            raise HTTPException(status_code=500, detail="Invalid JSON format from AI response")
+        parsed_json = json.loads(cleaned)
         
         grocery_items = parsed_json.get("items", [])
         logger.info("✅ Grocery list parsed successfully")
-
-        # ✅ Categorize items
         categorized_items = group_items_by_category(grocery_items)
 
         grocery_doc = {
@@ -80,7 +69,6 @@ async def generate_grocery_list(data: MealPlanInput):
 
         result = await grocery_collection.insert_one(grocery_doc)
         grocery_doc["_id"] = str(result.inserted_id)
-
         logger.info(f"📦 Grocery list saved with ID: {result.inserted_id}")
         return grocery_doc
 
@@ -96,14 +84,12 @@ class RecipeRequest(BaseModel):
     mealName: str
     mealType: Optional[str] = None
 
-# ✅ POST: Fetch or generate recipe
 @router.post("/get-recipe", summary="Fetch or generate detailed recipe by name and type")
 async def get_recipe(payload: RecipeRequest):
     try:
         meal_name = payload.mealName.strip().lower()
         meal_type = payload.mealType.strip().lower() if payload.mealType else None
 
-        # 🔍 Check if recipe already exists
         query = {"name": meal_name}
         if meal_type:
             query["mealType"] = meal_type
@@ -115,28 +101,16 @@ async def get_recipe(payload: RecipeRequest):
             return [existing]
 
         logger.info(f"🧠 Generating new recipe for: {meal_name} ({meal_type})")
-
-        # 🧠 Build GPT prompt and call
         prompt = build_recipe_prompt(meal_name)
-        # Get full output from streamed chunks
+
+        # ✅ Use task_type "recipe_generation"
         raw_output = ""
-        async for chunk in generate_response_streaming(prompt, task_type="meal_plan"):
+        async for chunk in generate_response_streaming(prompt, task_type="recipe_generation"):  # ✅
             raw_output += chunk
-            
-        # Clean Markdown formatting if GPT wrapped it in ```json ... ```
-        cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
 
-        # Parse JSON safely
-        try:
-            parsed_json = json.loads(cleaned)
-        except json.JSONDecodeError:
-            raise HTTPException(status_code=500, detail="Invalid JSON format from AI response")
-
-        # 🧼 Clean GPT output and parse JSON
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
         recipe_data = json.loads(cleaned)
 
-        # ✅ Save to MongoDB
         recipe_data["name"] = meal_name
         if meal_type:
             recipe_data["mealType"] = meal_type
