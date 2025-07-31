@@ -107,7 +107,20 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
         async for chunk in generate_response_streaming(prompt, task_type="family_meal_plan"):
             raw_output += chunk
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
-        meal_plan = json.loads(cleaned)
+        # 👇 Robust JSON parsing block
+        try:
+            meal_plan = json.loads(cleaned)
+        except json.JSONDecodeError as e:
+            logger.warning("First JSON parse failed. Attempting fallback...")
+            try:
+                match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+                if match:
+                    meal_plan = json.loads(match.group())
+                else:
+                    raise ValueError("No JSON object found")
+            except Exception as fallback_e:
+                logger.error(f"Fallback JSON parsing failed: {fallback_e}")
+                raise HTTPException(status_code=500, detail="Meal plan output could not be parsed as JSON.")
 
         now_utc = datetime.now(pytz.UTC)
         meal_doc = FamilyMealPlanModel(
