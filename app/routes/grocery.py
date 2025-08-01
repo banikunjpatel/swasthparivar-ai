@@ -46,7 +46,7 @@ async def generate_grocery_list(data: MealPlanInput):
         # ✅ Use task_type "grocery_plan"
         prompt = build_grocery_prompt(data.mealPlan)
         raw_output = ""
-        async for chunk in generate_response_streaming(prompt, task_type="grocery_plan"):  # ✅
+        async for chunk in generate_response_streaming(prompt, task_type="grocery_plan"):
             raw_output += chunk
 
         logger.debug(f"[Grocery GPT Output] {raw_output}")
@@ -105,7 +105,7 @@ async def get_recipe(payload: RecipeRequest):
 
         # ✅ Use task_type "recipe_generation"
         raw_output = ""
-        async for chunk in generate_response_streaming(prompt, task_type="recipe_generation"):  # ✅
+        async for chunk in generate_response_streaming(prompt, task_type="recipe_generation"):
             raw_output += chunk
 
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
