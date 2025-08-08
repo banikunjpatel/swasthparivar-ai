@@ -75,6 +75,7 @@ Return response in this strict JSON format:
 }}
 
 ⚠️ Output only JSON. No Markdown. No extra commentary.
+Respond ONLY with a valid JSON object. Do not include any explanations, markdown, or extra text.
 
 Do not use Markdown. No extra commentary.
 """

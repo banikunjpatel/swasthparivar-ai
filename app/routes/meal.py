@@ -62,20 +62,30 @@ async def generate_meal(member_id: str, request: MealGenerationRequest):
             if prev_week_start.tzinfo is None:
                 prev_week_start = prev_week_start.replace(tzinfo=timezone.utc)
             if prev_week_start < week_start:
-                previous_plan = previous_doc.get("plan")
-
+                previous_plan = previous_doc.get("plan")           
+                
         prompt = build_meal_plan_prompt(member, previous_plan=previous_plan)
-
         raw_output = ""
-        async for chunk in generate_response_streaming(prompt, task_type="meal_plan"):
+        async for chunk in generate_response_streaming(prompt, task_type="meal_plan", max_tokens=2048):
             raw_output += chunk
 
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
 
         try:
             meal_plan = json.loads(cleaned)
-        except json.JSONDecodeError:
-            raise HTTPException(status_code=500, detail="Invalid JSON format from AI response")
+        except json.JSONDecodeError as e:
+            logger.warning(f"First JSON parse failed: {e}. Attempting fallback extraction...")
+            logger.error(f"Raw AI output: {raw_output}")
+            match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+            if match:
+                try:
+                    meal_plan = json.loads(match.group())
+                except Exception as fallback_e:
+                    logger.error(f"Fallback JSON parsing failed: {fallback_e}")
+                    raise HTTPException(status_code=500, detail="Invalid JSON format from AI response")
+            else:
+                logger.error("No JSON object found in AI response.")
+                raise HTTPException(status_code=500, detail="Invalid JSON format from AI response")
 
         now_utc = datetime.now(pytz.UTC)
         meal_doc = FamilyMealPlanModel(
@@ -124,7 +134,7 @@ async def generate_meal(member_id: str, request: MealGenerationRequest):
                 continue
             recipe_prompt = build_recipe_prompt(meal_name)
             recipe_output = ""
-            async for chunk in generate_response_streaming(recipe_prompt, task_type="recipe"):
+            async for chunk in generate_response_streaming(recipe_prompt, task_type="recipe", max_tokens=2048):
                 recipe_output += chunk
             recipe_cleaned = re.sub(r"^```(?:json)?|```$", "", recipe_output.strip(), flags=re.MULTILINE).strip()
             recipe_data = json.loads(recipe_cleaned)

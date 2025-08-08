@@ -40,52 +40,70 @@ def generate_cache_key(prompt: str, task_type: str) -> str:
 async def generate_response_streaming(
     prompt: str,
     task_type: str = "default",
-    temperature: float = 0.4,
-    max_tokens: int = 512
+    temperature: float = 0.8,
+    max_tokens: int = 2048,
+    force_refresh: bool = False
 ) -> AsyncGenerator[str, None]:
     model = choose_model(task_type)
     cache_key = generate_cache_key(prompt, task_type)
 
-    if cache_key in response_cache:
+    print(f"[DEBUG] Using model: {model}")
+    print(f"[DEBUG] Cache key: {cache_key}")
+
+    # Use force_refresh in the cache check
+    if not force_refresh and cache_key in response_cache:
+        print("[DEBUG] Returning cached response.")
         yield response_cache[cache_key]
         return
 
-    response = await openai.ChatCompletion.acreate(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=temperature,
-        max_tokens=max_tokens,
-        stream=True,
-    )
+    print("[DEBUG] Sending request to OpenAI...")
+    try:
+        client = openai.AsyncOpenAI()
+        messages = [{"role": "user", "content": prompt}]
+        response = await client.chat.completions.create(
+            model=model,
+            messages= messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            stream=True,
+        )
+    except Exception as e:
+        print(f"[ERROR] OpenAI API call failed: {e}")
+        raise
 
     final_output = ""
     async for chunk in response:
-        delta = chunk["choices"][0]["delta"].get("content", "")
+        delta = chunk.choices[0].delta.content or ""
         final_output += delta
         yield delta
 
+    print(f"[DEBUG] Final output: {final_output[:200]}...")  # Print first 200 chars for brevity
     response_cache[cache_key] = final_output
 
 # ✅ Full GPT response (non-streamed, fallback or testing)
 async def generate_response_full(
     prompt: str,
     task_type: str = "default",
-    temperature: float = 0.4,
-    max_tokens: int = 512
+    temperature: float = 0.8,
+    max_tokens: int = 2048,
+    force_refresh: bool = False
 ) -> str:
     model = choose_model(task_type)
     cache_key = generate_cache_key(prompt, task_type)
 
-    if cache_key in response_cache:
+    # Use force_refresh in the cache check
+    if not force_refresh and cache_key in response_cache:
         return response_cache[cache_key]
 
-    response = await openai.ChatCompletion.acreate(
+    client = openai.AsyncOpenAI()
+    messages = [{"role": "user", "content": prompt}]
+    response = await client.chat.completions.create(
         model=model,
-        messages=[{"role": "user", "content": prompt}],
+        messages=messages,
         temperature=temperature,
         max_tokens=max_tokens
     )
 
-    result = response["choices"][0]["message"]["content"]
+    result = response.choices[0].message.content
     response_cache[cache_key] = result
     return result
