@@ -160,7 +160,12 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
         })
 
         # ✅ Generate Recipes
-        meal_names = {item["name"].strip().lower() for day in meal_plan.values() for item in day}
+        meal_names = {
+            meal_info["base"].strip().lower()
+            for day in meal_plan.values()
+            for meal_info in day.values()
+            if isinstance(meal_info, dict) and "base" in meal_info
+        }
         for meal_name in meal_names:
             if await recipes_collection.find_one({"name": meal_name}):
                 continue
