@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from typing import List, Dict
+from typing import Optional
 from datetime import datetime, timezone, timedelta
 import pytz
 import bcrypt
@@ -31,6 +32,7 @@ class FamilyWithMembers(BaseModel):
     name: str
     email: EmailStr
     password: str
+    state: Optional[str] = None
 
 @router.post("/register-family", summary="Register family account")
 async def register_family(data: FamilyWithMembers):
@@ -41,11 +43,17 @@ async def register_family(data: FamilyWithMembers):
 
         now = datetime.utcnow()
         hashed_password = bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode('utf-8')
+        
+        # right after hashing the password, before creating family_doc
+        if not data.state:
+            # first account must choose a state
+            raise HTTPException(status_code=400, detail="State is required during family registration")
 
         family_doc = {
             "name": data.name,
             "email": data.email,
             "password": hashed_password,
+            "state": data.state,
             "createdAt": now,
             "updatedAt": now,
             "isVerified": False,
@@ -57,6 +65,7 @@ async def register_family(data: FamilyWithMembers):
             "userId": user_id,
             "name": data.name,
             "email": data.email,
+            "state": data.state,
             "isVerified": False,
             "createdAt": now,
             "updatedAt": now
@@ -193,16 +202,16 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
         logger.exception("❌ Unexpected error during full generation pipeline")
         raise HTTPException(status_code=500, detail="Meal generation with auto pipeline failed")
 
-@router.get("/get-family-meal/{user_id}", summary="Fetch latest saved family meal plan by user ID")
-async def get_family_meal(user_id: str):
-    try:
-        latest_plan = await family_meal_collection.find_one({"userId": user_id}, sort=[("createdAt", -1)])
-        if not latest_plan:
-            raise HTTPException(status_code=404, detail="No meal plan found for this user")
-        latest_plan["_id"] = str(latest_plan["_id"])
-        return latest_plan
-    except Exception:
-        raise HTTPException(status_code=500, detail="Failed to fetch family meal plan")
+@router.get("/family/{user_id}/profile", summary="Get family profile (state lock)")
+async def get_family_profile(user_id: str):
+    fam = await families_collection.find_one({"_id": ObjectId(user_id)})
+    if not fam:
+        raise HTTPException(status_code=404, detail="Family account not found")
+    state = fam.get("state")
+    return {
+        "state": state,
+        "stateLocked": bool(state)
+    }
 
 @router.get("/get-all-family-meals/{user_id}", summary="Fetch all saved family meal plans by user ID")
 async def get_all_family_meals(user_id: str):
