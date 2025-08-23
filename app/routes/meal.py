@@ -87,6 +87,13 @@ async def generate_meal(member_id: str, request: MealGenerationRequest):
                 logger.error("No JSON object found in AI response.")
                 raise HTTPException(status_code=500, detail="Invalid JSON format from AI response")
 
+        if isinstance(meal_plan, dict) and "week" in meal_plan and isinstance(meal_plan["week"], dict):
+            week_plan = meal_plan["week"]   # normalized days→meals
+            metadata = meal_plan.get("metadata", {})
+        else:
+            week_plan = meal_plan           # assume top-level is the days dict
+            metadata = {}
+
         now_utc = datetime.now(pytz.UTC)
         meal_doc = FamilyMealPlanModel(
             userId=user_id,
@@ -127,7 +134,18 @@ async def generate_meal(member_id: str, request: MealGenerationRequest):
         })
 
         # 🍲 Auto-generate recipes
-        meal_names = extract_meal_names_from_plan(meal_plan)
+        try:
+            meal_names = extract_meal_names_from_plan(week_plan)  # << prefer updated util (see below)
+        except Exception:
+            meal_names = {
+                (info.get("base") or "").strip().lower()
+                for day in week_plan.values()
+                for info in day.values()   # breakfast, mid_morning, lunch, evening_snack, dinner
+                if isinstance(info, dict)
+                and isinstance(info.get("base"), str)
+                and info.get("base").strip()
+            }
+
         for meal_name in meal_names:
             existing_recipe = await recipes_collection.find_one({"name": meal_name.lower()})
             if existing_recipe:

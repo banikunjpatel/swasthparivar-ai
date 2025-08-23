@@ -41,7 +41,7 @@ async def generate_response_streaming(
     prompt: str,
     task_type: str = "default",
     temperature: float = 0.8,
-    max_tokens: int = 2048,
+    max_tokens: int = 4096,
     force_refresh: bool = False
 ) -> AsyncGenerator[str, None]:
     model = choose_model(task_type)
@@ -85,7 +85,7 @@ async def generate_response_full(
     prompt: str,
     task_type: str = "default",
     temperature: float = 0.8,
-    max_tokens: int = 2048,
+    max_tokens: int = 4096,
     force_refresh: bool = False
 ) -> str:
     model = choose_model(task_type)

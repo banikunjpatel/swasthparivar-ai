@@ -120,16 +120,25 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
         try:
             meal_plan = json.loads(cleaned)
         except json.JSONDecodeError as e:
-            logger.warning("First JSON parse failed. Attempting fallback...")
-            try:
-                match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-                if match:
+            logger.warning(f"First JSON parse failed: {e}. Attempting fallback extraction...")
+            logger.error(f"Raw AI output: {raw_output}")
+            match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+            if match:
+                try:
                     meal_plan = json.loads(match.group())
-                else:
-                    raise ValueError("No JSON object found")
-            except Exception as fallback_e:
-                logger.error(f"Fallback JSON parsing failed: {fallback_e}")
-                raise HTTPException(status_code=500, detail="Meal plan output could not be parsed as JSON.")
+                except Exception as fallback_e:
+                    logger.error(f"Fallback JSON parsing failed: {fallback_e}")
+                    raise HTTPException(status_code=500, detail="Meal plan output could not be parsed as JSON.")
+            else:
+                logger.error("No JSON object found in AI response.")
+                raise HTTPException(status_code=500, detail="Invalid JSON format from AI response")
+            
+        if isinstance(meal_plan, dict) and "week" in meal_plan and isinstance(meal_plan["week"], dict):
+            week_plan: Dict[str, Dict] = meal_plan["week"]          # normalized days → meals
+            metadata = meal_plan.get("metadata", {})
+        else:
+            week_plan = meal_plan                                   # assume top-level is days (old)
+            metadata = {}
 
         now_utc = datetime.now(pytz.UTC)
         meal_doc = FamilyMealPlanModel(
@@ -170,10 +179,12 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
 
         # ✅ Generate Recipes
         meal_names = {
-            meal_info["base"].strip().lower()
-            for day in meal_plan.values()
-            for meal_info in day.values()
-            if isinstance(meal_info, dict) and "base" in meal_info
+            (meal_info.get("base") or "").strip().lower()
+            for day in week_plan.values()
+            for meal_key, meal_info in day.items()
+            if isinstance(meal_info, dict)
+            and isinstance(meal_info.get("base"), str)
+            and meal_info.get("base").strip()
         }
         for meal_name in meal_names:
             if await recipes_collection.find_one({"name": meal_name}):

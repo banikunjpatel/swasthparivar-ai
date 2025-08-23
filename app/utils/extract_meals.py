@@ -1,14 +1,25 @@
-def extract_meal_names_from_plan(meal_plan: dict) -> list[str]:
+# app/utils/extract_meals.py
+def extract_meal_names_from_plan(plan: dict) -> set[str]:
     """
-    Extracts unique meal names from the structured meal plan dictionary.
+    Accepts either:
+      - OLD plan: { "Monday": {...}, ... }
+      - NEW plan: { "metadata": {...}, "week": { "Monday": {...}, ... } }
+    Returns a set of lowercased base dish names from all meals:
+      breakfast, mid_morning, lunch, evening_snack, dinner
     """
-    meal_names = set()
+    if isinstance(plan, dict) and "week" in plan and isinstance(plan["week"], dict):
+        week = plan["week"]
+    else:
+        week = plan
 
-    for day, meals in meal_plan.items():
-        for meal_time, meal in meals.items():
-            if isinstance(meal, dict) and "name" in meal:
-                meal_names.add(meal["name"])
-            elif isinstance(meal, str):
-                meal_names.add(meal)
-
-    return list(meal_names)
+    names = set()
+    for day in week.values():
+        if not isinstance(day, dict):
+            continue
+        for meal_key in ("breakfast", "mid_morning", "lunch", "evening_snack", "dinner"):
+            info = day.get(meal_key)
+            if isinstance(info, dict):
+                base = info.get("base")
+                if isinstance(base, str) and base.strip():
+                    names.add(base.strip().lower())
+    return names
