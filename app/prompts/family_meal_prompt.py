@@ -33,29 +33,33 @@ INPUT (variables you receive)
 
 --------------------------------------------------------------------------------
 RULES (must follow)
-1) **Ayurveda & Seasonality**
-   - Apply **Rutucharya** for {season}.
-   - Prefer **regional & seasonal** grains, pulses, fruits, vegetables for {location}.
-   - **Pacify each member’s prakriti/dosha**, avoid aggravating items/spices.
-   - Consider age/life-stage and gender when relevant.
-
-2) **Cooking Practicality & Restrictions**
-   - Meals must be **Satvik, wholesome, home-cookable**.
-   - **No** processed/packaged/junk; **avoid** excess oil, deep-fried, refined sugar.
-   - Respect **preferences**, **allergies**, and **health_conditions** member-wise.
-
-3) **Family Base + Customizations (the key)**
-   - For each meal, suggest **one common BASE dish** for the family **when suitable**.
-   - Then add **per-member customizations** derived from:
-     a) their personal profile (prakriti, age, conditions, preferences, allergies), and
-     b) the **specific base dish** (e.g., “Khichdi → +ghee for Vata child”, “Upma → mint chutney for Kapha”).
-   - **Do not** apply the **same customization** across all meals/dishes; **vary by meal and by dish**.
-   - If a shared base is unsuitable for someone, give a **clear alternative** for that member only.
-
-4) **Diversity & Balance**
-   - Ensure **diversity of base dishes** across the week (avoid repeats; rotate grains/millets).
-   - **Breakfast**: light but nourishing; **Lunch**: main wholesome meal; **Dinner**: light/easy to digest.
-   - Include **herbal drinks/soups/kashayas** where helpful (place under the relevant meal).
+### Instructions:
+1. Always follow Ayurvedic principles for diet:
+   - Use seasonal fruits and vegetables available in the given location/state.
+   - Consider the current season (Rutu) and apply Rutucharya rules.
+   - Balance the given dosha(s) with appropriate foods and avoid aggravating ones.
+   - Recommend Satvik, wholesome, light, and easily digestible meals.
+ 
+2. Output format:
+   - Present results in a **table** with columns: Day, Breakfast, Mid-Morning, Lunch, Evening Snack, Dinner.
+   - Each meal should be simple, practical, and easy to prepare at home.
+   - Mention **regional/local foods** wherever possible.
+ 
+3. Consider Family Member Preferences:
+   - Age group (child, adult, senior).
+   - Gender if relevant in Ayurveda (e.g., pregnancy, elderly women).
+   - Dietary preference (vegetarian, vegan, sattvic, Jain, etc.).
+ 
+4. Restrictions:
+   - Do not suggest packaged/processed foods.
+   - No excess oil, sugar, or fried foods.
+   - Focus on naturally available foods, seasonal grains, pulses, and spices.
+ 
+5. Response:
+   - Generate a 7-day weekly meal plan in tabular format.
+   - Keep portions balanced for breakfast (light but nourishing), lunch (main meal), and dinner (light and easy to digest).
+   - Suggest seasonal herbal drinks, soups, or kashayas when needed.
+   - Adapt the plan if multiple family members are provided (different age, dosha, or health focus).
 
 --------------------------------------------------------------------------------
 OUTPUT FORMAT (strict JSON, no extra fields)
@@ -65,43 +69,13 @@ OUTPUT FORMAT (strict JSON, no extra fields)
     "season": "<string>",
     "notes": "<string or empty>"
   },
-  "week": {
+  "plan": {
     "Monday": {
-      "breakfast": {
-        "base": "<dish for all, if suitable>",
-        "customizations": {
-          "<MemberName1>": "<member-specific tweak or alternative>",
-          "<MemberName2>": "<...>"
-        }
-      },
-      "mid_morning": {
-        "base": "<snack/drink for all, if suitable>",
-        "customizations": {
-          "<MemberName1>": "<...>",
-          "<MemberName2>": "<...>"
-        }
-      },
-      "lunch": {
-        "base": "<dish for all, if suitable>",
-        "customizations": {
-          "<MemberName1>": "<...>",
-          "<MemberName2>": "<...>"
-        }
-      },
-      "evening_snack": {
-        "base": "<snack for all, if suitable>",
-        "customizations": {
-          "<MemberName1>": "<...>",
-          "<MemberName2>": "<...>"
-        }
-      },
-      "dinner": {
-        "base": "<dish for all, if suitable>",
-        "customizations": {
-          "<MemberName1>": "<...>",
-          "<MemberName2>": "<...>"
-        }
-      }
+      "breakfast": "<Poha with peas + herbal tea>",
+      "mid_morning": "<Seasonal fruit (pear)>",
+      "lunch": "<Bajra roti, lauki sabzi, moong dal, buttermilk>",
+      "evening_snack": "<Roasted makhana with herbal tea>",
+      "dinner": "<Moong dal khichdi with bottle gourd>"
     },
     "Tuesday": { ... same shape ... },
     "Wednesday": { ... },
@@ -112,15 +86,20 @@ OUTPUT FORMAT (strict JSON, no extra fields)
   }
 }
 
+### Example Output (shortened):
+| Day | Breakfast | Mid-Morning | Lunch | Evening Snack | Dinner |
+|-----|-----------|-------------|-------|---------------|--------|
+| Mon | Warm moong dal khichdi with ghee | Seasonal fruit (pear) | Bajra roti, lauki sabzi, moong dal, buttermilk | Roasted makhana with herbal tea | Light vegetable soup with steamed rice |
+| Tue | Daliya with dates & cardamom | Amla juice | Brown rice, tinda sabzi, toor dal, cucumber salad | Sprouted moong chaat | Moong dal khichdi with bottle gourd |
+
 - Respond ONLY with a valid JSON object. Do not include any explanations, markdown, or extra text.
 
 Constraints:
 - **Output ONLY JSON** in the exact schema above.
 - Every day must include: breakfast, mid_morning, lunch, evening_snack, dinner.
-- Each meal must have a `"base"` and a `"customizations"` object keyed by **member names**.
 - Keep customizations **short, practical, and Ayurvedically meaningful** (e.g., “+ghee”, “mild spices”, “mint chutney (Kapha)”, “cooling raita (Pitta)”, “avoid peanuts (allergy)”).
 - Respect all allergies/conditions; when an alternative is needed, specify it clearly for that member.
-- Ensure meal bases are **diverse across the week** (avoid repeating the same base).
+- Ensure meal are **diverse across the week** (avoid repeating the same meal).
 """
 
     if previous_plan:

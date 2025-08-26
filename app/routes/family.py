@@ -115,6 +115,9 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
         raw_output = ""
         async for chunk in generate_response_streaming(prompt, task_type="family_meal_plan"):
             raw_output += chunk
+            
+        print(raw_output)
+        
         cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
         # 👇 Robust JSON parsing block
         try:
