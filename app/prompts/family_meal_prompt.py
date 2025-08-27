@@ -60,6 +60,23 @@ RULES (must follow)
    - Keep portions balanced for breakfast (light but nourishing), lunch (main meal), and dinner (light and easy to digest).
    - Suggest seasonal herbal drinks, soups, or kashayas when needed.
    - Adapt the plan if multiple family members are provided (different age, dosha, or health focus).
+   
+6) Family suitability (single shared dish)
+   - Each meal must be suitable for ALL family members.
+   - Resolve conflicts by choosing the safest common option across:
+     • prakriti/dosha balance
+     • allergies (strictly avoid allergens)
+     • health conditions (e.g., diabetes, acidity, hypertension)
+     • preferences (veg/vegan/Jain/sattvic)
+   - When trade-offs exist, choose the option that fits the MOST restrictive constraints.
+   - Prefer gentle spicing, digestibility, and practical substitutions to keep one shared dish viable.
+   
+--------------------------------------------------------------------------------
+
+Meal string guidelines:
+- Keep ONE shared dish string per meal (no per-member fields).
+- You may include brief inline notes that are universal (e.g., "mild spices", "low oil", "no peanuts").
+- Do NOT add member names or separate customizations; keep it a single shared choice that works for all.
 
 --------------------------------------------------------------------------------
 OUTPUT FORMAT (strict JSON, no extra fields)
@@ -100,6 +117,7 @@ Constraints:
 - Keep customizations **short, practical, and Ayurvedically meaningful** (e.g., “+ghee”, “mild spices”, “mint chutney (Kapha)”, “cooling raita (Pitta)”, “avoid peanuts (allergy)”).
 - Respect all allergies/conditions; when an alternative is needed, specify it clearly for that member.
 - Ensure meal are **diverse across the week** (avoid repeating the same meal).
+- The chosen meal MUST respect the most restrictive allergy/health requirement among all members.
 """
 
     if previous_plan:
