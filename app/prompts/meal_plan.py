@@ -45,79 +45,48 @@ INPUT (variables you receive)
 - Prakriti (Ayurvedic constitution): {prakriti}
 - Dietary preferences: {preferences}
 - Calorie goal: {calorie_goal} kcal/day
-- Health notes / special considerations: {health_notes}
-- Age: {age}
-- Gender: {gender}
+- State: {state}
 
---------------------------------------------------------------------------------
-RULES (must follow)
-### Instructions:
-1. Always follow Ayurvedic principles for diet:
-   - Use seasonal fruits and vegetables available in the given location/state.
-   - Consider the current season (Rutu) and apply Rutucharya rules.
-   - Balance the given dosha(s) with appropriate foods and avoid aggravating ones.
-   - Recommend Satvik, wholesome, light, and easily digestible meals.
- 
-2. Output format:
-   - Present results in a **table** with columns: Day, Breakfast, Mid-Morning, Lunch, Evening Snack, Dinner.
-   - Each meal should be simple, practical, and easy to prepare at home.
-   - Mention **regional/local foods** wherever possible.
- 
-3. Consider Member Preferences:
-   - Age group (child, adult, senior).
-   - Gender if relevant in Ayurveda (e.g., pregnancy, elderly women).
-   - Dietary preference (vegetarian, vegan, sattvic, Jain, etc.).
- 
-4. Restrictions:
-   - Do not suggest packaged/processed foods.
-   - No excess oil, sugar, or fried foods.
-   - Focus on naturally available foods, seasonal grains, pulses, and spices.
- 
-5. Response:
-   - Generate a 7-day weekly meal plan in tabular format.
-   - Keep portions balanced for breakfast (light but nourishing), lunch (main meal), and dinner (light and easy to digest).
-   - Suggest seasonal herbal drinks, soups, or kashayas when needed.
-   - Adapt the plan based on member is provided (different age, dosha, or health focus).
+{health_notes}
 
---------------------------------------------------------------------------------
-OUTPUT FORMAT (strict JSON, no extra fields)
-{
-  "metadata": {
-    "location": "<string>",
-    "season": "<string>",
-    "notes": "<string or empty>"
-  },
-  "plan": {
-    "Monday": {
-      "breakfast": "<Poha with peas + herbal tea>",
-      "mid_morning": "<Seasonal fruit (pear)>",
-      "lunch": "<Bajra roti, lauki sabzi, moong dal, buttermilk>",
-      "evening_snack": "<Roasted makhana with herbal tea>",
-      "dinner": "<Moong dal khichdi with bottle gourd>"
-    },
-    "Tuesday": { ... same shape ... },
-    "Wednesday": { ... },
-    "Thursday": { ... },
-    "Friday": { ... },
-    "Saturday": { ... },
-    "Sunday": { ... }
-  }
-}
+Each day must include:
+- Breakfast, Lunch, and Dinner
+- Meal names only (no recipes)
+- Meals suitable for the person's prakriti and health
+- Strictly avoid any ingredients listed above
+ Ensure variety across the week — do not repeat meals.
+- **Add meal-level Ayurvedic customizations** like:
+  - "with ghee for Vata"
+  - "add ajwain for Kapha digestion"
+  - "steamed version for weight loss"
+  - "ginger added for immunity"
+- Each meal (breakfast/lunch/dinner) must include a **base dish** and a **customizations** string.
 
-### Example Output (shortened):
-| Day | Breakfast | Mid-Morning | Lunch | Evening Snack | Dinner |
-|-----|-----------|-------------|-------|---------------|--------|
-| Mon | Warm moong dal khichdi with ghee | Seasonal fruit (pear) | Bajra roti, lauki sabzi, moong dal, buttermilk | Roasted makhana with herbal tea | Light vegetable soup with steamed rice |
-| Tue | Daliya with dates & cardamom | Amla juice | Brown rice, tinda sabzi, toor dal, cucumber salad | Sprouted moong chaat | Moong dal khichdi with bottle gourd |
 
-- Respond ONLY with a valid JSON object. Do not include any explanations, markdown, or extra text.
+Return response in this strict JSON format:
 
-Constraints:
-- **Output ONLY JSON** in the exact schema above.
-- Every day must include: breakfast, mid_morning, lunch, evening_snack, dinner.
-- Keep customizations **short, practical, and Ayurvedically meaningful** (e.g., “+ghee”, “mild spices”, “mint chutney (Kapha)”, “cooling raita (Pitta)”, “avoid peanuts (allergy)”).
-- Respect all allergies/conditions; when an alternative is needed, specify it clearly for member.
-- Ensure meal are **diverse across the week** (avoid repeating the same meal).
+
+{{
+  "Monday": {{
+    "breakfast": {{
+      "base": "Ragi porridge",
+      "customizations": "with cardamom and jaggery (for Vata balance)"
+    }},
+    "lunch": {{
+       "base": "Lauki sabzi with jowar roti",
+      "customizations": "with extra turmeric (for inflammation)"
+    }},
+    "dinner": {{
+       "base": "Moong dal khichdi",
+      "customizations": "with ghee and cumin seeds (Vata pacifying)"
+    }}
+  }},
+  ...
+}}
+
+⚠️ Output only JSON. No Markdown. No extra commentary.
+
+Do not use Markdown. No extra commentary.
 """
     if wellness_tips:
       prompt += "\n🌿 Seasonal Ayurvedic Wellness Suggestions:\n"

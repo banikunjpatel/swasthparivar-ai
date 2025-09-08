@@ -43,16 +43,12 @@ async def register_family(data: FamilyWithMembers):
 
         now = datetime.utcnow()
         hashed_password = bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode('utf-8')
-        
-        # right after hashing the password, before creating family_doc
-        # if not data.state:
-            # first account must choose a state
-            # raise HTTPException(status_code=400, detail="State is required during family registration")
 
         family_doc = {
             "name": data.name,
             "email": data.email,
             "password": hashed_password,
+            "state": data.state,
             "createdAt": now,
             "updatedAt": now,
             "isVerified": False,
@@ -64,6 +60,7 @@ async def register_family(data: FamilyWithMembers):
             "userId": user_id,
             "name": data.name,
             "email": data.email,
+            "state": data.state,
             "isVerified": False,
             "createdAt": now,
             "updatedAt": now
@@ -179,14 +176,7 @@ async def generate_family_meal(user_id: str, request: MealGenerationRequest):
         })
 
         # ✅ Generate Recipes
-        meal_names = {
-            (meal_info.get("base") or "").strip().lower()
-            for day in week_plan.values()
-            for meal_key, meal_info in day.items()
-            if isinstance(meal_info, dict)
-            and isinstance(meal_info.get("base"), str)
-            and meal_info.get("base").strip()
-        }
+        meal_names = {item["name"].strip().lower() for day in meal_plan.values() for item in day}
         for meal_name in meal_names:
             if await recipes_collection.find_one({"name": meal_name}):
                 continue
