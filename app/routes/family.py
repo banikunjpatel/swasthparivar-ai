@@ -45,15 +45,14 @@ async def register_family(data: FamilyWithMembers):
         hashed_password = bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode('utf-8')
         
         # right after hashing the password, before creating family_doc
-        if not data.state:
+        # if not data.state:
             # first account must choose a state
-            raise HTTPException(status_code=400, detail="State is required during family registration")
+            # raise HTTPException(status_code=400, detail="State is required during family registration")
 
         family_doc = {
             "name": data.name,
             "email": data.email,
             "password": hashed_password,
-            "state": data.state,
             "createdAt": now,
             "updatedAt": now,
             "isVerified": False,
@@ -65,7 +64,6 @@ async def register_family(data: FamilyWithMembers):
             "userId": user_id,
             "name": data.name,
             "email": data.email,
-            "state": data.state,
             "isVerified": False,
             "createdAt": now,
             "updatedAt": now

@@ -104,11 +104,11 @@ function AppContent() {
   const fetchMealPlan = async () => {
     if (userId && members && members.length > 0) {
       try {
-        const res = await apiClient.getMealPlan(userId);
-        const transformed = transformMealPlan(res.data);
+       const res = await apiClient.getMealPlan(userId);
+        const transformed = JSON.parse(JSON.stringify(transformMealPlan(res.data)));
         setMealPlan(transformed);
         const today = format(new Date(), "EEEE"); // e.g., "Wednesday"
-        const matchedWeek = transformed.find(item =>
+        const matchedWeek = transformed.find((item: any) =>
           format(new Date(item.weekStart), "yyyy-MM-dd") === getWeekStartDate(new Date())
         );
         const todayData = matchedWeek?.days?.find((dayObj: any) => dayObj.day === today);

@@ -127,7 +127,7 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
     return (
       <div
         className={`${mealColors[mealType as 'breakfast' | 'lunch' | 'dinner']} border rounded-xl shadow-sm p-4 space-y-2 transition hover:shadow-md cursor-pointer`}
-        onClick={() => onSelectRecipe(mealData.base, mealType)}
+        onClick={() => onSelectRecipe(mealData, mealType)}
       >
         {/* Header */}
         <div className="flex items-center gap-3">
@@ -141,7 +141,7 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
 
         {/* Base meal name */}
         <div>
-          <h5 className="text-sm font-semibold text-gray-900">{mealData.base}</h5>
+          <h5 className="text-sm font-semibold text-gray-900">{mealData}</h5>
         </div>
 
         {/* Customizations */}
@@ -269,7 +269,7 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
                   {mealTypes.map((mealType) => {
                     const mealData = getMealForSlot(new Date(date), mealType);
                     return (
-                      <div key={mealType} title={mealData?.base || 'Not planned'}>
+                      <div key={mealType} title={mealData || 'Not planned'}>
                         <MealCard mealData={mealData} mealType={mealType} compact />
                       </div>
                     );

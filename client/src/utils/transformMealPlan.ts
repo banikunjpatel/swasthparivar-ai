@@ -25,7 +25,8 @@ type TransformedMealPlan = {
 
 export function transformMealPlan(rawData: any[]): TransformedMealPlan[] {
   return rawData.map((entry) => {
-    const days: DayMeal[] = Object.entries(entry.plan).map(([day, meals]: [string, any]) => ({
+    const planObj = entry.plan.plan.meals ? entry.plan.plan.meals : entry.plan.plan;
+    const days: DayMeal[] = Object.entries(planObj).map(([day, meals]: [string, any]) => ({
       day,
       meals: {
         breakfast: meals.breakfast,
@@ -33,14 +34,13 @@ export function transformMealPlan(rawData: any[]): TransformedMealPlan[] {
         dinner: meals.dinner,
       },
     }));
-
     return {
       id: entry._id,
       userId: entry.userId,
       weekStart: entry.weekStart?.split('T')[0], // trim time from ISO string
       days,
     };
-  });
+  }); 
 }
 
 export const getWeekStartDate = (date: Date): any => {

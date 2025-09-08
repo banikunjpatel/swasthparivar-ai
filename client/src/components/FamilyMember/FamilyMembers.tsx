@@ -77,7 +77,7 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({ members, onRefresh }) => 
               setSelectedMember(null);
               onRefresh();
 
-            }} initialData={selectedMember} membersCount={members.length} />
+            }} initialData={selectedMember} membersData={members} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
