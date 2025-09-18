@@ -87,20 +87,22 @@ OUTPUT FORMAT (strict JSON, no extra fields)
     "notes": "<string or empty>"
   },
   "plan": {
-    "Monday": {
-      "breakfast": "<Poha with peas + herbal tea>",
-      "mid_morning": "<Seasonal fruit (pear)>",
-      "lunch": "<Bajra roti, lauki sabzi, moong dal, buttermilk>",
-      "evening_snack": "<Roasted makhana with herbal tea>",
-      "dinner": "<Moong dal khichdi with bottle gourd>"
-    },
-    "Tuesday": { ... same shape ... },
-    "Wednesday": { ... },
-    "Thursday": { ... },
-    "Friday": { ... },
-    "Saturday": { ... },
-    "Sunday": { ... }
-  }
+    "meals": {
+      "Monday": {
+        "breakfast": "<Poha with peas + herbal tea>",
+        "mid_morning": "<Seasonal fruit (pear)>",
+        "lunch": "<Bajra roti, lauki sabzi, moong dal, buttermilk>",
+        "evening_snack": "<Roasted makhana with herbal tea>",
+        "dinner": "<Moong dal khichdi with bottle gourd>"
+      },
+      "Tuesday": { ... same shape ... },
+      "Wednesday": { ... },
+      "Thursday": { ... },
+      "Friday": { ... },
+      "Saturday": { ... },
+      "Sunday": { ... }
+      }
+    }
 }
 
 ### Example Output (shortened):

@@ -104,8 +104,8 @@ function AppContent() {
   const fetchMealPlan = async () => {
     if (userId && members && members.length > 0) {
       try {
-       const res = await apiClient.getMealPlan(userId);
-        const transformed = JSON.parse(JSON.stringify(transformMealPlan(res.data)));
+        const res = await apiClient.getMealPlan(userId);
+        const transformed = transformMealPlan(res.data);
         setMealPlan(transformed);
         const today = format(new Date(), "EEEE"); // e.g., "Wednesday"
         const matchedWeek = transformed.find((item: any) =>
@@ -114,6 +114,7 @@ function AppContent() {
         const todayData = matchedWeek?.days?.find((dayObj: any) => dayObj.day === today);
         setTodayMealPlan(todayData);
       } catch (err) {
+        console.error("Meal plan fetch error:", err);
         setMealPlan([]);
         setTodayMealPlan(undefined);
       }
