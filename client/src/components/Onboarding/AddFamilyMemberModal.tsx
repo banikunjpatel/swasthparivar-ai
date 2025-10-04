@@ -99,7 +99,7 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
     if (step === 0) {
       if (!validateStep0()) return;
     }
-     if (step === 3) {
+     if (step === 2) {
       try {
         const isComplete = selectedAnswers.every((answer) => answer && answer.trim() !== "");
 
@@ -155,13 +155,13 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
 
         };
         return <StepBasicInfo formState={formState} setFormState={handleFormStateChange} membersData={membersData} errors={errors} />;
+      // case 1:
+        // return <StepHealthConditions formState={formState} setFormState={setFormState} />;
       case 1:
-        return <StepHealthConditions formState={formState} setFormState={setFormState} />;
-      case 2:
         return <StepDietaryPreference formState={formState} setFormState={setFormState} />;
-      case 3:
+      case 2:
         return <StepPrakritiAssessment selectedAnswers={selectedAnswers} setSelectedAnswers={setSelectedAnswers} />;
-      case 4:
+      case 3:
         return <StepReviewAndSubmit formState={formState} handleBack={handleBack} handleSubmit={handleSubmit} />;
       default:
         return null;
@@ -181,7 +181,7 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
           >
             Back
           </button>
-          {step < 4 ? (loading ? (
+          {step < 3 ? (loading ? (
             <button
               disabled
               className="px-6 py-2 bg-green-500 text-white rounded flex items-center justify-center gap-2"
