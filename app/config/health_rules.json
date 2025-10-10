@@ -1,7 +1,0 @@
-{
-  "diabetes": ["sugar", "jaggery", "sweet", "gulab jamun", "jalebi"],
-  "hypertension": ["salt", "pickle", "papad", "namkeen", "fried"],
-  "gastric": ["chili", "spicy", "onion", "garlic"],
-  "acid reflux": ["spicy", "fried", "chili"],
-  "joint_pain": ["curd", "brinjal", "spinach"]
-}
