@@ -1,5 +1,3 @@
-# app/app.py
-# app/app.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -7,6 +5,7 @@ from config import app_meta, cors_config
 from app.lifespan import lifespan
 
 # Routers
+from api.otp import router as otp_router
 from api.health_check import router as health_router
 from api.meal_plan_generate import router as meal_router
 from api.recipe_generate import router as recipe_router
@@ -42,5 +41,6 @@ def create_app() -> FastAPI:
     app.include_router(grocery_list_router, prefix="/v1")
     app.include_router(grocery_categories_router, prefix="/v1")
     app.include_router(prakriti_router, prefix="/v1")
+    app.include_router(otp_router, prefix="/v1")
 
     return app

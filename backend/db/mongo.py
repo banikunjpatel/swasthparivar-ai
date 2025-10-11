@@ -1,36 +1,23 @@
-# db/mongo.py
-from __future__ import annotations
+# backend/db/mongo.py
+from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv, find_dotenv
+import os
 
-from typing import Any, Optional
+# ensure .env loads no matter where run from
+load_dotenv(find_dotenv())
 
-MONGO_AVAILABLE = False
-try:
-    import motor.motor_asyncio as motor  # type: ignore
-    MONGO_AVAILABLE = True
-except Exception:
-    motor = None  # type: ignore
+MONGODB_URL = os.getenv("MONGODB_URL")
 
-_client = None
-_db = None
+client = AsyncIOMotorClient(MONGODB_URL)
 
-async def init_mongo(url: str | None, db_name: str | None = None) -> Optional[Any]:
-    """
-    Initialize Motor client if motor and URL are available.
-    Returns the database handle or None if not configured.
-    """
-    global _client, _db
-    if not (MONGO_AVAILABLE and url):
-        return None
-    _client = motor.AsyncIOMotorClient(url)  # type: ignore
-    _db = _client.get_default_database() if not db_name else _client[db_name]
-    return _db
+db = client["ayurmeal"]
 
-async def get_db() -> Optional[Any]:
-    return _db
-
-async def close_mongo() -> None:
-    global _client, _db
-    if _client:
-        _client.close()
-    _client = None
-    _db = None
+families_collection = db["families"]
+members_collection = db["members"]
+grocery_collection = db["grocery_lists"]
+users_collection = db["users"]
+family_meal_collection = db["family_meal_plans"]
+recipes_collection = db["recipes"]
+wellness_logs_collection = db["wellness_logs"]
+otps_collection = db["otps"]
+otp_requests_collection = db["otp_requests"]
