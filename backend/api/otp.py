@@ -1,137 +1,167 @@
 # backend/api/otp.py
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Depends, status
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
-from typing import Optional
+import os, random
 from datetime import datetime, timedelta, timezone
-import os, random, httpx
+from typing import Optional
 
-from db.mongo import get_db
-from api.auth import create_access_token, create_refresh_token
+from fastapi import APIRouter, HTTPException, status
+from pydantic import BaseModel, Field
+from jose import jwt, JWTError
+import httpx
+
+from backend.db.mongo import db  # uses your simple mongo.py with global `db`
 
 router = APIRouter(prefix="/otp", tags=["auth:otp"])
 
-# ---- Settings (env) ----
-OTP_LENGTH = int(os.getenv("OTP_LENGTH", "6"))
-OTP_EXPIRE_MINUTES = int(os.getenv("OTP_EXPIRE_MINUTES", "5"))
-OTP_COOLDOWN_MINUTES = int(os.getenv("OTP_COOLDOWN_MINUTES", "1"))
-OTP_MAX_ATTEMPTS = int(os.getenv("OTP_MAX_ATTEMPTS", "5"))
-SMS_API_URL = os.getenv("SMS_API_URL", "")        # e.g., https://api.twilio.com/... or your provider proxy
-SMS_API_KEY = os.getenv("SMS_API_KEY", "")        # or auth token for your SMS gateway
-SENDER_ID = os.getenv("SMS_SENDER_ID", "Swasth")
+# ---- ENV ----
+MSG91_AUTH_KEY   = os.getenv("MSG91_AUTH_KEY", "")
+MSG91_SENDER_ID  = os.getenv("MSG91_SENDER_ID", "")
+MSG91_ROUTE      = os.getenv("MSG91_ROUTE", "4")
+MSG91_COUNTRY    = os.getenv("MSG91_COUNTRY_CODE", "91")
+
+OTP_LENGTH            = int(os.getenv("OTP_LENGTH", "6"))
+OTP_EXPIRE_MINUTES    = int(os.getenv("OTP_EXPIRE_MINUTES", "5"))
+OTP_COOLDOWN_MINUTES  = int(os.getenv("OTP_COOLDOWN_MINUTES", "1"))
+OTP_MAX_ATTEMPTS      = int(os.getenv("OTP_MAX_ATTEMPTS", "5"))
+
+# JWT (kept minimal; uses your existing env names)
+JWT_SECRET   = os.getenv("JWT_SECRET") or os.getenv("JWT_SECRET_KEY") or "change-me"
+JWT_ALG      = os.getenv("JWT_ALGORITHM", "HS256")
+ACCESS_MIN   = int(os.getenv("ACCESS_TOKEN_MIN", "30"))
+REFRESH_DAYS = int(os.getenv("REFRESH_TOKEN_DAYS", "7"))
+ISSUER       = os.getenv("JWT_ISSUER", "swasthparivar-ai")
 
 def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
-class OTPRequest(BaseModel):
-    phone: str = Field(..., examples=["+919876543210"])
+def _gen_otp(n: int) -> str:
+    return "".join(str(random.randint(0, 9)) for _ in range(n))
 
-class OTPVerify(BaseModel):
+def _encode_jwt(sub: str, minutes: int, typ: str) -> str:
+    now = utcnow()
+    payload = {
+        "sub": sub,
+        "iat": int(now.timestamp()),
+        "exp": int((now + timedelta(minutes=minutes)).timestamp()),
+        "iss": ISSUER,
+        "typ": typ,
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALG)
+
+def create_access_token(user_id: str) -> str:
+    return _encode_jwt(user_id, ACCESS_MIN, "access")
+
+def create_refresh_token(user_id: str) -> str:
+    return _encode_jwt(user_id, REFRESH_DAYS * 24 * 60, "refresh")
+
+# ---- Models ----
+class OTPRequestBody(BaseModel):
+    phone: str = Field(..., examples=["919876543210", "+919876543210"])
+
+class OTPVerifyBody(BaseModel):
     phone: str
     code: str
 
-def _gen_otp(length: int) -> str:
-    return "".join(str(random.randint(0, 9)) for _ in range(length))
+# ---- MSG91 (kept in your v2 send-sms style) ----
+async def send_sms_via_msg91(phone: str, message: str) -> None:
+    # normalise: keep digits only; MSG91 accepts with/without country code
+    to = "".join(ch for ch in phone if ch.isdigit())
 
-async def _send_sms(phone: str, message: str) -> None:
-    if not SMS_API_URL:
-        # In dev: log but don't fail hard
-        print(f"[DEV] SMS to {phone}: {message}")
-        return
-    headers = {"Authorization": f"Bearer {SMS_API_KEY}"} if SMS_API_KEY else {}
-    async with httpx.AsyncClient(timeout=10) as client:
-        resp = await client.post(SMS_API_URL, json={"to": phone, "sender": SENDER_ID, "message": message}, headers=headers)
-        resp.raise_for_status()
+    url = "https://api.msg91.com/api/v2/sendsms"
+    headers = {
+        "accept": "application/json",
+        "authkey": MSG91_AUTH_KEY,
+        "content-type": "application/json",
+    }
+    payload = {
+        "sender": MSG91_SENDER_ID,
+        "route": MSG91_ROUTE,
+        "country": MSG91_COUNTRY,
+        "sms": [
+            {
+                "message": message,
+                "to": [to],
+            }
+        ],
+    }
+    async with httpx.AsyncClient(timeout=15) as client:
+        r = await client.post(url, json=payload, headers=headers)
+        if r.status_code != 200:
+            # bubble up exact provider response for easier debugging
+            raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"MSG91 error: {r.text}")
 
+# ---- Routes ----
 @router.post("/request")
-async def request_otp(data: OTPRequest, db=Depends(get_db)):
-    if not db:
-        raise HTTPException(status_code=500, detail="Database not initialized")
+async def request_otp(body: OTPRequestBody):
+    if not MSG91_AUTH_KEY or not MSG91_SENDER_ID:
+        raise HTTPException(500, "MSG91 not configured (missing MSG91_AUTH_KEY / MSG91_SENDER_ID)")
 
-    # Cooldown check
-    now = utcnow()
-    cutoff = now - timedelta(minutes=OTP_COOLDOWN_MINUTES)
-    recent = await db.otp_requests.find_one({"phone": data.phone, "created_at": {"$gte": cutoff}})
+    phone = body.phone.strip()
+
+    # cooldown: block spamming
+    cutoff = utcnow() - timedelta(minutes=OTP_COOLDOWN_MINUTES)
+    recent = await db.otp_requests.find_one({"phone": phone, "created_at": {"$gte": cutoff}})
     if recent:
-        return JSONResponse(
-            status_code=429,
-            content={"success": False, "message": f"Please wait {OTP_COOLDOWN_MINUTES} minute(s) before requesting another OTP"}
-        )
+        raise HTTPException(429, f"Please wait {OTP_COOLDOWN_MINUTES} minute(s) before requesting another OTP")
 
-    # create OTP
+    # generate + persist (one active per phone)
     code = _gen_otp(OTP_LENGTH)
-    expires_at = now + timedelta(minutes=OTP_EXPIRE_MINUTES)
+    expires_at = utcnow() + timedelta(minutes=OTP_EXPIRE_MINUTES)
 
-    # Persist OTP (upsert one active)
     await db.otps.update_one(
-        {"phone": data.phone},
-        {"$set": {"code": code, "expires_at": expires_at, "attempts": 0, "created_at": now}},
-        upsert=True
+        {"phone": phone},
+        {"$set": {"code": code, "expires_at": expires_at, "attempts": 0, "created_at": utcnow()}},
+        upsert=True,
     )
-    # Log request
-    await db.otp_requests.insert_one({"phone": data.phone, "created_at": now})
+    await db.otp_requests.insert_one({"phone": phone, "created_at": utcnow()})
 
-    # Send SMS
-    try:
-        await _send_sms(data.phone, f"{code} is your verification code. It expires in {OTP_EXPIRE_MINUTES} minutes.")
-    except httpx.HTTPError as e:
-        raise HTTPException(status_code=502, detail=f"SMS provider error: {e}")
+    # send via MSG91
+    message = f"{code} is your verification code. It expires in {OTP_EXPIRE_MINUTES} minutes."
+    await send_sms_via_msg91(phone, message)
 
     return {"success": True, "message": "OTP sent"}
 
 @router.post("/verify")
-async def verify_otp(data: OTPVerify, db=Depends(get_db)):
-    if not db:
-        raise HTTPException(status_code=500, detail="Database not initialized")
-
-    rec = await db.otps.find_one({"phone": data.phone})
+async def verify_otp(body: OTPVerifyBody):
+    phone = body.phone.strip()
+    rec = await db.otps.find_one({"phone": phone})
     if not rec:
-        raise HTTPException(status_code=400, detail="No OTP requested for this phone")
+        raise HTTPException(400, "No OTP requested for this phone")
 
-    # Expiry
+    # expiry
     if rec.get("expires_at") and utcnow() > rec["expires_at"]:
         await db.otps.delete_one({"_id": rec["_id"]})
-        raise HTTPException(status_code=400, detail="OTP expired")
+        raise HTTPException(400, "OTP expired")
 
-    # Attempts
-    if rec.get("attempts", 0) >= OTP_MAX_ATTEMPTS:
+    # attempts
+    attempts = int(rec.get("attempts", 0))
+    if attempts >= OTP_MAX_ATTEMPTS:
         await db.otps.delete_one({"_id": rec["_id"]})
-        raise HTTPException(status_code=429, detail="Too many attempts. Please request a new OTP")
+        raise HTTPException(429, "Too many attempts. Request a new OTP")
 
-    # Check code
-    if data.code != rec["code"]:
+    # compare
+    if body.code != rec["code"]:
         await db.otps.update_one({"_id": rec["_id"]}, {"$inc": {"attempts": 1}})
-        raise HTTPException(status_code=400, detail="Invalid code")
+        raise HTTPException(400, "Invalid code")
 
-    # Success: issue tokens, upsert user
+    # success → upsert user and issue tokens
+    user = await db.users.find_one({"phone": phone})
     now = utcnow()
-    user = await db.users.find_one({"phone": data.phone})
     if not user:
-        res = await db.users.insert_one({"phone": data.phone, "is_verified": True, "created_at": now, "updated_at": now})
-        user_id = str(res.inserted_id)
-        user = {"_id": res.inserted_id, "phone": data.phone, "is_verified": True, "created_at": now, "updated_at": now}
+        ins = await db.users.insert_one({"phone": phone, "is_verified": True, "created_at": now, "updated_at": now})
+        user_id = str(ins.inserted_id)
     else:
         user_id = str(user["_id"])
         await db.users.update_one({"_id": user["_id"]}, {"$set": {"is_verified": True, "updated_at": now}})
 
-    # Cleanup OTP
+    # cleanup OTP
     await db.otps.delete_one({"_id": rec["_id"]})
-
-    access_token = create_access_token(user_id)
-    refresh_token = create_refresh_token(user_id)
 
     return {
         "success": True,
-        "access_token": access_token,
-        "refresh_token": refresh_token,
         "token_type": "bearer",
-        "user": {
-            "id": user_id,
-            "phone": user["phone"],
-            "is_verified": True,
-            "created_at": user["created_at"],
-            "updated_at": user.get("updated_at", user["created_at"])
-        }
+        "access_token": create_access_token(user_id),
+        "refresh_token": create_refresh_token(user_id),
+        "user": {"id": user_id, "phone": phone, "is_verified": True},
     }
