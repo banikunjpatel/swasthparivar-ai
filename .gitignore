@@ -29,7 +29,9 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
+node_modules/
+client/node_modules
+client/package-lock.json
 # =========================================
 # IDE / Editors
 # =========================================
