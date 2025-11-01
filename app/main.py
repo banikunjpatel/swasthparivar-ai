@@ -5,6 +5,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from pydantic import BaseModel
 from app.services.openai_client import generate_response_streaming
 from dotenv import load_dotenv
+import os
 import json
 import time
 import logging
