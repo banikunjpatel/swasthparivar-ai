@@ -1,21 +1,21 @@
-from app.prompts.grocery_list import build_grocery_prompt
-from app.services.openai_client import call_gpt
-from app.utils.timing import timed
 import json
 import re
+from app.services.openai_client import generate_response_streaming
+from app.prompts.grocery_list import build_grocery_prompt
 
-@timed
-def generate_grocery_list(meal_plan: dict) -> dict:
+async def generate_grocery_items(meal_plan: list[dict]) -> list[dict]:
     prompt = build_grocery_prompt(meal_plan)
 
-    for attempt in range(3):  # retry up to 3 times
-        response = call_gpt(prompt)
+    # Collect streamed output
+    raw_output = ""
+    async for chunk in generate_response_streaming(prompt, task_type="grocery_list"):
+        raw_output += chunk
 
-        try:
-            return json.loads(response)
-        except json.JSONDecodeError:
-            print(f"⚠️ Attempt {attempt+1} failed to parse JSON.")
-            print("🔴 Raw Response:", response)
+    # Clean Markdown ```json formatting
+    cleaned = re.sub(r"^```(?:json)?|```$", "", raw_output.strip(), flags=re.MULTILINE).strip()
 
-    # Final failure
-    raise ValueError("Grocery list output could not be parsed as JSON after 3 attempts.")
+    try:
+        parsed_json = json.loads(cleaned)
+        return parsed_json.get("items", [])
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to parse grocery list JSON: {e}")

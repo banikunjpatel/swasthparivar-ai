@@ -23,7 +23,6 @@ def detect_dosha(quiz: DoshaQuiz):
         max_tokens=100
     )
 
-
     # dosha_result = response.choices[0].message.content.strip().lower()
     response_text = response.choices[0].message.content.strip()
 

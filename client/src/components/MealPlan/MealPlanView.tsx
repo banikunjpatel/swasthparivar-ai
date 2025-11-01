@@ -42,8 +42,16 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
         const selectedWeekStart = getWeekStartDate(date);
         const todayWeekStart = getWeekStartDate(new Date());
         const matchedPlan = mealPlan.find(plan => plan.weekStart === selectedWeekStart)
-        const isCurrentWeekPlanned = (matchedPlan?.weekStart === selectedWeekStart) || (selectedWeekStart < todayWeekStart);
-        setIsGenerateDisabled(isCurrentWeekPlanned);
+        // Calculate next week's start date
+        const nextWeekStartDate = new Date(todayWeekStart);
+        nextWeekStartDate.setDate(nextWeekStartDate.getDate() + 7);
+        const nextWeekStart = getWeekStartDate(nextWeekStartDate);
+
+        const isAllowedWeek =selectedWeekStart === todayWeekStart || selectedWeekStart === nextWeekStart;
+        const shouldDisable =
+          matchedPlan?.weekStart === selectedWeekStart || !isAllowedWeek ||  selectedWeekStart < todayWeekStart;
+        // const isCurrentWeekPlanned = (matchedPlan?.weekStart === selectedWeekStart) || (selectedWeekStart < todayWeekStart);
+        setIsGenerateDisabled(shouldDisable);
       } catch (err) {
         console.error('Failed to fetch meal plan', err);
       }
@@ -124,10 +132,35 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
       );
     }
 
+    // normalize meal data to ensure React renders strings/arrays not objects
+    const normalizeMeal = (raw: any) => {
+      if (raw == null) return { base: '', customizations: undefined as any };
+      if (typeof raw === 'string') return { base: raw, customizations: undefined as any };
+      if (typeof raw === 'number' || typeof raw === 'boolean') return { base: String(raw), customizations: undefined as any };
+      if (typeof raw === 'object') {
+        // already { base, customizations }
+        if ('base' in raw) {
+          return { base: raw.base == null ? '' : String(raw.base), customizations: raw.customizations };
+        }
+        // common case where object keys are member -> customization or simple map of strings
+        const stringValues = Object.values(raw).filter(v => typeof v === 'string' || typeof v === 'number');
+        if (stringValues.length > 0 && Object.keys(raw).length <= 6) {
+          // join short lists into readable base
+          return { base: stringValues.join(', '), customizations: undefined };
+        }
+        // fallback to stringify to avoid rendering raw object
+        return { base: JSON.stringify(raw), customizations: (raw as any).customizations };
+      }
+      return { base: String(raw), customizations: undefined as any };
+    };
+
+    const meal = normalizeMeal(mealData);
+
+
     return (
       <div
         className={`${mealColors[mealType as 'breakfast' | 'lunch' | 'dinner']} border rounded-xl shadow-sm p-4 space-y-2 transition hover:shadow-md cursor-pointer`}
-        onClick={() => onSelectRecipe(mealData.base, mealType)}
+        onClick={() => onSelectRecipe(meal.base, mealType)}
       >
         {/* Header */}
         <div className="flex items-center gap-3">
@@ -141,15 +174,15 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
 
         {/* Base meal name */}
         <div>
-          <h5 className="text-sm font-semibold text-gray-900">{mealData.base}</h5>
+          <h5 className="text-sm font-semibold text-gray-900">{meal.base}</h5>
         </div>
 
         {/* Customizations */}
-        {mealData?.customizations && (typeof mealData?.customizations === "string" ? (
-          <p className="text-sm text-gray-700">{mealData?.customizations}</p>
+        {meal?.customizations && (typeof meal?.customizations === "string" ? (
+          <p className="text-sm text-gray-700">{meal?.customizations}</p>
         ) : (
           <ul className="text-xs text-gray-700 pl-4 list-disc space-y-1">
-            {Object.entries(mealData?.customizations).map(([member, customization]) => (
+            {Object.entries(meal?.customizations).map(([member, customization]) => (
               <li key={member}>
                 <strong className="capitalize">{member}:</strong> {String(customization)}
               </li>
@@ -214,7 +247,7 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
                 setLoading(false);
               }
             }}
-            disabled={isGenerateDisabled && loading}
+            disabled={isGenerateDisabled || loading}
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${isGenerateDisabled
               ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
               : 'bg-green-600 text-white hover:bg-green-700'
@@ -269,7 +302,7 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
                   {mealTypes.map((mealType) => {
                     const mealData = getMealForSlot(new Date(date), mealType);
                     return (
-                      <div key={mealType} title={mealData?.base || 'Not planned'}>
+                      <div key={mealType} title={mealData || 'Not planned'}>
                         <MealCard mealData={mealData} mealType={mealType} compact />
                       </div>
                     );
