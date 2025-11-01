@@ -77,10 +77,10 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({ members, onRefresh }) => 
               setSelectedMember(null);
               onRefresh();
 
-            }} initialData={selectedMember} membersCount={members.length} />
+            }} initialData={selectedMember} membersData={members} />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <div className="bg-white p-4 rounded-xl shadow text-center">
               <div className="text-2xl font-semibold text-green-600">{total}</div>
               <div className="text-sm text-gray-600">Family Members</div>
@@ -93,7 +93,7 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({ members, onRefresh }) => 
               <div className="text-2xl font-semibold text-green-600">{withConditions}</div>
               <div className="text-sm text-gray-600">With Health Conditions</div>
             </div>
-          </div>
+          </div> */}
 
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -1,7 +1,7 @@
 import json
-from app.services.openai_client import call_gpt
+from app.services.openai_client import generate_response_streaming
 
-def get_dosha_type(quiz_answers: list[str]) -> str:
+async def get_dosha_type(quiz_answers: list[str]) -> str:
     quiz_json = json.dumps({f"question_{i+1}": ans for i, ans in enumerate(quiz_answers)}, indent=2)
 
     prompt = f"""
@@ -12,4 +12,9 @@ Do not include any greeting, explanation, or extra text. Only output the dosha t
 Quiz answers (JSON): {quiz_json}
 """.strip()
 
-    return call_gpt(prompt, model="gpt-3.5-turbo", max_tokens=20, temperature=0.2)
+    # 🔁 Collect streamed chunks
+    output = ""
+    async for chunk in generate_response_streaming(prompt, task_type="dosha_type"):
+        output += chunk
+
+    return output.strip().lower()

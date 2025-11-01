@@ -1,6 +1,7 @@
 def build_recipe_prompt(recipe_name: str) -> str:
     prompt = f"""
 You are an expert Ayurvedic recipe assistant.
+You MUST reply with 100% valid, parseable JSON without any comments or Markdown.
 
 Generate a detailed, structured recipe for the following dish:
 📝 Recipe Name: "{recipe_name}"
@@ -21,7 +22,7 @@ Generate a detailed, structured recipe for the following dish:
 🧾 Format the response as strict JSON in this structure:
 
 {{
-  "id": "slug-format-id",  // like 'moong-dal-chilla'
+  "id": "slug-format-id",  // lowercase, kebab-case slug derived from recipe name like 'moong-dal-chilla'
   "name": "{recipe_name}",
   "description": "Short Ayurvedic description...",
   "ingredients": [

@@ -14,7 +14,7 @@ interface AddFamilyMemberModalProps {
   open: boolean;
   onClose: () => void;
   initialData?: any | null;
-  membersCount: number
+  membersData: any
 }
 const storedUser = localStorage.getItem('user');
 const userId = storedUser ? JSON.parse(storedUser)?.userId : '';
@@ -26,7 +26,7 @@ export interface DoshaStats {
 export interface MemberFormState {
   _id?: string;
   fullName: string;
-  age: number;
+  age: number | '';
   gender: 'male' | 'female' | 'other';
   dietaryPreferences: string; // Added property to match FormState
   medicalConditions: string[];
@@ -39,7 +39,7 @@ export interface MemberFormState {
 const defaultFormState: MemberFormState = {
   _id: undefined,
   fullName: '',
-  age: 1,
+  age: '',
   gender: 'male',
   dietaryPreferences: '', // Added default value for the new property
   medicalConditions: [],
@@ -54,14 +54,25 @@ const defaultFormState: MemberFormState = {
   state: ''
 };
 
-const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClose, initialData, membersCount }) => {
+const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClose, initialData, membersData }) => {
   const [step, setStep] = useState(0);
   const [formState, setFormState] = useState<MemberFormState>(defaultFormState);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>(Array(9).fill(''));
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ fullName?: boolean; age?: boolean; state?: boolean }>({});
+  const validateStep0 = () => {
+    const newErrors: { fullName?: boolean; age?: boolean; state?: boolean } = {};
+    if (!formState.fullName || formState.fullName.trim() === '') newErrors.fullName = true;
+    if (formState.age === '' || formState.age < 1 || formState.age > 99) newErrors.age = true;
+    if (!formState.state || formState.state.trim() === '') newErrors.state = true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   useEffect(() => {
     if (open) {
+      setStep(0);
+      setErrors({});
       if (initialData) {
         setFormState(initialData);
       } else {
@@ -70,8 +81,10 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
           try {
             const user = JSON.parse(storedUser);
             if (user?.name) {
+              console.log(membersData)
               setFormState(defaultFormState)
-              setFormState(prev => ({ ...prev, fullName: (user.name && membersCount === 1) ? user.name : '', userId: user.userId || '', }));
+              setFormState(prev => ({ ...prev, fullName: (user.name && membersData?.length === 0) ? user.name : '', userId: user.userId || '', }));
+              console.log(formState)
             }
           } catch {
             console.warn('Invalid user data in localStorage');
@@ -83,7 +96,10 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
   }, [open, initialData]);
 
   const handleNext = async () => {
-    if (step === 3) {
+    if (step === 0) {
+      if (!validateStep0()) return;
+    }
+     if (step === 2) {
       try {
         const isComplete = selectedAnswers.every((answer) => answer && answer.trim() !== "");
 
@@ -135,15 +151,17 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
       case 0:
         const handleFormStateChange = (field: string, value: any) => {
           setFormState(prev => ({ ...prev, [field]: value }));
+                  setErrors(prev => ({ ...prev, [field]: false })); // clear error on change
+
         };
-        return <StepBasicInfo formState={formState} setFormState={handleFormStateChange} />;
+        return <StepBasicInfo formState={formState} setFormState={handleFormStateChange} membersData={membersData} errors={errors} />;
+      // case 1:
+        // return <StepHealthConditions formState={formState} setFormState={setFormState} />;
       case 1:
-        return <StepHealthConditions formState={formState} setFormState={setFormState} />;
-      case 2:
         return <StepDietaryPreference formState={formState} setFormState={setFormState} />;
-      case 3:
+      case 2:
         return <StepPrakritiAssessment selectedAnswers={selectedAnswers} setSelectedAnswers={setSelectedAnswers} />;
-      case 4:
+      case 3:
         return <StepReviewAndSubmit formState={formState} handleBack={handleBack} handleSubmit={handleSubmit} />;
       default:
         return null;
@@ -163,7 +181,7 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
           >
             Back
           </button>
-          {step < 4 ? (loading ? (
+          {step < 3 ? (loading ? (
             <button
               disabled
               className="px-6 py-2 bg-green-500 text-white rounded flex items-center justify-center gap-2"

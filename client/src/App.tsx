@@ -108,12 +108,13 @@ function AppContent() {
         const transformed = transformMealPlan(res.data);
         setMealPlan(transformed);
         const today = format(new Date(), "EEEE"); // e.g., "Wednesday"
-        const matchedWeek = transformed.find(item =>
+        const matchedWeek = transformed.find((item: any) =>
           format(new Date(item.weekStart), "yyyy-MM-dd") === getWeekStartDate(new Date())
         );
         const todayData = matchedWeek?.days?.find((dayObj: any) => dayObj.day === today);
         setTodayMealPlan(todayData);
       } catch (err) {
+        console.error("Meal plan fetch error:", err);
         setMealPlan([]);
         setTodayMealPlan(undefined);
       }
@@ -155,6 +156,24 @@ function AppContent() {
   const TodayMealCard: React.FC<Props> = ({ todayPlan }) => {
     const meals = ["breakfast", "lunch", "dinner"] as const;
 
+    const normalizeMeal = (raw: any) => {
+      if (raw == null) return { base: "", customizations: undefined as any };
+      // already normalized { base: string, customizations: string | Record<string,string> }
+      if (typeof raw === "object" && ("base" in raw || "customizations" in raw)) {
+        // handle case where base itself is nested object
+        const baseVal = raw.base ?? (raw.base === 0 ? "0" : undefined);
+        if (typeof baseVal === "object" && baseVal !== null) {
+          return {
+            base: String(baseVal.base ?? JSON.stringify(baseVal)),
+            customizations: raw.customizations ?? baseVal.customizations,
+          };
+        }
+        return { base: baseVal ?? String(raw), customizations: raw.customizations };
+      }
+      // plain string
+      return { base: String(raw), customizations: undefined as any };
+    };
+
     return (
       <div className="mx-auto mt-6">
         <h2 className="text-lg font-bold mb-4 flex items-center">
@@ -162,7 +181,8 @@ function AppContent() {
         </h2>
 
         {meals.map((mealKey) => {
-          const meal = todayPlan.meals[mealKey];
+          const rawMeal = (todayPlan?.meals || {})[mealKey];
+          const meal = normalizeMeal(rawMeal);
           return (
             <div
               key={mealKey}
