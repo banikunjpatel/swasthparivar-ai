@@ -5,6 +5,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from pydantic import BaseModel
 from app.services.openai_client import generate_response_streaming
 from dotenv import load_dotenv
+import os
 import json
 import time
 import logging
@@ -31,16 +32,15 @@ app = FastAPI(
 
 # ─────────────────────────────────────────────
 # 🌐 CORS Middleware
+allowed_origins = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5174",
-        "http://localhost:5173",  # ✅ React/Vite frontend
-    ],
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+logger.info(f"✅ CORS origins allowed: {allowed_origins}")
 
 # ─────────────────────────────────────────────
 # 🧾 Audit Logger
