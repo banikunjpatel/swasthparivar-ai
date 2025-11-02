@@ -32,14 +32,15 @@ app = FastAPI(
 
 # ─────────────────────────────────────────────
 # 🌐 CORS Middleware
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
+allowed_origins = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+logger.info(f"✅ CORS origins allowed: {allowed_origins}")
 
 # ─────────────────────────────────────────────
 # 🧾 Audit Logger
