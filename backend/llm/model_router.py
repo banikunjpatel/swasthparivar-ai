@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from config import model_map, features, llm_defaults
+from config.config import model_map, features, llm_defaults
 from .tasks import normalize_task
 
 

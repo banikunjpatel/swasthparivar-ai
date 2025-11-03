@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from config import app_meta, cors_config
+from config.config import app_meta, cors_config
 from app.lifespan import lifespan
 
 # Routers
@@ -11,8 +11,8 @@ from api.recipe_generate import router as recipe_router
 from api.grocery_generate import router as grocery_list_router
 from api.grocery_category_generate import router as grocery_categories_router
 from api.dosha_detector import router as prakriti_router
-from backend.api.firebase_auth import router as firebase_router
-from backend.api.users import router as users_router
+# from api.firebase_auth import router as firebase_router
+from  api.users import router as users_router
 
 def create_app() -> FastAPI:
     meta = app_meta()
@@ -21,6 +21,7 @@ def create_app() -> FastAPI:
         title=meta.get("name", "Swasth Backend"),
         version=meta.get("version", "0.1.0"),
         lifespan=lifespan,
+        docs_url="/docs", redoc_url="/redoc"
     )
 
     cors = cors_config()
@@ -31,7 +32,7 @@ def create_app() -> FastAPI:
         allow_headers=cors.get("allow_headers", ["*"]),
         allow_credentials=cors.get("allow_credentials", True),
     )
-
+    
     # Public health check
     app.include_router(health_router, prefix="")
 
@@ -41,7 +42,13 @@ def create_app() -> FastAPI:
     app.include_router(grocery_list_router, prefix="/v1")
     app.include_router(grocery_categories_router, prefix="/v1")
     app.include_router(prakriti_router, prefix="/v1")
-    app.include_router(firebase_router, prefix="/api/v1")
+    # app.include_router(firebase_router, prefix="/api/v1")
     app.include_router(users_router, prefix="/api/v1")
 
     return app
+
+app = create_app()
+
+@app.get("/")
+async def root():
+    return {"status": "ok"}

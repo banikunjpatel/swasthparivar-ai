@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field, EmailStr
 from jose import jwt
 from firebase_admin import auth as fb_auth
-from backend.db.mongo import db  # your Motor global db
+from db.mongo import db  # your Motor global db
 
 router = APIRouter(prefix="/users", tags=["users"])
 

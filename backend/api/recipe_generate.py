@@ -3,10 +3,10 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Request
 
-from config import features
+from config.config import features
 from domain.recipe.models import GenerateRecipeRequest, GenerateRecipeResponse
 from domain.recipe.service import RecipeService
-from deps import model_override, prompt_version_override
+from .deps import model_override, prompt_version_override
 
 router = APIRouter(tags=["recipe"])
 

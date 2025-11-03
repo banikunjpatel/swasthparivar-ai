@@ -3,10 +3,10 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Request
 
-from config import features
+from config.config import features
 from domain.prakriti.models import GeneratePrakritiRequest, GeneratePrakritiResponse
 from domain.prakriti.service import PrakritiService
-from deps import model_override, prompt_version_override
+from .deps import model_override, prompt_version_override
 
 router = APIRouter(tags=["prakriti"])
 

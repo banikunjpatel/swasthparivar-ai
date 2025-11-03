@@ -12,6 +12,11 @@ client = AsyncIOMotorClient(MONGODB_URL)
 
 db = client["ayurmeal"]
 
+async def init_mongo(MONGODB_URL, db):
+    pass
+
+async def close_mongo():
+  pass
 families_collection = db["families"]
 members_collection = db["members"]
 grocery_collection = db["grocery_lists"]

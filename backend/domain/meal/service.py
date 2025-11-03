@@ -6,10 +6,9 @@ import json
 from typing import Any, Dict, Tuple
 
 from pydantic import ValidationError
-from config import features, feature_flag
+from config.config import features, feature_flag
 from domain.meal.variety import collect_dish_names, find_duplicates, filter_recent
 
-from config import features, feature_flag
 from cache import Cache
 from llm.client import LLMClient
 from llm.prompt_renderer import render_prompt

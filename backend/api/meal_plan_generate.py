@@ -3,11 +3,11 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Request
 
-from config import features
+from config.config import features
 from domain.meal.models import GenerateMealPlanRequest, GenerateMealPlanResponse
 from domain.meal.service import MealPlanService
 
-from deps import model_override, prompt_version_override
+from .deps import model_override, prompt_version_override
 
 router = APIRouter(tags=["meal"])
 

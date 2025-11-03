@@ -7,7 +7,7 @@ from typing import Any, Dict, Tuple
 
 from pydantic import ValidationError
 
-from config import features
+from config.config import features
 from cache import Cache
 from llm.client import LLMClient
 from llm.prompt_renderer import render_prompt

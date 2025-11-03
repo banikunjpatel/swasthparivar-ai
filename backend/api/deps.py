@@ -20,3 +20,9 @@ async def get_current_user(authorization: Optional[str] = Header(None)) -> Dict[
         return {"user_id": payload.sub}
     except ValueError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token")
+
+async def model_override(x_model: Optional[str] = Header(None, alias="X-Model")) -> Optional[str]:
+    return x_model
+
+async def prompt_version_override(x_prompt_ver: Optional[int] = Header(None, alias="X-Prompt-Ver")) -> Optional[int]:
+    return x_prompt_ver
