@@ -20,23 +20,20 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
-
+    const token = localStorage.getItem('accessToken');
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(endpoint !== '/api/user/assessment' && this.token && { Authorization: `Bearer ${this.token}` }),
+        ...(endpoint !== '/api/user/assessment' && token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
       ...options,
     };
 
     try {
-      console.log(`Making API request to: ${url}`);
       const response = await fetch(url, config);
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-
         // Handle token expiration
         if (response.status === 401 && errorData.code === 'TOKEN_EXPIRED') {
           const refreshSuccess = await this.refreshToken();
@@ -96,10 +93,10 @@ class ApiClient {
     }
   }
 
-  setTokens(accessToken: string, refreshToken: string) {
+  setTokens(accessToken: string, refreshToken?: string) {
     this.token = accessToken;
     localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
+    // localStorage.setItem('refreshToken', refreshToken);
   }
 
   logout() {
@@ -110,12 +107,8 @@ class ApiClient {
   }
 
   // Auth methods
-  async register(userData: {
-    name: string;
-    email: string;
-    password: string;
-  }): Promise<ApiResponse> {
-    return this.request('/register-family', {
+  async register(userData: any): Promise<ApiResponse> {
+    return this.request('/users/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
@@ -142,12 +135,12 @@ class ApiClient {
     });
   }
 
-  async logoutUser(refreshToken?: string): Promise<ApiResponse> {
-    return this.request('/logout', {
-      method: 'POST',
-      body: JSON.stringify({ refreshToken }),
-    });
-  }
+  // async logoutUser(refreshToken?: string): Promise<ApiResponse> {
+    // return this.request('/logout', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ refreshToken }),
+    // });
+  // }
 
   async getCurrentUser(): Promise<ApiResponse> {
     const stored = localStorage.getItem('user');

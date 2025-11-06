@@ -14,7 +14,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const mobileMenuRef = useRef(null);
 
-  const { user, isAuthenticated, signOut } = useAuth();
+  const { user, isAuthenticated, signOutFirebase } = useAuth();
 
   const navItems = isAuthenticated
     ? [
@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await signOutFirebase();
       setShowUserMenu(false);
       onNavigate('dashboard');
     } catch (error) {
@@ -40,21 +40,6 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
     }
   };
 
-   const handleAuthSuccess = async (token: string, user: any) => {
-    console.log("Firebase user:", user);
-    console.log("ID Token:", token);
-    
-    // send token to backend
-    // const response = await fetch("http://localhost:5000/api/auth/firebase-login", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ idToken: token }),
-    // });
-    // const data = await response.json();
-    // console.log("Backend response:", data);
-  };
 
   // Close mobile menu on outside click
   useEffect(() => {
@@ -193,7 +178,6 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
        <AuthModal
         open={authOpen}
         onClose={() => setAuthOpen(false)}
-        onAuthSuccess={handleAuthSuccess}
       />
     </>
   );

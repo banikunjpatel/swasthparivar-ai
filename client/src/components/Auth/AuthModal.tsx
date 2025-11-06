@@ -1,5 +1,7 @@
 // src/components/AuthModal.tsx
 import React, { useState } from "react";
+import { AlertCircle, CheckCircle, X } from 'lucide-react';
+
 import {
   signInWithPopup,
   signInWithEmailAndPassword,
@@ -7,19 +9,21 @@ import {
   sendEmailVerification,
 } from "firebase/auth";
 import { auth, googleProvider } from "./firebaseConfig";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface AuthModalProps {
   open: boolean;
   onClose: () => void;
-  onAuthSuccess: (token: string, user: any) => void; // Pass token to backend
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ open, onClose, onAuthSuccess }) => {
+const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { signIn, signUp } = useAuth();
+  const [success, setSuccess] = useState('');
 
   if (!open) return null;
 
@@ -29,14 +33,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose, onAuthSuccess }) =
       setLoading(true);
       const result = await signInWithPopup(auth, googleProvider);
       const token = await result.user.getIdToken();
-      onAuthSuccess(token, result.user);
+      const isNewUser = (result as any)?._tokenResponse?.isNewUser ?? false;
+      if (isNewUser) {
+        signUpWithFirebase(result.user, token);
+      } else {
+        signInWithFirebase(result.user, token);
+      }
+
       onClose();
+      resetForm()
     } catch (err: any) {
       console.error(err);
-      setError("Failed to sign in with Google");
+      handleFirebaseError(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const resetForm = () => {
+    setError('');
+    setSuccess('');
   };
 
   // 🔹 Email/Password Sign-In or Sign-Up
@@ -48,25 +64,105 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose, onAuthSuccess }) =
       let userCredential;
       if (isLogin) {
         userCredential = await signInWithEmailAndPassword(auth, email, password);
-        console.log("User signed in:", userCredential);
+        signInWithFirebase(userCredential.user, await userCredential.user.getIdToken());
       } else {
         userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const idToken = await userCredential.user.getIdToken();
+        signUpWithFirebase(user, idToken);
         await sendEmailVerification(userCredential.user);
-        alert("Verification email sent!");
+        setSuccess("Verification email sent!");
       }
-      const token = await userCredential.user.getIdToken();
-      onAuthSuccess(token, userCredential.user);
       onClose();
+      resetForm();
     } catch (err: any) {
-      setError(err.message || "Authentication failed");
+      handleFirebaseError(err);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleFirebaseError = (error: any) => {
+    switch (error.code) {
+      case "auth/email-already-in-use":
+        setError("This email is already registered. Try signing in instead.");
+        break;
+      case "auth/invalid-email":
+        setError("Please enter a valid email address.");
+        break;
+      case "auth/weak-password":
+        setError("Your password is too weak. Please use a stronger one.");
+        break;
+      case "auth/user-not-found":
+        setError("No account found with this email. Try signing up.");
+        break;
+      case "auth/wrong-password":
+        setError("Incorrect password. Try again.");
+        break;
+      default:
+        setError("Something went wrong. Please try again later.");
+        console.error(error);
+    }
+  }
+
+  const signUpWithFirebase = async (user: any, idToken: string) => {
+    let result;
+    localStorage.setItem('accessToken', idToken)
+    const payload = {
+      uid: user.uid,
+      email: user.email,
+      phoneNumber: user.phoneNumber || "",
+      createdAt: user.metadata.creationTime,
+      emailVerified: user.emailVerified,
+    };
+    result = await signUp(payload);
+    if (!result.error) {
+      setSuccess('Account created! Now please log in to access your Swasth Parivar dashboard.');
+    }
+    return result
+  }
+
+  const signInWithFirebase = async (user: any, token: string) => {
+    let result;
+    const payload = {
+      uid: user.uid,
+      email: user.email,
+      phoneNumber: user.phoneNumber || "",
+      createdAt: user.metadata.creationTime,
+      emailVerified: user.emailVerified,
+    };
+    result = await signIn(payload, token);
+    if (!result.error) {
+      setSuccess('Account created! Now please log in to access your Swasth Parivar dashboard.');
+    }
+    return result
+  }
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-      <div className="bg-white rounded-2xl p-8 w-[400px] shadow-xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative max-h-[90vh] overflow-y-auto">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">🧘‍♀️</span>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800">
+            {isLogin ? 'Welcome Back' : 'Begin Your Journey'}
+          </h2>
+          <p className="text-gray-600 mt-2">
+            {isLogin
+              ? 'Continue your Ayurvedic wellness journey'
+              : 'Discover personalized nutrition for your unique constitution'
+            }
+          </p>
+        </div>
         <h2 className="text-2xl font-semibold text-center mb-6">
           {isLogin ? "Sign In" : "Create Account"}
         </h2>
@@ -89,7 +185,23 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose, onAuthSuccess }) =
             required
           />
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex items-start space-x-2">
+                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+            </div>
+          )}
+
+          {success && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-start space-x-2">
+                <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                <p className="text-green-600 text-sm">{success}</p>
+              </div>
+            </div>
+          )}
 
           <button
             type="submit"
@@ -119,14 +231,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose, onAuthSuccess }) =
             {isLogin ? "Sign up" : "Login"}
           </button>
         </p>
+
       </div>
     </div>
   );
 };
 
 export default AuthModal;
-
-
 
 // import React, { useState } from 'react';
 // import { X, Mail, Lock, User, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
@@ -185,7 +296,7 @@ export default AuthModal;
 //     try {
 //       let result;
 //       if (isLogin) {
-        // result = await signIn(email, password);
+// result = await signIn(email, password);
 //         if (!result.error) {
 //           setSuccess('Welcome back! Redirecting to your dashboard...');
 //         }

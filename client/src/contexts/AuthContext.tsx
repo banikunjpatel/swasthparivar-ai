@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import apiClient from '../apiCall/api';
-import { se } from 'date-fns/locale';
+import { signOut } from "firebase/auth";
+import { auth } from "../components/Auth/firebaseConfig";
+
 
 interface User {
   userId: string;
@@ -28,10 +30,10 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signUp: (userData: { name: string; email: string; password: string }) => Promise<{ error?: string }>;
-  signIn: (email: string, password: string) => Promise<{ error?: string }>;
+  signUp: (userData: any) => Promise<{ error?: string }>;
+  signIn:  (userData: any, token: string) => Promise<{ error?: string }>;
   sendSMS: (phone: string) => Promise<{ error?: string }>;
-  signOut: () => Promise<void>;
+  signOutFirebase: () => Promise<void>;
   updateUser: (userData: Partial<User>) => void;
   isAuthenticated?: boolean;
 }
@@ -62,15 +64,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
     try {
-      const response = await apiClient.getCurrentUser();
-      console.log('Auth initialization response:', response);
-      if (response.data) {
-        setUser(response.data);
-        setIsAuthenticated(true);
-      } else {
-        apiClient.logout();
-        setIsAuthenticated(false);
-      }
+      // const response = await apiClient.getCurrentUser();
+      // console.log('Auth initialization response:', response);
+      // if (response.data) {
+      //   setUser(response.data);
+      //   setIsAuthenticated(true);
+      // } else {
+      //   apiClient.logout();
+      //   setIsAuthenticated(false);
+      // }
     } catch (error) {
       console.error('Auth initialization error:', error);
       apiClient.logout();
@@ -80,10 +82,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signUp = async (userData: { name: string; email: string; password: string }) => {
+  const signUp = async (userData: any) => {
     try {
       const response = await apiClient.register(userData);
-
+      if (userData.emailVerified) {
+        const user = response;
+        apiClient.setTokens(localStorage.getItem('accessToken') || '');
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(user));
+      }
       if (response.error) {
         return { error: response.error };
       }
@@ -110,21 +117,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signIn = async (response: any) => {
+  const signIn = async (response: any, token: string) => {
     try {
-      console.log(response)
-      // const response = await apiClient.login({ email, password });
-
       if (response.error) {
         return { error: response.error };
       }
 
-      if (response.data) {
-        const { user: loggedInUser, tokens } = response.data;
-        apiClient.setTokens(tokens.accessToken, tokens.refreshToken);
-        setUser(loggedInUser);
+      if (response) {
+        const user = response;
+        apiClient.setTokens(token);
+        setUser(user);
         setIsAuthenticated(true);
-        localStorage.setItem('user', JSON.stringify(loggedInUser));
+        localStorage.setItem('user', JSON.stringify(user));
       }
 
       return {};
@@ -134,10 +138,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signOut = async () => {
+  const signOutFirebase = async () => {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
-      await apiClient.logoutUser(refreshToken || undefined);
+      await signOut(auth);
+      // await apiClient.logoutUser(refreshToken || undefined);
     } catch (error) {
       console.error('Sign out error:', error);
     } finally {
@@ -160,7 +164,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     signUp,
     signIn,
-    signOut,
+    signOutFirebase,
     sendSMS,
     updateUser,
     isAuthenticated

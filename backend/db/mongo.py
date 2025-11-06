@@ -10,7 +10,7 @@ MONGODB_URL = os.getenv("MONGODB_URL")
 
 client = AsyncIOMotorClient(MONGODB_URL)
 
-db = client["ayurmeal"]
+db = client["swasthparivar"]
 
 async def init_mongo(MONGODB_URL, db):
     pass

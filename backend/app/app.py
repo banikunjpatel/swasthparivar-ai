@@ -13,6 +13,10 @@ from api.grocery_category_generate import router as grocery_categories_router
 from api.dosha_detector import router as prakriti_router
 # from api.firebase_auth import router as firebase_router
 from  api.users import router as users_router
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 def create_app() -> FastAPI:
     meta = app_meta()
@@ -25,9 +29,11 @@ def create_app() -> FastAPI:
     )
 
     cors = cors_config()
+    allowed_origins = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o]
+    print(allowed_origins)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=cors.get("allow_origins", ["*"]),
+        allow_origins=cors.get("allow_origins", allowed_origins),
         allow_methods=cors.get("allow_methods", ["*"]),
         allow_headers=cors.get("allow_headers", ["*"]),
         allow_credentials=cors.get("allow_credentials", True),

@@ -78,10 +78,8 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
           try {
             const user = JSON.parse(storedUser);
             if (user?.name) {
-              console.log(membersData)
               setFormState(defaultFormState)
               setFormState(prev => ({ ...prev, fullName: (user.name && membersData?.length === 0) ? user.name : '', userId: user.userId || '', }));
-              console.log(formState)
             }
           } catch {
             console.warn('Invalid user data in localStorage');
