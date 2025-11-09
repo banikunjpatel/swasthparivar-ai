@@ -21,7 +21,6 @@ ACCESS_MIN   = int(os.getenv("ACCESS_TOKEN_MIN", "30"))
 REFRESH_DAYS = int(os.getenv("REFRESH_TOKEN_DAYS", "7"))
 ISSUER       = os.getenv("JWT_ISSUER", "swasthparivar-ai")
 
-# ...existing code...
 if not _apps:
     cred_env = os.getenv("FIREBASE_CREDENTIALS")
     # repo_backend_dir points to backend/
@@ -43,8 +42,7 @@ if not _apps:
         )
 
     initialize_app(credentials.Certificate(cred_path))
-# ...existing code...
-
+    
 def _now(): return datetime.now(timezone.utc)
 def _make_token(sub: str, minutes: int, typ: str) -> str:
     n = _now()
