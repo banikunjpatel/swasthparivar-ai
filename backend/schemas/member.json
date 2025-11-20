@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "member.json",
+  "title": "Member",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "userId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fullName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "gender": {
+      "type": "string"
+    },
+    "dietaryPreferences": {
+      "type": "string"
+    },
+    "medicalConditions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "allergies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "prakriti": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "userId",
+    "fullName",
+    "medicalConditions"
+  ]
+}
