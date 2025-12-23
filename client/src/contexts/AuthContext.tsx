@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import apiClient from '../apiCall/api';
 import { signOut } from "firebase/auth";
 import { auth } from "../components/Auth/firebaseConfig";
+import { id } from 'date-fns/locale';
 
 
 interface User {
@@ -117,14 +118,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signIn = async (response: any, token: string) => {
+  const signIn = async (userData: any, token: string) => {
     try {
+      console.log('Sign in response:', userData);
+      let loginData = {
+        uId: userData.uid
+      }
+      const response = await apiClient.login(loginData);
       if (response.error) {
         return { error: response.error };
       }
 
       if (response) {
-        const user = response;
+        console.log(response.data)
+        const user = response.data.user;
         apiClient.setTokens(token);
         setUser(user);
         setIsAuthenticated(true);

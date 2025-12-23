@@ -114,13 +114,10 @@ class ApiClient {
     });
   }
 
-  async login(credentials: {
-    email: string;
-    password: string;
-  }): Promise<ApiResponse> {
-    return this.request('/login', {
+  async login(loginData: any): Promise<ApiResponse> {
+    return this.request('/users/login', {
       method: 'POST',
-      body: JSON.stringify(credentials),
+      body: JSON.stringify(loginData),
     });
   }
 

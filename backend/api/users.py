@@ -152,3 +152,38 @@ async def register_user(body: RegisterBody, authorization: Optional[str] = Heade
         "updated_at": user_doc.get("updated_at"),
     }
     return {"success": True, "user": user_out}
+
+
+class LoginBody(BaseModel):
+    uId: str  # Firebase ID Token from frontend
+
+
+@router.post("/login")
+async def login_user(body: LoginBody):
+
+    
+
+    # 2️⃣ Lookup user in MongoDB
+    user = await db.users.find_one({"firebase_uid": body.uId})
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User does not exist. Please sign up first."
+        )
+
+    # 3️⃣ Create tokens
+
+    # 4️⃣ Return user object
+    user_out = {
+        "userId": str(user["_id"]),
+        "firebase_uid": user["firebase_uid"],
+        "email": user.get("email"),
+        "phone": user.get("phone"),
+        "isVerified": user.get("emailVerified", False),
+    }
+
+    return {
+        "success": True,
+        "user": user_out,
+    }
