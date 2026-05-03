@@ -3,7 +3,7 @@ interface ApiResponse<T = any> {
   data?: T;
   error?: string;
   message?: string;
-  otp?: string; 
+  otp?: string;
 }
 
 class ApiClient {
@@ -121,7 +121,7 @@ class ApiClient {
     });
   }
 
-   async sendSMS(phone: string): Promise<ApiResponse> {
+  async sendSMS(phone: string): Promise<ApiResponse> {
     const payload = {
       phone: `91${phone}`
     };
@@ -133,10 +133,10 @@ class ApiClient {
   }
 
   // async logoutUser(refreshToken?: string): Promise<ApiResponse> {
-    // return this.request('/logout', {
-    //   method: 'POST',
-    //   body: JSON.stringify({ refreshToken }),
-    // });
+  // return this.request('/logout', {
+  //   method: 'POST',
+  //   body: JSON.stringify({ refreshToken }),
+  // });
   // }
 
   async getCurrentUser(): Promise<ApiResponse> {
@@ -209,6 +209,22 @@ class ApiClient {
     });
   }
 
+  async generateMealPlanV2(payload: {
+    userId: string;
+    weekStart: string;
+    region: string;
+    dietType: 'veg' | 'non_veg' | 'eggs_ok';
+    members: Array<{ name: string; dosha: 'vata' | 'pitta' | 'kapha' | 'tridoshic' }>;
+    model?: string | null;
+    prompt_version?: number | null;
+    force?: boolean;
+  }): Promise<ApiResponse> {
+    return this.request('/meal-plan/generate', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
   async saveMealPlan(mealPlanData: any): Promise<ApiResponse> {
     return this.request('/meal-plans', {
       method: 'POST',
@@ -248,10 +264,20 @@ class ApiClient {
     });
   }
 
-  async calculatePrakriti(answers: any): Promise<ApiResponse> {
-    return this.request(`/detect-dosha`, {
+  async calculatePrakriti(requestData: {
+    profile: {
+      name: string;
+      age?: number;
+      gender?: string;
+      region?: string;
+    };
+    questions: Array<{ question: string; answer: string }>;
+  }): Promise<ApiResponse> {
+    // Backend prakriti router is mounted under /api/v1 (see app.include_router)
+    // So with baseURL = "http://127.0.0.1:8000/api/v1" we just need the relative path
+    return this.request('/prakriti/assessment', {
       method: 'POST',
-      body: JSON.stringify({ answers: answers }),
+      body: JSON.stringify(requestData),
     });
   }
 

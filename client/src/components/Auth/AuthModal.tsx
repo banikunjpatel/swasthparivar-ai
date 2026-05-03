@@ -547,7 +547,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
           onSubmit={useOtp ? handleVerifyOtp : handleEmailAuth}
           className="space-y-4"
         >
-          {/* Toggle between Email and OTP */}
+          {/* Toggle between Email and OTP 
           <div className="flex items-center justify-center gap-3 mb-2">
             <button
               type="button"
@@ -575,7 +575,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
             >
               Mobile (OTP)
             </button>
-          </div>
+          </div>*/}
 
           {useOtp ? (
             <>

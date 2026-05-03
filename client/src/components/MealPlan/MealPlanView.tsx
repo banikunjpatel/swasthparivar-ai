@@ -3,7 +3,7 @@ import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MealType } from '../../types';
 import apiClient from '../../apiCall/api';
 import {
-  getWeekStartDate, normalizeToWeekStart, transformMealPlan
+  getWeekStartDate, transformMealPlan
 
 } from '../../utils/transformMealPlan';
 
@@ -188,19 +188,40 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
               try {
                 setLoading(true);
                 const userId = await apiClient.getCurrentUserId();
-                const weekStartDate = normalizeToWeekStart(new Date(weekDates[0]));
+                const weekStartDate = getWeekStartDate(new Date(weekDates[0]));
                 setLoadingMeal(true);
-                try {
-                  if (members.length === 1) {
-                    await apiClient.getMealPlanByMember(members, weekStartDate);
 
-                  } else {
-                    await apiClient.generateMealPlan(userId, weekStartDate);
-                  }
+                try {
+                  // Map dietary preference to backend dietType enum
+                  const dietPref = (members?.[0]?.dietaryPreferences || '').toLowerCase();
+                  const dietType: 'veg' | 'non_veg' | 'eggs_ok' =
+                    dietPref.includes('non') ? 'non_veg' :
+                      dietPref.includes('egg') ? 'eggs_ok' : 'veg';
+
+                  const memberPayload = (members || []).map((m: any) => ({
+                    name: m.fullName || m.name || 'Member',
+                    dosha: (m.prakriti?.primaryDosha || 'tridoshic') as 'vata' | 'pitta' | 'kapha' | 'tridoshic',
+                  }));
+
+                  const payload = {
+                    userId,
+                    weekStart: weekStartDate,
+                    region: members?.[0]?.state || 'India',
+                    dietType,
+                    members: memberPayload,
+                  };
+
+                  const res = await apiClient.generateMealPlanV2(payload);
+                  if (res.error) throw new Error(res.error);
+
+                  const transformed = transformMealPlan([{
+                    _id: res.data?.weekStartDate || weekStartDate,
+                    userId: res.data?.user_id || userId,
+                    weekStart: res.data?.weekStartDate || weekStartDate,
+                    plan: res.data?.plan,
+                  }]);
 
                   setIsGenerateDisabled(true);
-                  const res = await apiClient.getMealPlan(userId);
-                  const transformed = transformMealPlan(res.data);
                   setMealPlan(transformed);
                 } catch (err) {
                   console.error("Failed to fetch meal plan", err);

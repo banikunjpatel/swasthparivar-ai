@@ -9,11 +9,21 @@ interface Props {
     age: number | '';
     gender: 'male' | 'female' | 'other';
     state?: string;
+    dietaryPreferences?: string;
   };
   membersData: any;
   setFormState: (field: string, value: any) => void;
   errors?: { fullName?: boolean; age?: boolean; state?: boolean };
 }
+
+const DIET_OPTIONS = [
+  'Vegetarian',
+  'Vegan',
+  'Non-Vegetarian',
+  'Pescatarian',
+  'Keto',
+  'Other',
+];
 
 const StepBasicInfo: React.FC<Props> = ({ formState, membersData, setFormState, errors = {} }) => {
   useEffect(() => {
@@ -27,9 +37,7 @@ const StepBasicInfo: React.FC<Props> = ({ formState, membersData, setFormState, 
 
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-gray-900">Basic Information</h2>
-
-      {/* Name & Age Row */}
+       {/* Name & Age Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1 text-left">Name</label>
@@ -58,7 +66,6 @@ const StepBasicInfo: React.FC<Props> = ({ formState, membersData, setFormState, 
             value={formState.age === 0 || formState.age === ''  ? '' : formState.age}
             onChange={(e) => {
               const value = e.target.value;
-              // allow only empty input or value >= 1
               if (value === '') {
                 setFormState('age', '');
               } else if (Number(value) >= 1) {
@@ -74,7 +81,6 @@ const StepBasicInfo: React.FC<Props> = ({ formState, membersData, setFormState, 
             <span className="text-red-500 text-xs">Age is required (1-99)</span>
           )}
         </div>
-
       </div>
 
       {/* Gender */}
@@ -103,26 +109,46 @@ const StepBasicInfo: React.FC<Props> = ({ formState, membersData, setFormState, 
           ))}
         </div>
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1 text-left">State / UT</label>
-        <select
-          value={formState.state || ""}
-          required
-          disabled={membersData?.length > 0}
-          onChange={(e) => setFormState("state", e.target.value)}
-          className={`w-full px-4 py-3 rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-            errors.state ? 'border-red-500 ring-red-400' : 'border-gray-300'
-          }`} >
-          <option value="" disabled>Select a state</option>
-          {statesAndUTs.map((item) => (
-            <option key={item.key} value={item.value}>
-              {item.value}
-            </option>
-          ))}
-        </select>
-        {errors.state && (
-          <span className="text-red-500 text-xs">State is required</span>
-        )}
+
+      {/* State & Dietary Preference in one row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1 text-left">State / UT</label>
+          <select
+            value={formState.state || ""}
+            required
+            disabled={membersData?.length > 0}
+            onChange={(e) => setFormState("state", e.target.value)}
+            className={`w-full px-4 py-3 rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
+              errors.state ? 'border-red-500 ring-red-400' : 'border-gray-300'
+            }`} >
+            <option value="" disabled>Select a state</option>
+            {statesAndUTs.map((item) => (
+              <option key={item.key} value={item.value}>
+                {item.value}
+              </option>
+            ))}
+          </select>
+          {errors.state && (
+            <span className="text-red-500 text-xs">State is required</span>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1 text-left">Dietary Preference</label>
+          <select
+            value={formState.dietaryPreferences || ""}
+            onChange={(e) => setFormState("dietaryPreferences", e.target.value)}
+            className="w-full px-4 py-3 rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 border-gray-300"
+          >
+            <option value="" disabled>Select preference</option>
+            {DIET_OPTIONS.map(opt => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </div>
   );

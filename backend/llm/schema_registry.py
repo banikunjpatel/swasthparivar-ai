@@ -6,9 +6,9 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Dict, Tuple
 
-# Schemas live under: /schemas/*.json
+# Schemas live under: backend/schemas/*.json
 ROOT_DIR: Path = Path(__file__).resolve().parents[1]
-SCHEMAS_DIR: Path = ROOT_DIR.parent / "schemas"
+SCHEMAS_DIR: Path = ROOT_DIR / "schemas"
 
 # Default schema file per task
 DEFAULT_SCHEMA_BY_TASK: Dict[str, str] = {

@@ -23,18 +23,6 @@
     "dietaryPreferences": {
       "type": "string"
     },
-    "medicalConditions": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "allergies": {
-      "type": "array",
-      "items": { "type": "string" },
-      "default": []
-    },
-    "prakriti": {
-      "type": "string"
-    },
     "state": {
       "type": "string"
     },
@@ -50,6 +38,8 @@
   "required": [
     "userId",
     "fullName",
-    "medicalConditions"
+    "age",
+    "gender",
+    "dietaryPreferences"
   ]
 }

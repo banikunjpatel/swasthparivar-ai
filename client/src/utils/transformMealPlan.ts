@@ -1,3 +1,6 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 type Meal = {
   base: string;
   customizations: {
@@ -24,8 +27,48 @@ type TransformedMealPlan = {
 };
 
 export function transformMealPlan(rawData: any[]): TransformedMealPlan[] {
+  if (!Array.isArray(rawData)) {
+    return [];
+  }
   return rawData.map((entry) => {
-   let planObj;
+    // New schema (LLM v2): entry.plan.days is an array of { date, breakfast, lunch, dinner }
+    if (entry?.plan?.days && Array.isArray(entry.plan.days)) {
+      const days: DayMeal[] = entry.plan.days.map((dayObj: any) => ({
+        day: new Date(dayObj.date).toLocaleDateString('en-US', { weekday: 'long' }),
+        meals: {
+          breakfast: dayObj.breakfast?.name || dayObj.breakfast || null,
+          lunch: dayObj.lunch?.name || dayObj.lunch || null,
+          dinner: dayObj.dinner?.name || dayObj.dinner || null,
+        },
+      }));
+      return {
+        id: entry._id || entry.plan.weekStart || 'plan',
+        userId: entry.userId,
+        weekStart: entry.plan.weekStart?.split('T')[0] || entry.plan.weekStart,
+        days,
+      };
+    }
+
+    // New schema: entry.plan.week_plan is an array of { day, meals }
+    if (entry?.plan?.week_plan && Array.isArray(entry.plan.week_plan)) {
+      const days: DayMeal[] = entry.plan.week_plan.map((dayObj: any) => ({
+        day: dayObj.day,
+        meals: {
+          breakfast: dayObj.meals?.breakfast || null,
+          lunch: dayObj.meals?.lunch || null,
+          dinner: dayObj.meals?.dinner || null,
+        },
+      }));
+      return {
+        id: entry._id || entry.plan.weekStart || 'plan',
+        userId: entry.userId,
+        weekStart: entry.plan.weekStart?.split('T')[0] || entry.plan.weekStart,
+        days,
+      };
+    }
+
+    // Legacy schema fallbacks
+    let planObj;
     if (entry.plan?.plan?.meals) {
       planObj = entry.plan.plan.meals;
     } else if (entry.plan?.plan) {
@@ -43,25 +86,20 @@ export function transformMealPlan(rawData: any[]): TransformedMealPlan[] {
         dinner: meals.dinner,
       },
     }));
-    // console.log("Transformed Entry:", {
-    //   id: entry._id,
-    //   userId: entry.userId,
-    //   weekStart: entry.weekStart?.split('T')[0], // trim time from ISO string
-    //   days,
-    // })
+
     return {
       id: entry._id,
       userId: entry.userId,
       weekStart: entry.weekStart?.split('T')[0], // trim time from ISO string
       days,
     };
-  }); 
+  });
 }
 
 export const getWeekStartDate = (date: Date): any => {
-  const d = date;
+  const d = new Date(date); // clone to avoid mutation
   const day = d.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
-  const diff = day === 0 ? -5 : (1 - day) + 1; // If Sunday, subtract 6 to get previous Monday
+  const diff = day === 0 ? -6 : 1 - day; // Adjust to get Monday
   d.setDate(d.getDate() + diff);
   d.setHours(0, 0, 0, 0);
   return d.toISOString().split('T')[0];
@@ -75,5 +113,11 @@ export const normalizeToWeekStart = (dateString: Date): string => {
 
   // Return ISO string at 00:00:00 UTC
   return new Date(Date.UTC(utcYear, utcMonth, utcDay, 0, 0, 0)).toISOString();
+}
+
+
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
 

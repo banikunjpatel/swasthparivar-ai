@@ -1,36 +1,32 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+"$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "meal_plan_family.json",
   "title": "Weekly Meal Plan (Single or Family)",
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "weekStart": { "type": "string", "format": "date" },
-    "region": { "type": "string", "minLength": 1 },
-    "dietType": { "type": "string", "enum": ["veg", "non_veg", "eggs_ok"] },
-    "household": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "type": { "type": "string", "enum": ["single", "family"] },
-        "size": { "type": "integer", "minimum": 1 },
-        "members": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "name": { "type": "string", "minLength": 1 },
-              "dosha": { "type": "string", "enum": ["vata", "pitta", "kapha", "tridoshic"] }
-            },
-            "required": ["name", "dosha"]
-          }
-        }
-      },
-      "required": ["type", "size", "members"]
+    "title": {
+      "type": "string",
+      "minLength": 1
     },
-    "days": {
+    "subtitle": {
+      "type": "string",
+      "minLength": 1
+    },
+    "region": {
+      "type": "string",
+      "minLength": 1
+    },
+    "diet_type": {
+      "type": "string",
+      "enum": ["veg", "non_veg", "eggs_ok"]
+    },
+    "constitution": {
+      "type": "string",
+      "enum": ["vata", "pitta", "kapha", "vata-pitta", "pitta-kapha", "vata-kapha", "tridoshic"]
+    },
+
+    "week_plan": {
       "type": "array",
       "minItems": 7,
       "maxItems": 7,
@@ -38,79 +34,95 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "date": { "type": "string", "format": "date" },
-          "breakfast": { "$ref": "#/$defs/meal" },
-          "lunch": { "$ref": "#/$defs/meal" },
-          "dinner": { "$ref": "#/$defs/meal" },
-          "notes": { "type": "string" }
+          "day": {
+            "type": "string",
+            "enum": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ]
+          },
+          "meals": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "morning": { "type": "string", "minLength": 1 },
+              "breakfast": { "type": "string", "minLength": 1 },
+              "lunch": { "type": "string", "minLength": 1 },
+              "evening": { "type": "string", "minLength": 1 },
+              "dinner": { "type": "string", "minLength": 1 }
+            },
+            "required": ["morning", "breakfast", "lunch", "evening", "dinner"]
+          }
         },
-        "required": ["date", "breakfast", "lunch", "dinner"]
+        "required": ["day", "meals"]
       }
     },
-    "groceryList": {
+
+    "key_guidelines": {
       "type": "array",
-      "items": { "$ref": "#/$defs/grocery" }
-    }
-  },
-  "required": ["weekStart", "region", "dietType", "household", "days", "groceryList"],
-  "$defs": {
-    "ingredient": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": { "type": "string", "minLength": 1 },
-        "qty": { "type": "number", "minimum": 0 },
-        "unit": { "type": "string", "minLength": 1 },
-        "category": {
-          "type": "string",
-          "enum": ["produce", "grains", "dairy", "spices", "protein", "staples", "bakery", "condiments", "other"]
-        }
-      },
-      "required": ["name", "qty", "unit"]
+      "minItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
-    "recipe": {
+
+    "regional_notes": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "ingredients": {
+        "current_region_focus": {
           "type": "array",
           "minItems": 1,
-          "items": { "$ref": "#/$defs/ingredient" }
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         },
-        "steps": {
-          "type": "array",
-          "minItems": 3,
-          "maxItems": 20,
-          "items": { "type": "string", "minLength": 1 }
-        },
-        "prep_mins": { "type": "integer", "minimum": 0 },
-        "cook_mins": { "type": "integer", "minimum": 0 }
-      },
-      "required": ["ingredients", "steps", "prep_mins", "cook_mins"]
-    },
-    "meal": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": { "type": "string", "minLength": 1 },
-        "serving_size": { "type": "integer", "minimum": 1 },
-        "recipe": { "$ref": "#/$defs/recipe" }
-      },
-      "required": ["name", "serving_size", "recipe"]
-    },
-    "grocery": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": { "type": "string", "minLength": 1 },
-        "qty": { "type": "number" },
-        "unit": { "type": "string", "minLength": 1 },
-        "category": {
-          "type": "string",
-          "enum": ["produce", "grains", "dairy", "spices", "protein", "staples", "bakery", "condiments", "other"]
+        "comparison_with_previous_region": {
+          "type": "boolean"
         }
       },
-      "required": ["name", "qty", "unit"]
+      "required": ["current_region_focus", "comparison_with_previous_region"]
+    },
+
+    "previous_region_comparison": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "type": ["string", "null"]
+        },
+        "to": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": ["from", "to", "notes"]
     }
-  }
+  },
+
+  "required": [
+    "title",
+    "subtitle",
+    "region",
+    "diet_type",
+    "constitution",
+    "week_plan",
+    "key_guidelines",
+    "regional_notes"
+  ]
 }

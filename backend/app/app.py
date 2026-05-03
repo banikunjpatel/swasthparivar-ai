@@ -30,25 +30,51 @@ def create_app() -> FastAPI:
     )
 
     cors = cors_config()
-    allowed_origins = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o]
-    print(allowed_origins)
+    allowed_origins_env = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o]
+    
+    # Get origins from config, env, or default
+    cors_origins = cors.get("allow_origins")
+    if cors_origins:
+        origins = cors_origins
+    elif allowed_origins_env:
+        origins = allowed_origins_env
+    else:
+        origins = ["*"]
+    
+    allow_creds = cors.get("allow_credentials", True)
+    
+    # CORS spec: cannot use allow_origins=["*"] with allow_credentials=True
+    # If credentials are enabled and origins is ["*"], use specific dev origins
+    if allow_creds and origins == ["*"]:
+        origins = [
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:5173",
+            "http://localhost:8080",
+        ]
+        print(f"CORS Warning: Using default dev origins because allow_credentials=True and origins=['*']")
+        print(f"CORS: Allowed origins: {origins}")
+    else:
+        print(f"CORS: Allowed origins: {origins}")
+    
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=cors.get("allow_origins", allowed_origins),
+        allow_origins=origins,
         allow_methods=cors.get("allow_methods", ["*"]),
         allow_headers=cors.get("allow_headers", ["*"]),
-        allow_credentials=cors.get("allow_credentials", True),
+        allow_credentials=allow_creds,
     )
     
     # Public health check
     app.include_router(health_router, prefix="")
 
-    # API v1
-    app.include_router(meal_router, prefix="/v1")
-    app.include_router(recipe_router, prefix="/v1")
-    app.include_router(grocery_list_router, prefix="/v1")
-    app.include_router(grocery_categories_router, prefix="/v1")
-    app.include_router(prakriti_router, prefix="/v1")
+    # API v1 (consistent prefix /api/v1)
+    app.include_router(meal_router, prefix="/api/v1")
+    app.include_router(recipe_router, prefix="/api/v1")
+    app.include_router(grocery_list_router, prefix="/api/v1")
+    app.include_router(grocery_categories_router, prefix="/api/v1")
+    app.include_router(prakriti_router, prefix="/api/v1")
     # app.include_router(firebase_router, prefix="/api/v1")
     app.include_router(users_router, prefix="/api/v1")
     app.include_router(members_router, prefix="/api/v1")

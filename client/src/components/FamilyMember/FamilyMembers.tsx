@@ -3,213 +3,367 @@ import { Pencil, Trash } from 'lucide-react';
 import NoFamilyMemberPrompt from '../Onboarding/NoFamilyMemberPrompt';
 import AddFamilyMemberModal from '../Onboarding/AddFamilyMemberModal';
 import apiClient from '../../apiCall/api';
+import { PrakritiQuiz } from '../Assessment/PrakritiAssessment';
+import PrakritiDetailsCard from '../Assessment/PrakritiDetailsCard';
 
 interface FamilyMembersProps {
   members: FamilyMember[];
   onRefresh: () => void;
 }
 
-interface DoshaStats {
+/* ---------------- Dosha Distribution ---------------- */
+
+interface DoshaDistribution {
   vata: number;
   pitta: number;
   kapha: number;
 }
 
-interface FamilyMember {
-  _id: string
-  fullName: string;
-  age: number;
-  prakriti: 'VATA' | 'PITTA' | 'KAPHA';
-  gender: 'male' | 'female' | 'other';
-  doshaStats: DoshaStats;
-  dietaryPreferences: string;
-  medicalConditions?: string[];
-  allergies?: string[];
+/* ---------------- Guidance ---------------- */
+
+interface PrakritiGuidance {
+  foods_to_favor: string[];
+  foods_to_avoid: string[];
+  lifestyle_tips: string[];
 }
 
-const DoshaBar = ({ label, value }: { label: string; value: number }) => (
-  <div>
-    <div className="text-sm text-gray-600 mb-1">{label}</div>
-    <div className="w-full h-2 bg-green-100 rounded">
-      <div
-        className="h-2 bg-green-600 rounded"
-        style={{ width: `${value}%` }}
-      ></div>
-    </div>
-  </div>
+/* ---------------- Assessment ---------------- */
+
+interface PrakritiAssessment {
+  /** Primary dosha: vata | pitta | kapha | tridoshic */
+  primaryDosha: 'vata' | 'pitta' | 'kapha' | 'tridoshic';
+
+  /** Secondary dosha if applicable */
+  secondaryDosha?: 'vata' | 'pitta' | 'kapha';
+
+  distribution: DoshaDistribution;
+  guidance: PrakritiGuidance;
+
+  /** Optional clinician / system notes */
+  notes?: string;
+
+  /** ISO string from backend */
+  assessedAt?: string;
+
+  /** Assessment version / algorithm */
+  version?: string;
+}
+
+
+interface FamilyMember {
+  _id: string;
+  fullName: string;
+  age: number;
+  gender: 'male' | 'female' | 'other';
+  dietaryPreferences: string;
+  state?: string;
+  prakriti?: PrakritiAssessment;
+}
+
+/* ------------------ Small Reusable UI ------------------ */
+
+// const DoshaBar = ({ label, value }: { label: string; value: number }) => (
+//   <div>
+//     <div className="text-sm text-gray-600 mb-1">{label}</div>
+//     <div className="w-full h-2 bg-green-100 rounded">
+//       <div
+//         className="h-2 bg-green-600 rounded"
+//         style={{ width: `${value}%` }}
+//       />
+//     </div>
+//   </div>
+// );
+
+const PrakritiBadge = ({ assessed }: { assessed: boolean }) => (
+  <span
+    className={`ml-2 text-xs font-semibold px-2 py-0.5 rounded-full ${assessed
+      ? 'bg-green-100 text-green-700'
+      : 'bg-yellow-100 text-yellow-700'
+      }`}
+  >
+    {assessed ? 'Assessed ✔' : 'Not Assessed'}
+  </span>
 );
 
-const FamilyMembers: React.FC<FamilyMembersProps> = ({ members, onRefresh }) => {
+const PrakritiCTA = ({ onClick }: { onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className="w-full mt-4 py-2 rounded-xl border border-green-600
+               text-green-700 font-semibold
+               hover:bg-green-600 hover:text-white
+               transition flex items-center justify-center gap-2"
+  >
+    🌿 Take Prakriti Assessment
+  </button>
+);
+
+/* ------------------ Prakriti Dialog ------------------ */
+
+const PrakritiAssessmentDialog = ({
+  open,
+  member,
+  onClose,
+}: {
+  open: boolean;
+  member: FamilyMember | null;
+  onClose: () => void;
+}) => {
+  if (!open || !member) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+      <div
+        className="
+          bg-white
+          w-full max-w-4xl
+          h-[95vh]
+          rounded-2xl
+          shadow-xl
+          flex flex-col
+          relative
+        "
+      >
+        {/* Header */}
+        <div className="px-8 py-4 border-b flex items-center justify-between flex-shrink-0">
+          <h2 className="text-xl font-semibold text-gray-800">
+            Prakriti Assessment
+          </h2>
+
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="
+              text-gray-500 hover:text-gray-800
+              transition
+              text-xl
+              leading-none
+            "
+            aria-label="Close dialog"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto px-8 py-6 overscroll-contain">
+          <PrakritiQuiz member={member} onComplete={onClose} />
+        </div>
+
+        {/* Footer */}
+        <div className="px-8 py-4 border-t flex-shrink-0">
+          <p className="text-sm text-gray-500">
+            Answer honestly for accurate results
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const InfoRow = ({ label, value }: { label: string; value?: string }) => {
+  if (!value) return null;
+  return (
+    <div className="text-sm text-gray-600">
+      <span className="font-medium text-gray-700">{label}:</span> {value}
+    </div>
+  );
+};
+
+/* ------------------ MAIN COMPONENT ------------------ */
+
+const FamilyMembers: React.FC<FamilyMembersProps> = ({
+  members,
+  onRefresh,
+}) => {
   const total = members.length;
-  const vegetarians = members.filter((m) => m.dietaryPreferences === 'Vegetarian').length;
-  const withConditions = members.filter((m) => m.medicalConditions?.length).length;
+  const vegetarians = members.filter(
+    (m) => m.dietaryPreferences === 'Vegetarian'
+  ).length;
+
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
-  const handleEditMember = (member: FamilyMember) => {
-    setSelectedMember(member); // Set selected member first
-    setModalOpen(true);        // Then open modal
-  };
+  const [selectedMember, setSelectedMember] =
+    useState<FamilyMember | null>(null);
+
+  const [prakritiModalOpen, setPrakritiModalOpen] = useState(false);
+  const [activeMember, setActiveMember] =
+    useState<FamilyMember | null>(null);
+
+  const isAssessed = (m: FamilyMember) =>
+    m?.prakriti?.primaryDosha !== undefined;
 
   return (
     <div className="p-6 bg-green-50 min-h-screen">
-
-      {members.length > 0 ?
-        (<>
+      {members.length > 0 ? (
+        <>
+          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">Family Profile</h2>
-              <p className="text-gray-600 text-sm">Manage your family members and their profiles</p>
+              <h2 className="text-2xl font-bold text-gray-800">
+                Family Profile
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Manage your family members and their profiles
+              </p>
             </div>
             <button
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-semibold shadow"
-              onClick={() => {
-                if (members.length >= 5) {
-                  alert("You can only add up to 5 family members.");
-                  return;
-                }
-                setModalOpen(true);
-              }}
+              onClick={() => setModalOpen(true)}
             >
               + Add Family Member
             </button>
-            <AddFamilyMemberModal open={modalOpen} onClose={() => {
-              setModalOpen(false);
-              setSelectedMember(null);
-              onRefresh();
-
-            }} initialData={selectedMember} membersData={members} />
           </div>
 
+          {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <div className="bg-white p-4 rounded-xl shadow text-center">
-              <div className="text-2xl font-semibold text-green-600">{total}</div>
-              <div className="text-sm text-gray-600">Family Members</div>
+              <div className="text-2xl font-semibold text-green-600">
+                {total}
+              </div>
+              <div className="text-sm text-gray-600">
+                Family Members
+              </div>
             </div>
             <div className="bg-white p-4 rounded-xl shadow text-center">
-              <div className="text-2xl font-semibold text-green-600">{vegetarians}</div>
-              <div className="text-sm text-gray-600">Vegetarians</div>
+              <div className="text-2xl font-semibold text-green-600">
+                {vegetarians}
+              </div>
+              <div className="text-sm text-gray-600">
+                Vegetarians
+              </div>
             </div>
-            <div className="bg-white p-4 rounded-xl shadow text-center">
-              <div className="text-2xl font-semibold text-green-600">{withConditions}</div>
-              <div className="text-sm text-gray-600">With Health Conditions</div>
-            </div>
+
           </div>
 
-
+          {/* Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {members.map((member, i) => (
-              <div key={i} className="bg-white p-4 rounded-xl shadow relative">
+            {members.map((member) => (
+              <div
+                key={member._id}
+                className="bg-white p-4 rounded-xl shadow relative"
+              >
+                {/* Edit / Delete */}
                 <div className="absolute top-4 right-4 flex space-x-2">
-                  <Pencil className="w-4 h-4 text-gray-500 cursor-pointer hover:text-green-600"
+                  <Pencil
+                    className="w-4 h-4 cursor-pointer"
                     onClick={() => {
-                      handleEditMember(member); // Open modal with selected member data
-                    }} />
+                      setSelectedMember(member);
+                      setModalOpen(true);
+                    }}
+                  />
                   <Trash
-                    className="w-4 h-4 text-gray-500 cursor-pointer hover:text-red-500"
+                    className="w-4 h-4 cursor-pointer"
                     onClick={async () => {
-                      if (window.confirm(`Are you sure you want to delete ${member.fullName}?`)) {
-                        try {
-                          await apiClient.deleteFamilyMember(member._id); // ensure `userId` exists
-                          onRefresh();
-                        } catch (error) {
-                          console.error("Failed to delete family member", error);
-                          alert("Failed to delete family member.");
-                        }
+                      if (
+                        window.confirm(
+                          `Delete ${member.fullName}?`
+                        )
+                      ) {
+                        await apiClient.deleteFamilyMember(
+                          member._id
+                        );
+                        onRefresh();
                       }
                     }}
                   />
                 </div>
 
-                <div className="text-lg font-semibold text-gray-800 mb-1">
+                {/* Name + Badge */}
+                <div className="text-lg font-semibold text-gray-800 flex items-center">
                   {member.fullName}
+                  <PrakritiBadge assessed={isAssessed(member)} />
                 </div>
-                <div className="text-sm text-gray-600 mb-2">{member.age} years old</div>
 
-                <div className="mb-2">
-                  <span
-                    className={`text-xs font-bold uppercase mr-2 ${member.prakriti === 'VATA'
-                      ? 'text-blue-600'
-                      : member.prakriti === 'PITTA'
-                        ? 'text-red-600'
-                        : 'text-green-600'
-                      }`}
-                  >
-                    {member.prakriti} Primary
-                  </span>
-                  <span className="text-xs text-green-600 font-semibold">
+                <div className="text-sm text-gray-600 mb-2">
+                  {member.age} years old, {
+                      member.gender.charAt(0).toUpperCase() + member.gender.slice(1)
+                    }
+                </div>
+
+                {/* Basic Info */}
+                {/* <div className="space-y-1 mb-3">
+                  <InfoRow
+                    label="Gender"
+                    value={
+                      member.gender.charAt(0).toUpperCase() + member.gender.slice(1)
+                    }
+                  />
+                  <InfoRow label="State" value={member?.state} />
+                </div> */}
+
+                {/* Dietary Preference */}
+                {/* <div className="mb-3">
+                  <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
                     {member.dietaryPreferences}
                   </span>
-                </div>
+                </div> */}
 
-                <div className="space-y-2 mb-4">
-                  <DoshaBar label="Vata" value={member?.doshaStats?.vata ? member?.doshaStats?.vata : 0} />
-                  <DoshaBar label="Pitta" value={member?.doshaStats?.pitta ? member?.doshaStats?.pitta : 0} />
-                  <DoshaBar label="Kapha" value={member?.doshaStats?.kapha ? member?.doshaStats?.kapha : 0} />
-                </div>
+                {/* Prakriti Section */}
+                {isAssessed(member) ? (
+                  <PrakritiDetailsCard
+                    primaryDosha={member.prakriti?.primaryDosha || 'unknown'}
+                    secondaryDosha={member.prakriti?.secondaryDosha || 'unknown'}
+                    distribution={member.prakriti?.distribution || {
+                      vata: 0,
+                      pitta: 0,
+                      kapha: 0,
+                    }}
+                    guidance={member.prakriti?.guidance || {
+                      foods_to_favor: [],
+                      foods_to_avoid: [],
+                      lifestyle_tips: [],
+                    }}
+                  />
 
-                {member.medicalConditions && member.medicalConditions.length > 0 && (
-                  <div className="mb-3">
-                    <div className="text-sm font-medium text-gray-700 mb-1">Health Conditions</div>
-                    <div className="flex flex-wrap gap-2">
-                      {member.medicalConditions.map((cond, idx) => (
-                        <span
-                          key={idx}
-                          className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full"
-                        >
-                          {cond}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* {member.foodPreferences && member.foodPreferences.length > 0 && (
-              <div className="mb-3">
-                <div className="text-sm font-medium text-gray-700 mb-1">Food Preferences</div>
-                <div className="flex flex-wrap gap-2">
-                  {member.foodPreferences.map((food, idx) => (
-                    <span
-                      key={idx}
-                      className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full"
-                    >
-                      {food}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )} */}
-
-                {member.allergies && member.allergies.length > 0 && (
-                  <div className="mb-1">
-                    <div className="text-sm font-medium text-gray-700 mb-1">Allergies</div>
-                    <div className="flex flex-wrap gap-2">
-                      {member.allergies.map((a, idx) => (
-                        <span
-                          key={idx}
-                          className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full"
-                        >
-                          {a}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                ) : (
+                  <PrakritiCTA
+                    onClick={() => {
+                      setActiveMember(member);
+                      setPrakritiModalOpen(true);
+                    }}
+                  />
                 )}
               </div>
             ))}
-          </div></>) :
-        <NoFamilyMemberPrompt
-          onAddFamily={function (): void {
-            throw new Error('Function not implemented.');
-          }}
-          onRefresh={onRefresh}
-        />
-      }
+          </div>
+        </>
+      ) : (
+        <NoFamilyMemberPrompt onAddFamily={() => { }} onRefresh={onRefresh} />
+      )}
 
+      {/* Modals */}
+      <AddFamilyMemberModal
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setSelectedMember(null);
+          onRefresh();
+        }}
+        initialData={
+          selectedMember
+            ? {
+              _id: selectedMember._id,
+              fullName: selectedMember.fullName,
+              age: selectedMember.age,
+              gender: selectedMember.gender,
+              dietaryPreferences: selectedMember.dietaryPreferences,
+              userId: selectedMember._id,
+            }
+            : null
+        }
+        membersData={members.map((m) => ({ ...m, userId: m._id }))}
+      />
 
-
+      <PrakritiAssessmentDialog
+        open={prakritiModalOpen}
+        member={activeMember}
+        onClose={() => {
+          setPrakritiModalOpen(false);
+          setActiveMember(null);
+          onRefresh(); // Refresh member list after assessment
+        }}
+      />
     </div>
   );
 };
 
 export default FamilyMembers;
-

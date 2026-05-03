@@ -59,25 +59,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const initializeAuth = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      setLoading(false);
-      return;
-    }
     try {
-      // const response = await apiClient.getCurrentUser();
-      // console.log('Auth initialization response:', response);
-      // if (response.data) {
-      //   setUser(response.data);
-      //   setIsAuthenticated(true);
-      // } else {
-      //   apiClient.logout();
-      //   setIsAuthenticated(false);
-      // }
+      const token = localStorage.getItem('accessToken');
+      const storedUser = localStorage.getItem('user');
+
+      // Nothing stored → user is logged out
+      if (!token || !storedUser) {
+        setLoading(false);
+        setIsAuthenticated(false);
+        setUser(null);
+        return;
+      }
+
+      // Rehydrate user from localStorage so refresh doesn't log them out
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        setIsAuthenticated(true);
+      } catch (e) {
+        console.error('Failed to parse stored user, logging out.', e);
+        apiClient.logout();
+        setIsAuthenticated(false);
+        setUser(null);
+      }
     } catch (error) {
       console.error('Auth initialization error:', error);
       apiClient.logout();
       setIsAuthenticated(false);
+      setUser(null);
     } finally {
       setLoading(false);
     }

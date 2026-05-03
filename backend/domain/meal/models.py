@@ -57,13 +57,32 @@ class GroceryItem(BaseModel):
     category: Optional[str] = None
 
 
+class WeekMealPlanItem(BaseModel):
+    day: str  # Monday, Tuesday, etc.
+    meals: Dict[str, str]  # morning, breakfast, lunch, evening, dinner
+
+class RegionalNotes(BaseModel):
+    current_region_focus: List[str]
+    comparison_with_previous_region: bool
+
+class PreviousRegionComparison(BaseModel):
+    from_: Optional[str] = Field(None, alias="from")
+    to: str
+    notes: List[str]
+
 class WeeklyMealPlan(BaseModel):
-    weekStart: str
+    title: str
+    subtitle: str
     region: str
-    dietType: DietType
-    household: Household
-    days: List[DayPlan] = Field(min_length=7, max_length=7)
-    groceryList: List[GroceryItem]
+    diet_type: DietType
+    constitution: str
+    week_plan: List[WeekMealPlanItem] = Field(min_length=7, max_length=7)
+    key_guidelines: List[str] = Field(min_length=3)
+    regional_notes: RegionalNotes
+    previous_region_comparison: Optional[PreviousRegionComparison] = None
+    
+    class Config:
+        populate_by_name = True
 
 
 # API DTOs
@@ -81,6 +100,8 @@ class GenerateMealPlanRequest(BaseModel):
 class GenerateMealPlanResponse(BaseModel):
     plan: WeeklyMealPlan
     meta: dict
+    user_id: str
+    weekStartDate: str
 
 class MealPlanDocument(BaseModel):
     userId: str

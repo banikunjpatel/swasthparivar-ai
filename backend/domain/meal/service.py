@@ -96,6 +96,8 @@ class MealPlanService:
             schema_name=schema_name,
             schema=schema,
             model_override=req.model,
+            # Meal plans can be slower; allow a longer timeout
+            timeout_s=int(features().get("meal_plan_timeout_s", 120)),
         )
 
         try:
@@ -132,10 +134,15 @@ class MealPlanService:
                 recents = filter_recent(names, recent_set) if recent_set else []
                 needs_repair = bool(dups or recents)
 
-        # Optional server-side aggregation
-        if bool(feature_flag("deterministic_grocery_aggregation", True)):
-            items = aggregate_from_plan(plan)
-            plan = WeeklyMealPlan(**{**plan.model_dump(), "groceryList": [i.model_dump() for i in items]})
+        # Optional server-side aggregation (only works with old schema with recipe details)
+        # New schema doesn't include recipe ingredients, so skip aggregation
+        if bool(feature_flag("deterministic_grocery_aggregation", True)) and hasattr(plan, 'days'):
+            try:
+                items = aggregate_from_plan(plan)
+                plan = WeeklyMealPlan(**{**plan.model_dump(), "groceryList": [i.model_dump() for i in items]})
+            except (AttributeError, KeyError):
+                # New schema structure doesn't support grocery aggregation
+                pass
 
         meta = {"model": resp.model, "prompt_version": prompt_version, "cached": False}
 

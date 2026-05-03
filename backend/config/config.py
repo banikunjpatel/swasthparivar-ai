@@ -28,7 +28,7 @@ class EnvSettings(BaseSettings):
     features: Dict[str, Any] = Field(default_factory=dict)
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(ROOT_DIR / ".env"),
         env_file_encoding="utf-8",
         env_nested_delimiter="__",
         extra="allow",

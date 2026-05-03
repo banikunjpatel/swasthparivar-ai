@@ -85,15 +85,16 @@ function AppContent() {
   const fetchMembers = async () => {
     try {
       const userId = await apiClient.getCurrentUserId();
+      console.log("userId in fetchMembers:", userId);
       const res = await apiClient.getFamilyMembers(userId);
-      const highestDosha = Object.entries(res?.data[0]?.doshaStats).reduce((max: any, current: any) => {
-        return current[1] > max[1] ? current : max;
-      }, ["", 0]);
+      // const highestDosha = Object.entries(res?.data[0]?.doshaStats).reduce((max: any, current: any) => {
+      //   return current[1] > max[1] ? current : max;
+      // }, ["", 0]);
 
-      const [doshaName, percentage] = highestDosha;
+      // const [doshaName, percentage] = highestDosha;
 
-      setDoshaName(`${doshaName.charAt(0).toUpperCase() + doshaName.slice(1)}`);
-      setDoshaPerc(percentage.toString());
+      // setDoshaName(`${doshaName.charAt(0).toUpperCase() + doshaName.slice(1)}`);
+      // setDoshaPerc(percentage.toString());
       setUserId(user?.userId || '');
       setMembers(res.data || []);
     } catch (err) {
@@ -104,18 +105,19 @@ function AppContent() {
     if (userId && members && members.length > 0) {
       try {
         const res = await apiClient.getMealPlan(userId);
-        const transformed = transformMealPlan(res.data);
-        setMealPlan(transformed);
-        const today = format(new Date(), "EEEE"); // e.g., "Wednesday"
-        const matchedWeek = transformed.find((item: any) =>
-          format(new Date(item.weekStart), "yyyy-MM-dd") === getWeekStartDate(new Date())
-        );
-        const todayData = matchedWeek?.days?.find((dayObj: any) => dayObj.day === today);
-        setTodayMealPlan(todayData);
+        if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+          const transformed = transformMealPlan(res.data);
+          setMealPlan(transformed);
+          const today = format(new Date(), "EEEE"); // e.g., "Wednesday"
+          const matchedWeek = transformed.find((item: any) =>
+            format(new Date(item.weekStart), "yyyy-MM-dd") === getWeekStartDate(new Date())
+          );
+          const todayData = matchedWeek?.days?.find((dayObj: any) => dayObj.day === today);
+          setTodayMealPlan(todayData);
+        }
       } catch (err) {
         console.error("Meal plan fetch error:", err);
-        setMealPlan([]);
-        setTodayMealPlan(undefined);
+        // Don't set mealPlan to [] to avoid overriding generated plans
       }
     }
   };

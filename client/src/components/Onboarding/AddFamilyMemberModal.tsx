@@ -1,17 +1,15 @@
+// ...existing code...
 import React, { useEffect, useState } from 'react';
 
 import apiClient from '../../apiCall/api';
 import StepBasicInfo from './steps/StepBasicInfo';
-import StepPrakritiAssessment from './steps/StepPrakritiAssessment';
-import StepReviewAndSubmit from './steps/StepReviewAndSubmit';
-import StepDietaryPreference from './steps/StepDietaryPreference';
 import Modal from '../../shared/Modal';
 
 interface AddFamilyMemberModalProps {
   open: boolean;
   onClose: () => void;
   initialData?: MemberFormState | null;
-  membersData: MemberFormState[]
+  membersData: MemberFormState[];
 }
 const storedUser = localStorage.getItem('user');
 const userId = storedUser ? JSON.parse(storedUser)?.userId : '';
@@ -25,9 +23,139 @@ export interface MemberFormState {
   fullName: string;
   age: number | '';
   gender: 'male' | 'female' | 'other';
-  dietaryPreferences: string; // Added property to match FormState
+  dietaryPreferences: string;
+  userId: string;
+  state?: string;
+}
+const defaultFormState: MemberFormState = {
+  _id: undefined,
+  fullName: '',
+  age: '',
+  gender: 'male',
+  dietaryPreferences: '',
+  userId: userId,
+  state: ''
+};
+
+const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClose, initialData, membersData }) => {
+  const [loading, setLoading] = useState(false);
+  const [formState, setFormState] = useState<MemberFormState>(defaultFormState);
+  const [errors, setErrors] = useState<{ fullName?: boolean; age?: boolean; state?: boolean }>({});
+
+  useEffect(() => {
+    if (open) {
+      setErrors({});
+      if (initialData) {
+        setFormState(initialData);
+      } else {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            const user = JSON.parse(storedUser);
+            setFormState(prev => ({ ...defaultFormState, fullName: (user?.name && membersData?.length === 0) ? user.name : '', userId: user.userId || '' }));
+          } catch {
+            console.warn('Invalid user data in localStorage');
+            setFormState(defaultFormState);
+          }
+        } else {
+          setFormState(defaultFormState);
+        }
+      }
+    }
+  }, [open, initialData, membersData]);
+
+  const validate = () => {
+    const newErrors: { fullName?: boolean; age?: boolean; state?: boolean } = {};
+    if (!formState.fullName || formState.fullName.trim() === '') newErrors.fullName = true;
+    if (formState.age === '' || formState.age < 1 || formState.age > 99) newErrors.age = true;
+    if (!formState.state || formState.state.trim() === '') newErrors.state = true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (field: string, value: any) => {
+    // cast field to keyof MemberFormState when updating the strongly-typed form state
+    setFormState(prev => ({ ...prev, [field as keyof MemberFormState]: value }));
+    // update errors safely (cast to any to allow dynamic key)
+    setErrors(prev => ({ ...prev, [field as keyof typeof prev]: false } as any));
+  };
+
+  const handleSubmit = async () => {
+    if (!validate()) return;
+    setLoading(true);
+    try {
+      if (initialData && initialData._id) {
+        await apiClient.updateFamilyMember(initialData._id, formState);
+      } else {
+        await apiClient.addFamilyMember(formState);
+      }
+      onClose();
+      setFormState(defaultFormState);
+    } catch (err) {
+      console.error('Error submitting form', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Modal open={open} onClose={onClose} title="Add Family Member">
+      <div className="px-4 py-6">
+        <StepBasicInfo formState={formState} setFormState={handleChange} membersData={membersData} errors={errors} />
+
+        <div className="flex justify-between mt-6">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100"
+            disabled={loading}
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={handleSubmit}
+            className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save'}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+};
+
+export default AddFamilyMemberModal;
+// ...existing code...
+/** // filepath: d:\swasth\new\swasthparivar-ai\client\src\components\Onboarding\AddFamilyMemberModal.tsx
+// ...existing code...
+import React, { useEffect, useState } from 'react';
+
+import apiClient from '../../apiCall/api';
+import StepBasicInfo from './steps/StepBasicInfo';
+import Modal from '../../shared/Modal';
+
+interface AddFamilyMemberModalProps {
+  open: boolean;
+  onClose: () => void;
+  initialData?: MemberFormState | null;
+  membersData: MemberFormState[];
+}
+const storedUser = localStorage.getItem('user');
+const userId = storedUser ? JSON.parse(storedUser)?.userId : '';
+export interface DoshaStats {
+  vata: number;
+  pitta: number;
+  kapha: number;
+}
+export interface MemberFormState {
+  _id?: string;
+  fullName: string;
+  age: number | '';
+  gender: 'male' | 'female' | 'other';
+  dietaryPreferences: string;
   medicalConditions: string[];
-  allergies: string[],
+  allergies: string[];
   prakriti: string;
   userId: string;
   doshaStats: DoshaStats;
@@ -38,7 +166,7 @@ const defaultFormState: MemberFormState = {
   fullName: '',
   age: '',
   gender: 'male',
-  dietaryPreferences: '', // Added default value for the new property
+  dietaryPreferences: '',
   medicalConditions: [],
   prakriti: 'unknown',
   allergies: [],
@@ -52,23 +180,12 @@ const defaultFormState: MemberFormState = {
 };
 
 const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClose, initialData, membersData }) => {
-  const [step, setStep] = useState(0);
-  const [formState, setFormState] = useState<MemberFormState>(defaultFormState);
-  const [selectedAnswers, setSelectedAnswers] = useState<string[]>(Array(9).fill(''));
   const [loading, setLoading] = useState(false);
+  const [formState, setFormState] = useState<MemberFormState>(defaultFormState);
   const [errors, setErrors] = useState<{ fullName?: boolean; age?: boolean; state?: boolean }>({});
-  const validateStep0 = () => {
-    const newErrors: { fullName?: boolean; age?: boolean; state?: boolean } = {};
-    if (!formState.fullName || formState.fullName.trim() === '') newErrors.fullName = true;
-    if (formState.age === '' || formState.age < 1 || formState.age > 99) newErrors.age = true;
-    if (!formState.state || formState.state.trim() === '') newErrors.state = true;
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   useEffect(() => {
     if (open) {
-      setStep(0);
       setErrors({});
       if (initialData) {
         setFormState(initialData);
@@ -77,131 +194,71 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
         if (storedUser) {
           try {
             const user = JSON.parse(storedUser);
-            if (user?.name) {
-              setFormState(defaultFormState)
-              setFormState(prev => ({ ...prev, fullName: (user.name && membersData?.length === 0) ? user.name : '', userId: user.userId || '', }));
-            }
+            setFormState(prev => ({ ...defaultFormState, fullName: (user?.name && membersData?.length === 0) ? user.name : '', userId: user.userId || '' }));
           } catch {
             console.warn('Invalid user data in localStorage');
+            setFormState(defaultFormState);
           }
+        } else {
+          setFormState(defaultFormState);
         }
       }
-
     }
-  }, [open, initialData]);
+  }, [open, initialData, membersData]);
 
-  const handleNext = async () => {
-    if (step === 0) {
-      if (!validateStep0()) return;
-    }
-     if (step === 2) {
-      try {
-        const isComplete = selectedAnswers.every((answer) => answer && answer.trim() !== "");
-
-        if (!isComplete) {
-          alert("Please answer all Prakriti assessment questions.");
-          return;
-        }
-        setLoading(true);
-        const res = await apiClient.calculatePrakriti(selectedAnswers);
-        const { prakriti, doshaStats } = res.data;
-        setFormState(prev => ({ ...prev, prakriti, doshaStats }));
-        setStep(step + 1);
-      } catch (err) {
-        console.error('Failed to calculate prakriti', err);
-      } finally {
-        setLoading(false); // 🔵 Hide loader
-      }
-    } else {
-      setStep(step + 1);
-    }
+  const validate = () => {
+    const newErrors: { fullName?: boolean; age?: boolean; state?: boolean } = {};
+    if (!formState.fullName || formState.fullName.trim() === '') newErrors.fullName = true;
+    if (formState.age === '' || formState.age < 1 || formState.age > 99) newErrors.age = true;
+    if (!formState.state || formState.state.trim() === '') newErrors.state = true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleBack = () => {
-    if (step > 0) setStep(step - 1);
+  const handleChange = (field: keyof MemberFormState, value: any) => {
+    setFormState(prev => ({ ...prev, [field]: value }));
+    setErrors(prev => ({ ...prev, [field]: false }));
   };
 
   const handleSubmit = async () => {
+    if (!validate()) return;
+    setLoading(true);
     try {
-      if (initialData) {
-        if (initialData?._id) {
-          await apiClient.updateFamilyMember(initialData._id, formState);
-        } else {
-          console.error('Error: Family member ID is undefined.')
-          return;
-        }
+      if (initialData && initialData._id) {
+        await apiClient.updateFamilyMember(initialData._id, formState);
       } else {
         await apiClient.addFamilyMember(formState);
       }
       onClose();
-      setFormState(defaultFormState)
-
-    } catch (error) {
-      console.error('Error submitting form', error);
-    }
-  };
-
-  const renderStep = () => {
-    switch (step) {
-      case 0:
-        const handleFormStateChange = (field: string, value: any) => {
-          setFormState(prev => ({ ...prev, [field]: value }));
-                  setErrors(prev => ({ ...prev, [field]: false })); // clear error on change
-
-        };
-        return <StepBasicInfo formState={formState} setFormState={handleFormStateChange} membersData={membersData} errors={errors} />;
-      // case 1:
-        // return <StepHealthConditions formState={formState} setFormState={setFormState} />;
-      case 1:
-        return <StepDietaryPreference formState={formState} setFormState={setFormState} />;
-      case 2:
-        return <StepPrakritiAssessment selectedAnswers={selectedAnswers} setSelectedAnswers={setSelectedAnswers} />;
-      case 3:
-        return <StepReviewAndSubmit formState={formState} handleBack={handleBack} handleSubmit={handleSubmit} />;
-      default:
-        return null;
+      setFormState(defaultFormState);
+    } catch (err) {
+      console.error('Error submitting form', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Modal open={open} onClose={onClose} title="Add Family Member">
       <div className="px-4 py-6">
-        {renderStep()}
+        <StepBasicInfo formState={formState} setFormState={handleChange} membersData={membersData} errors={errors} />
 
         <div className="flex justify-between mt-6">
           <button
-            onClick={handleBack}
-            disabled={step === 0}
+            onClick={onClose}
             className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100"
+            disabled={loading}
           >
-            Back
+            Cancel
           </button>
-          {step < 3 ? (loading ? (
-            <button
-              disabled
-              className="px-6 py-2 bg-green-500 text-white rounded flex items-center justify-center gap-2"
-            >
-              <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8H4z"></path>
-              </svg>
-              Calculating...
-            </button>
-          ) : (
-            <button
-              onClick={handleNext}
-              className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Next
-            </button>
-          )) : (
-            <button
-              onClick={handleSubmit}
-              className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Submit
-            </button>
-          )}
+
+          <button
+            onClick={handleSubmit}
+            className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save'}
+          </button>
         </div>
       </div>
     </Modal>
@@ -209,3 +266,4 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
 };
 
 export default AddFamilyMemberModal;
+// **/  

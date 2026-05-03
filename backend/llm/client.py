@@ -20,7 +20,7 @@ class StructuredResult:
 
 class LLMClient:
     """
-    Thin adapter over OpenAI Responses API.
+    Thin adapter over OpenAI Chat Completions API.
     - Picks model per task from a provided task_model_map
     - Supports per-call model override
     - Provides a structured() helper that enforces a JSON schema
@@ -38,6 +38,28 @@ class LLMClient:
         self._timeout = request_timeout_s
         self._task_models = {k.strip().lower(): v for k, v in (task_model_map or {}).items()}
         self._default_quality = default_quality
+
+    def _add_additional_properties_false(self, schema: Dict[str, Any]) -> None:
+        """
+        Recursively enforce OpenAI structured-output requirements:
+        - Every object has additionalProperties: false
+        - required includes *all* properties keys (OpenAI demands this even for optional fields)
+        """
+        if isinstance(schema, dict):
+            if schema.get("type") == "object":
+                props = schema.get("properties")
+                # Always provide additionalProperties for objects (OpenAI requires it).
+                schema["additionalProperties"] = False
+                if isinstance(props, dict):
+                    # OpenAI wants required to list every key in properties
+                    schema["required"] = list(props.keys())
+            # Recurse into nested values, including $defs
+            for key, value in schema.items():
+                if key != "additionalProperties":  # avoid looping on the flag we just set
+                    self._add_additional_properties_false(value)
+        elif isinstance(schema, list):
+            for item in schema:
+                self._add_additional_properties_false(item)
 
     def _model_for(self, task: str, override: Optional[str] = None) -> str:
         if override:
@@ -63,6 +85,11 @@ class LLMClient:
         model = self._model_for(task, model_override)
         timeout = timeout_s or self._timeout
 
+        # Ensure schema has additionalProperties: false for OpenAI structured outputs
+        # NOTE: Use a deep copy so we never mutate the original Pydantic schema object.
+        openai_schema = json.loads(json.dumps(schema))
+        self._add_additional_properties_false(openai_schema)
+
         messages = [
             {"role": "system", "content": system},
             {"role": "user", "content": user},
@@ -71,16 +98,20 @@ class LLMClient:
         last_err: Exception | None = None
         for attempt in range(max_retries):
             try:
-                resp = await self._client.responses.create(
+                resp = await self._client.chat.completions.create(
                     model=model,
-                    input=messages,
+                    messages=messages,
                     response_format={
                         "type": "json_schema",
-                        "json_schema": {"name": schema_name, "schema": schema},
+                        "json_schema": {
+                            "name": schema_name,
+                            "schema": openai_schema,
+                            "strict": True,
+                        },
                     },
                     timeout=timeout,
                 )
-                text = resp.output[0].content[0].text  # guaranteed JSON string for json_schema
+                text = resp.choices[0].message.content  # guaranteed JSON string for json_schema
                 data = json.loads(text)
                 return StructuredResult(data=data, model=model, raw=resp)
             except (RateLimitError, APITimeoutError, APIError) as e:

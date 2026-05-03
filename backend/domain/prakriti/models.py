@@ -33,10 +33,15 @@ class PrakritiGuidance(BaseModel):
     foods_to_avoid: List[str]
     lifestyle_tips: List[str]
 
+class PrakritiMeta(BaseModel):
+    model: Optional[str] = None
+    prompt_version: Optional[int] = None
+    cached: Optional[bool] = None
+
 class GeneratePrakritiResponse(BaseModel):
     primaryDosha: Dosha
     secondaryDosha: Optional[Dosha] = None
     distribution: PrakritiDistribution
     guidance: PrakritiGuidance
     notes: Optional[str] = None
-    meta: dict
+    meta: PrakritiMeta = Field(default_factory=PrakritiMeta)

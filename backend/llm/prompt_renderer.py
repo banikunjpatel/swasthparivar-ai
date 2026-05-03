@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader, TemplateNotFound, select_autoe
 
 # Prompts live under: /prompts/<task>/v{version}.j2
 ROOT_DIR: Path = Path(__file__).resolve().parents[1]
-PROMPTS_DIR: Path = ROOT_DIR.parent / "prompts"
+PROMPTS_DIR: Path = ROOT_DIR / "prompts"
 
 _env = Environment(
     loader=FileSystemLoader(str(PROMPTS_DIR)),

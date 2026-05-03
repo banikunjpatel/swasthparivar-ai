@@ -27,3 +27,4 @@ async def prakriti_assessment(
 
     data, meta = await svc.generate(final_req)
     return data
+    

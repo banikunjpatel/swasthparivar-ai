@@ -37,4 +37,9 @@ async def generate_meal_plan(
     final_req = body.model_copy(update={"model": model, "prompt_version": prompt_version})
 
     plan, meta = await svc.generate(final_req)
-    return GenerateMealPlanResponse(plan=plan, meta=meta)
+    return GenerateMealPlanResponse(
+        plan=plan, 
+        meta=meta, 
+        user_id=final_req.userId, 
+        weekStartDate=final_req.weekStart
+    )
