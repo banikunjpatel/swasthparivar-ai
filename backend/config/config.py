@@ -9,7 +9,7 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # --- Paths ---
-ROOT_DIR: Path = Path(__file__).resolve().parents[2]
+ROOT_DIR: Path = Path(__file__).resolve().parents[1]
 CONFIG_DIR: Path = ROOT_DIR / "config"
 
 # --- Env settings (env + .env) ---

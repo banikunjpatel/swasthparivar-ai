@@ -5,7 +5,7 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException
 
 router = APIRouter(tags=["grocery"])
-DATA_DIR = Path(__file__).resolve().parents[3] / "data"
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 
 @router.get("/grocery/categories")
 async def grocery_categories() -> dict:
