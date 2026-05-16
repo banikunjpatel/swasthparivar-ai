@@ -119,6 +119,7 @@ jobs:
             docker image prune -f
 
             echo ">>> Deployment complete ✅"
+            echo ">>> Health: $(curl -sf http://localhost:8000/healthz || echo 'check failed')"
             $COMPOSE ps
 
       - name: Notify on failure
