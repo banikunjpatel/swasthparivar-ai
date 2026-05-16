@@ -2,11 +2,11 @@ name: Backend CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [feature/prakriti]
     paths:
       - "backend/**"
   push:
-    branches: [main]
+    branches: [feature/prakriti]
     paths:
       - "backend/**"
 

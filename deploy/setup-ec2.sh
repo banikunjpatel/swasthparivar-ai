@@ -30,9 +30,9 @@ sudo apt-get install -y nginx certbot python3-certbot-nginx
 echo "=== [4/7] Clone / update repo ==="
 if [ -d "$APP_DIR" ]; then
   echo "Repo already exists — pulling latest..."
-  git -C "$APP_DIR" fetch origin && git -C "$APP_DIR" reset --hard origin/main
+  git -C "$APP_DIR" fetch origin && git -C "$APP_DIR" reset --hard origin/feature/prakriti
 else
-  git clone "$REPO_URL" "$APP_DIR"
+  git clone --branch feature/prakriti "$REPO_URL" "$APP_DIR"
 fi
 cd "$APP_DIR"
 

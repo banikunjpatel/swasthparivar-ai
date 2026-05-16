@@ -22,9 +22,9 @@ done
 cd "$APP_DIR"
 
 if [[ "${PULL:-false}" == "true" ]]; then
-  echo "=== Pulling latest code from main ==="
-  git fetch origin main
-  git reset --hard origin/main
+  echo "=== Pulling latest code from feature/prakriti ==="
+  git fetch origin feature/prakriti
+  git reset --hard origin/feature/prakriti
 fi
 
 echo "=== Building Docker image ==="
