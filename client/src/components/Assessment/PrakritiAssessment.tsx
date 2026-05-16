@@ -60,7 +60,6 @@ export const PrakritiQuiz = ({ member, onComplete }: PrakritiQuizProps) => {
 
   const handleSubmit = async () => {
     if (!member) {
-      console.error("No member provided for assessment");
       return;
     }
 
@@ -70,8 +69,6 @@ export const PrakritiQuiz = ({ member, onComplete }: PrakritiQuizProps) => {
       answersMap[questionId] = answer;
     });
 
-    console.log('Submitting rule-based assessment with answers:', answersMap);
-
     // Call new rule-based prakriti assessment API
     const response = await apiClient.calculatePrakritiRuleBased({
       memberId: member._id,
@@ -79,11 +76,8 @@ export const PrakritiQuiz = ({ member, onComplete }: PrakritiQuizProps) => {
     });
 
     if (response.error) {
-      console.error("Prakriti assessment failed:", response.error);
       return;
     }
-
-    console.log("Prakriti assessment result:", response.data);
 
     // Update member with complete prakriti assessment
     if (response.data) {
@@ -112,21 +106,16 @@ export const PrakritiQuiz = ({ member, onComplete }: PrakritiQuizProps) => {
         version: "2.0-rule-based",
       };
 
-      console.log('Saving prakriti assessment with elements:', prakritiAssessment);
-
       try {
-        const updateResponse = await apiClient.updateFamilyMember(member._id, {
+        await apiClient.updateFamilyMember(member._id, {
           prakriti: prakritiAssessment,
         });
-
-        console.log('Member update response:', updateResponse);
 
         // Call onComplete callback to refresh member list
         if (onComplete) {
           onComplete();
         }
       } catch (error) {
-        console.error("Failed to update member prakriti assessment:", error);
       }
     }
 

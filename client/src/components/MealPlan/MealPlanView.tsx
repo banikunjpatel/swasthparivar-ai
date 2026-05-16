@@ -45,7 +45,6 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
         const isCurrentWeekPlanned = (matchedPlan?.weekStart === selectedWeekStart) || (selectedWeekStart < todayWeekStart);
         setIsGenerateDisabled(isCurrentWeekPlanned);
       } catch (err) {
-        console.error('Failed to fetch meal plan', err);
       }
     };
 
@@ -239,13 +238,11 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
                   setIsGenerateDisabled(true);
                   setMealPlan(transformed);
                 } catch (err) {
-                  console.error("Failed to fetch meal plan", err);
                 } finally {
                   setLoadingMeal(false);
                 }
 
               } catch (error) {
-                console.error("Failed to generate meal plan", error);
               } finally {
                 setLoading(false);
               }

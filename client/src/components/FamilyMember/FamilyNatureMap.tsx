@@ -95,39 +95,31 @@ export const FamilyNatureMap: React.FC<FamilyNatureMapProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  console.log('FamilyNatureMap rendering with members:', members);
-
   useEffect(() => {
     loadFamilyNature();
   }, [members]);
 
   const loadFamilyNature = async () => {
     try {
-      console.log('Loading family nature...');
       setLoading(true);
       setError(null);
 
       const userId = await apiClient.getCurrentUserId();
-      console.log('userId from apiClient:', userId);
 
       if (!userId) {
-        console.error('No userId found');
         setError('User ID not found. Please log in again.');
         setLoading(false);
         return;
       }
 
       const response = await apiClient.getFamilyNature(userId);
-      console.log('Family nature response:', response);
 
       if (response.data) {
         setFamilyData(response.data);
       } else if (response.error) {
-        console.error('API error:', response.error);
         setError(response.error);
       }
     } catch (error) {
-      console.error('Failed to load family nature:', error);
       setError('Failed to load family data');
     } finally {
       setLoading(false);
@@ -214,17 +206,10 @@ export const FamilyNatureMap: React.FC<FamilyNatureMapProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {familyData.members.map((member, index) => {
             const fullMember = members.find(m => m.fullName === member.name);
-            console.log('Member from API:', member.name);
-            console.log('Looking for fullMember in members array:', members.map(m => m.fullName));
-            console.log('Found fullMember:', fullMember);
 
             const hasAssessment = member.prakriti;
             const memberAge = member.age || 0;
             const isEligibleForAssessment = memberAge >= 13;
-
-            console.log('hasAssessment:', hasAssessment);
-            console.log('isEligibleForAssessment:', isEligibleForAssessment);
-            console.log('fullMember exists:', !!fullMember);
 
             // Get dominant element and its percentage
             let dominantElement: string | null = null;

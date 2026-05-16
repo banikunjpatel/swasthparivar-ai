@@ -75,7 +75,6 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
               state: defaultState
             }));
           } catch {
-            console.warn('Invalid user data in localStorage');
             setFormState(defaultFormState);
           }
         } else {
@@ -145,7 +144,6 @@ const AddFamilyMemberModal: React.FC<AddFamilyMemberModalProps> = ({ open, onClo
       onClose();
       setFormState(defaultFormState);
     } catch (err) {
-      console.error('Error submitting form', err);
     } finally {
       setLoading(false);
     }

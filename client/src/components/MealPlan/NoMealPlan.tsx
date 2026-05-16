@@ -22,7 +22,6 @@ const NoMealPlan: React.FC<NoMealPlanProps> = ({ members, userId, onPlanGenerate
       const response = await apiClient.getMealPlan(userId);
       onPlanGenerated(response.data); // pass data back to parent
     } catch (err) {
-      console.error('Failed to generate meal plan:', err);
     } finally {
       setLoading(false);
     }

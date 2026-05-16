@@ -72,7 +72,6 @@ const FamilyGuidance: React.FC = () => {
         setGuidance(response.data);
       }
     } catch (err: any) {
-      console.error('Error fetching family guidance:', err);
       setError('Failed to load family guidance');
     } finally {
       setLoading(false);

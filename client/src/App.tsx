@@ -93,7 +93,6 @@ function AppContent() {
   const fetchMembers = async () => {
     try {
       const userId = await apiClient.getCurrentUserId();
-      console.log("userId in fetchMembers:", userId);
       const res = await apiClient.getFamilyMembers(userId);
       // const highestDosha = Object.entries(res?.data[0]?.doshaStats).reduce((max: any, current: any) => {
       //   return current[1] > max[1] ? current : max;
@@ -106,7 +105,6 @@ function AppContent() {
       setUserId(user?.userId || '');
       setMembers(res.data || []);
     } catch (err) {
-      console.error("Failed to load family members", err);
     }
   };
   const fetchTodayTask = async (uid: string) => {
@@ -114,7 +112,6 @@ function AppContent() {
       const res = await apiClient.getTodayTask(uid);
       if (res.data && !res.error) setTodayTask(res.data);
     } catch (err) {
-      console.error('Failed to fetch today task', err);
     }
   };
 
@@ -133,7 +130,6 @@ function AppContent() {
           setTodayMealPlan(todayData);
         }
       } catch (err) {
-        console.error("Meal plan fetch error:", err);
         // Don't set mealPlan to [] to avoid overriding generated plans
       }
     }
@@ -488,7 +484,6 @@ function AppContent() {
                 const res = await apiClient.getRecipeByName(obj);
                 setFetchedRecipe(res.data);
               } catch (error) {
-                console.error("Failed to fetch recipe", error);
               } finally {
                 setLoadingRecipe(false);
               }

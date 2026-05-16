@@ -58,7 +58,6 @@ export const GroceryList: React.FC<GroceryListProps> = ({ userId, mealPlan }) =>
                 setItems(response.data?.itemsFlat || []);
                 setHasFetched(true);
             } catch (err) {
-                console.error("Failed to fetch grocery list", err);
             } finally {
                 setLoadingGrocery(false);
             }

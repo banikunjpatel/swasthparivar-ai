@@ -85,7 +85,6 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({ members, onRefresh }) => 
       await apiClient.deleteFamilyMember(deleteTarget._id);
       onRefresh();
     } catch (err) {
-      console.error('Delete failed', err);
     } finally {
       setDeleting(false);
       setDeleteTarget(null);
