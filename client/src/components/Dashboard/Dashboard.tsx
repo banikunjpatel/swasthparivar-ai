@@ -157,35 +157,23 @@ const Dashboard: React.FC<DashboardProps> = ({
   // Fetch streak data
   useEffect(() => {
     const fetchStreak = async () => {
-      console.log('=== Streak Fetch Start ===');
-      console.log('isAuthenticated:', isAuthenticated);
-      console.log('user:', user);
-      console.log('user?.userId:', user?.userId);
-
       if (!isAuthenticated || !user?.userId) {
-        console.log('Skipping streak fetch - not authenticated or no userId');
         setLoadingStreak(false);
         return;
       }
 
       setLoadingStreak(true);
       try {
-        console.log('Fetching streak for user:', user.userId);
         const response = await apiClient.getStreak(user.userId);
-        console.log('Streak API response:', response);
 
         if (!response.error && response.data) {
-          console.log('Setting streak data:', response.data);
           setStreakData(response.data);
         } else {
-          console.error('Streak fetch error:', response.error);
           setStreakData(null);
         }
       } catch (error) {
-        console.error('Failed to fetch streak (exception):', error);
         setStreakData(null);
       } finally {
-        console.log('Setting loadingStreak to false');
         setLoadingStreak(false);
       }
     };
@@ -210,7 +198,6 @@ const Dashboard: React.FC<DashboardProps> = ({
         }
       }
     } catch (e) {
-      console.error(e);
     } finally {
       setCompleting(false);
     }
@@ -408,13 +395,6 @@ const Dashboard: React.FC<DashboardProps> = ({
             {/* WELLNESS STREAK - Moved below Today's Card */}
             <div className="bg-card rounded-2xl border border-border shadow-sm p-5">
               <h3 className="font-bold text-foreground mb-3">Your Family's Streak 🔥</h3>
-
-              {(() => {
-                console.log('=== Streak Render ===');
-                console.log('loadingStreak:', loadingStreak);
-                console.log('streakData:', streakData);
-                return null;
-              })()}
 
               {loadingStreak ? (
                 <div className="text-center py-8">

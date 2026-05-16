@@ -313,7 +313,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
   };
 
   const handleFirebaseError = (err: any) => {
-    console.error("Firebase error:", err);
     if (!err || !err.code) {
       setError("Something went wrong. Please try again.");
       return;
@@ -516,7 +515,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
       setConfirmationResult(confirmationResult);
       setSuccess("OTP sent successfully to your phone.");
     } catch (err: any) {
-      console.error("Send OTP error:", err);
       handleFirebaseError(err);
     } finally {
       setLoading(false);
@@ -566,7 +564,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
         }, 1000);
       }
     } catch (err: any) {
-      console.error("Verify OTP error:", err);
       // Firebase errors like auth/invalid-verification-code
       if (err?.code === "auth/invalid-verification-code") {
         setError("Invalid OTP. Please try again.");

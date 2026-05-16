@@ -40,7 +40,6 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentSection }) => {
       setShowMobileMenu(false);
       onNavigate('dashboard');
     } catch (error) {
-      console.error('Sign out error:', error);
     }
   };
 

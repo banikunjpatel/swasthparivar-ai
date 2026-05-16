@@ -100,7 +100,6 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ userId, onComplete }) =
           setLocationData({ latitude, longitude, region });
           setCurrentStep('user-details');
         } catch (err) {
-          console.error('Error processing location:', err);
           // Proceed to form with default region
           setLocationData({ latitude: 0, longitude: 0, region: 'India' });
           setCurrentStep('user-details');
@@ -110,7 +109,6 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ userId, onComplete }) =
       },
       (err) => {
         // User denied permission or location services are off
-        console.warn('Location permission denied:', err);
         // Set default region and proceed to form
         setLocationData({ latitude: 0, longitude: 0, region: 'India' });
         setCurrentStep('user-details');

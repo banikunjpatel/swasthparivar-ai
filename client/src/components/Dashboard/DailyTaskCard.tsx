@@ -49,7 +49,6 @@ const DailyTaskCard: React.FC<DailyTaskCardProps> = ({ task, onComplete }) => {
         onComplete?.(task.taskId);
       }
     } catch (err) {
-      console.error('Failed to complete task', err);
     } finally {
       setLoading(false);
     }

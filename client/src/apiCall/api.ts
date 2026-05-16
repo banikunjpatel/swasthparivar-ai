@@ -52,8 +52,6 @@ class ApiClient {
       const data = await response.json();
       return { data };
     } catch (error) {
-      console.error('API request failed:', error);
-
       // Provide more specific error messages
       if (error instanceof TypeError && error.message.includes('fetch')) {
         return {
@@ -88,7 +86,6 @@ class ApiClient {
         return false;
       }
     } catch (error) {
-      console.error('Token refresh failed:', error);
       this.logout();
       return false;
     }
