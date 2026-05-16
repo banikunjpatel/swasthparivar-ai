@@ -12,7 +12,7 @@ services:
     environment:
       - WEB_CONCURRENCY=2
     ports:
-      - "127.0.0.1:8000:8000"   # Bind to localhost only; Nginx proxies externally
+      - "0.0.0.0:8000:8000"     # Publicly accessible (add Nginx later for SSL)
     volumes:
       # Mount Firebase service account key (do NOT bake secrets into the image)
       - ./backend/credentials:/app/credentials:ro
