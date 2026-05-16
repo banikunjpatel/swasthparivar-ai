@@ -1,11 +1,11 @@
 // src/components/Onboarding/steps/StepBasicInfo.tsx
 
 import React, { useEffect } from 'react';
-import { statesAndUTs } from '../../../data/ayurvedic-data';
 
 interface Props {
   formState: {
     fullName: string;
+    birthdate?: string;
     age: number | '';
     gender: 'male' | 'female' | 'other';
     state?: string;
@@ -13,87 +13,81 @@ interface Props {
   };
   membersData: any;
   setFormState: (field: string, value: any) => void;
-  errors?: { fullName?: boolean; age?: boolean; state?: boolean };
+  errors?: { fullName?: boolean; birthdate?: boolean };
 }
-
-const DIET_OPTIONS = [
-  'Vegetarian',
-  'Vegan',
-  'Non-Vegetarian',
-  'Pescatarian',
-  'Keto',
-  'Other',
-];
 
 const StepBasicInfo: React.FC<Props> = ({ formState, membersData, setFormState, errors = {} }) => {
   useEffect(() => {
-    if (
-      membersData?.length > 0 &&
-      !formState.state // only set if not already set
-    ) {
+    // Auto-set state from first member or user
+    if (membersData?.length > 0 && !formState.state) {
       setFormState("state", membersData[0].state);
+    } else if (!formState.state) {
+      // Try to get from localStorage user
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        try {
+          const user = JSON.parse(storedUser);
+          if (user.region) {
+            setFormState("state", user.region);
+          }
+        } catch {
+          console.warn('Invalid user data in localStorage');
+        }
+      }
     }
   }, [membersData, formState.state, setFormState]);
 
   return (
-    <div className="space-y-8">
-       {/* Name & Age Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="space-y-6 sm:space-y-8">
+       {/* Name & Birthdate Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1 text-left">Name</label>
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left">Name</label>
           <input
             type="text"
             value={formState.fullName}
             onChange={(e) => setFormState('fullName', e.target.value)}
             placeholder="Enter name"
             required
-            className={`w-full px-4 py-3 rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 
+            className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 
               ${errors.fullName ? 'border-red-500 ring-red-400' : 'border-gray-300'
             }`}
           />
           {errors.fullName && (
-            <span className="text-red-500 text-xs">Name is required</span>
+            <span className="text-red-500 text-xs mt-1 block">Name is required</span>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1 text-left">Age</label>
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-left">Date of Birth</label>
           <input
-            type="number"
-            min="1"
-            max="99"
+            type="date"
             required
-            value={formState.age === 0 || formState.age === ''  ? '' : formState.age}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value === '') {
-                setFormState('age', '');
-              } else if (Number(value) >= 1) {
-                setFormState('age', Number(value));
-              }
-            }}
-            placeholder="Enter age"
-           className={`w-full px-4 py-3 rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-              errors.age ? 'border-red-500 ring-red-400' : 'border-gray-300'
+            value={formState.birthdate || ''}
+            onChange={(e) => setFormState('birthdate', e.target.value)}
+            max={new Date().toISOString().split('T')[0]}
+            className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
+              errors.birthdate ? 'border-red-500 ring-red-400' : 'border-gray-300'
             }`}
           />
-          {errors.age && (
-            <span className="text-red-500 text-xs">Age is required (1-99)</span>
+          {errors.birthdate && (
+            <span className="text-red-500 text-xs mt-1 block">Birthdate is required</span>
           )}
         </div>
       </div>
 
       {/* Gender */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Gender</label>
-        <div className="flex space-x-6">
+        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 text-left">Gender</label>
+        <div className="flex flex-row gap-2">
           {['male', 'female', 'other'].map((g) => (
             <label
               key={g}
-              className={`flex items-center px-4 py-2 rounded-lg border cursor-pointer shadow-sm ${formState.gender === g
-                ? 'bg-yellow-100 border-yellow-500 text-yellow-700'
-                : 'bg-white border-gray-300 text-gray-800 hover:bg-gray-50'
-                }`}
+              className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border cursor-pointer shadow-sm transition-colors text-sm font-medium select-none ${
+                formState.gender === g
+                  ? 'bg-yellow-100 border-yellow-500 text-yellow-700'
+                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+              }`}
             >
               <input
                 type="radio"
@@ -102,52 +96,11 @@ const StepBasicInfo: React.FC<Props> = ({ formState, membersData, setFormState, 
                 required
                 checked={formState.gender === g}
                 onChange={() => setFormState('gender', g)}
-                className="form-radio text-yellow-500 focus:ring-yellow-500 mr-2"
+                className="form-radio text-yellow-500 focus:ring-yellow-500 shrink-0"
               />
               <span className="capitalize">{g}</span>
             </label>
           ))}
-        </div>
-      </div>
-
-      {/* State & Dietary Preference in one row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1 text-left">State / UT</label>
-          <select
-            value={formState.state || ""}
-            required
-            disabled={membersData?.length > 0}
-            onChange={(e) => setFormState("state", e.target.value)}
-            className={`w-full px-4 py-3 rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 ${
-              errors.state ? 'border-red-500 ring-red-400' : 'border-gray-300'
-            }`} >
-            <option value="" disabled>Select a state</option>
-            {statesAndUTs.map((item) => (
-              <option key={item.key} value={item.value}>
-                {item.value}
-              </option>
-            ))}
-          </select>
-          {errors.state && (
-            <span className="text-red-500 text-xs">State is required</span>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1 text-left">Dietary Preference</label>
-          <select
-            value={formState.dietaryPreferences || ""}
-            onChange={(e) => setFormState("dietaryPreferences", e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 border-gray-300"
-          >
-            <option value="" disabled>Select preference</option>
-            {DIET_OPTIONS.map(opt => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 
 
 Dosha = Literal["vata", "pitta", "kapha", "tridoshic"]
-DietType = Literal["veg", "non_veg", "eggs_ok"]
+DietType = Literal["vegetarian", "satvic", "vegan", "non_veg", "eggs_ok", "veg"]
 
 
 class FamilyMember(BaseModel):

@@ -4,6 +4,7 @@ interface ApiResponse<T = any> {
   error?: string;
   message?: string;
   otp?: string;
+  success?: boolean;
 }
 
 class ApiClient {
@@ -213,7 +214,7 @@ class ApiClient {
     userId: string;
     weekStart: string;
     region: string;
-    dietType: 'veg' | 'non_veg' | 'eggs_ok';
+    dietType: 'vegetarian' | 'satvic' | 'vegan' | 'non_veg' | 'eggs_ok' | 'veg';
     members: Array<{ name: string; dosha: 'vata' | 'pitta' | 'kapha' | 'tridoshic' }>;
     model?: string | null;
     prompt_version?: number | null;
@@ -273,9 +274,19 @@ class ApiClient {
     };
     questions: Array<{ question: string; answer: string }>;
   }): Promise<ApiResponse> {
-    // Backend prakriti router is mounted under /api/v1 (see app.include_router)
-    // So with baseURL = "http://127.0.0.1:8000/api/v1" we just need the relative path
+    // Legacy LLM-based endpoint (deprecated)
     return this.request('/prakriti/assessment', {
+      method: 'POST',
+      body: JSON.stringify(requestData),
+    });
+  }
+
+  async calculatePrakritiRuleBased(requestData: {
+    memberId: string;
+    answers: Record<string, string>;
+  }): Promise<ApiResponse> {
+    // New rule-based endpoint (recommended)
+    return this.request('/prakriti/assessment/rule-based', {
       method: 'POST',
       body: JSON.stringify(requestData),
     });
@@ -287,11 +298,56 @@ class ApiClient {
       body: JSON.stringify(data),
     });
   }
-  async getRecipeByName(data: any): Promise<ApiResponse> {
-    return this.request(`/get-recipe`, {
+  async getRecipeByName(data: {
+    userId: string;
+    dish: string;
+    region: string;
+    dietType: 'vegetarian' | 'satvic' | 'vegan' | 'non_veg' | 'eggs_ok' | 'veg';
+    servings: number;
+    force?: boolean;
+  }): Promise<ApiResponse> {
+    return this.request(`/recipe/generate`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  }
+
+  async updateUserProfile(data: any): Promise<ApiResponse> {
+    const userId = await this.getCurrentUserId();
+    return this.request(`/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getTodayTask(userId: string): Promise<ApiResponse> {
+    return this.request(`/tasks/today?userId=${encodeURIComponent(userId)}`);
+  }
+
+  async completeTask(taskId: string, userId: string): Promise<ApiResponse> {
+    return this.request('/tasks/complete', {
+      method: 'POST',
+      body: JSON.stringify({ taskId, userId }),
+    });
+  }
+
+  async getStreak(userId: string): Promise<ApiResponse> {
+    return this.request(`/tasks/streak?userId=${encodeURIComponent(userId)}`);
+  }
+
+  async resetJourney(userId: string): Promise<ApiResponse> {
+    return this.request('/tasks/reset-journey', {
+      method: 'POST',
+      body: JSON.stringify({ userId }),
+    });
+  }
+
+  async getFamilyNature(userId: string): Promise<ApiResponse> {
+    return this.request(`/members/family-nature/${userId}`);
+  }
+
+  async getFamilyGuidance(userId: string): Promise<ApiResponse> {
+    return this.request(`/family-guidance/${userId}`);
   }
 }
 

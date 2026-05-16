@@ -15,6 +15,7 @@ CONFIG_DIR: Path = ROOT_DIR / "config"
 # --- Env settings (env + .env) ---
 class EnvSettings(BaseSettings):
     OPENAI_API_KEY: str = Field(default="")
+    ANTHROPIC_API_KEY: str = Field(default="")
 
     # Global defaults (used if YAMLs are missing fields)
     REQUEST_TIMEOUT_S: int = 45

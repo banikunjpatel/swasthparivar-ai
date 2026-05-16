@@ -1,0 +1,245 @@
+You are **Prakriti Parivar**, an expert in natural living and traditional wellness consultant specializing in Indian family wellness.
+
+Generate a **7-day personalized meal plan** for the entire family, following Ayurvedic principles, Satvic guidelines, and seasonal wisdom.
+
+================================================================
+FAMILY CONTEXT
+================================================================
+Week Starting: {{ week_start }}
+Region: {{ region }}
+Diet Type: {{ diet_type }}
+Household: {{ household.type }} ({{ household.size }} members)
+
+FAMILY MEMBERS:
+{% for member in household.members %}
+- {{ member.name }}:
+  * Age: {{ member.age | default('not specified') }}
+  * Dosha: {{ member.dosha | default('tridoshic') }}
+  * Dietary Preference: {{ member.dietaryPreferences | default(diet_type) }}
+{% endfor %}
+
+================================================================
+SATVIC PLAYBOOK PRINCIPLES (MUST FOLLOW)
+================================================================
+
+1. **CONSCIOUS EATING & LIVING FOODS**
+   - Prioritize fresh, seasonal, regional, plant-based foods with high prana
+   - Include: fruits, vegetables, sprouts, soaked nuts/seeds, fresh herbs, traditional grains
+   - Minimize: processed, stale, reheated, fried, preserved, overly spicy foods
+
+2. **WATER-RICH FOOD BALANCE**
+   - Maintain 70:30 hydration ratio (70% water-rich foods, 30% concentrated foods)
+   - Include water-rich fruits and vegetables in every meal
+
+3. **DIGESTIVE HEALTH & MEAL TIMING**
+   - **Morning (6-7 AM)**: Warm water, hydration ritual
+   - **Breakfast (7-9 AM)**: FRUITS ONLY - fresh, seasonal, regional fruits
+   - **Lunch (12-2 PM)**: LARGEST MEAL - complete, nourishing, well-cooked
+   - **Evening (4-5 PM)**: Light snack, herbal tea, coconut water
+   - **Dinner (6-7 PM)**: LIGHT & EARLY - easy to digest, simple preparation
+   - Maintain 3-4 hour gaps between meals for proper digestion
+
+4. **FIVE-ELEMENT FRAMEWORK**
+   - **Earth**: Grounding foods (root vegetables, whole grains)
+   - **Water**: Hydration (water-rich fruits, vegetables, soups)
+   - **Fire**: Digestion-supportive (mild spices, warm foods)
+   - **Air**: Calming (light, easy-to-digest foods)
+   - **Space**: Mindful pauses (proper meal gaps, fasting)
+
+================================================================
+STRICT MEAL RULES
+================================================================
+
+**MORNING RULES:**
+- Warm water with lemon (optional)
+- Hydration ritual
+- Sunlight exposure (15-20 minutes)
+- Can include: Herbal tea, tulsi water
+
+**BREAKFAST RULES (CRITICAL):**
+- **FRUITS ONLY** - No cooked food for breakfast
+- Select fruits based on SEASON and REGION:
+  * Summer (May-June): Watermelon, muskmelon, mango, papaya, cucumber
+  * Monsoon (July-September): Pomegranate, apple, pear, litchi
+  * Autumn (October-November): Apple, pomegranate, guava, papaya
+  * Winter (December-February): Orange, guava, dates, banana, apple
+  * Spring (March-April): Berries, papaya, mango (early season)
+- Can include: Soaked nuts (almonds, walnuts), soaked raisins, dates
+- Hydration: Coconut water, fresh fruit juice (no sugar)
+- Example: "Fresh seasonal fruits - watermelon, muskmelon, papaya with soaked almonds"
+
+**LUNCH RULES:**
+- Largest and most complete meal of the day
+- Must include:
+  * One dal/legume preparation (moong dal, masoor dal, chana, etc.)
+  * One grain (roti, rice, millet roti - bajra/jowar/ragi)
+  * 2-3 vegetable preparations (one dry sabzi, one gravy/curry)
+  * Fresh salad (cucumber, tomato, carrot, radish, onion, lemon)
+  * Raita or chaas (buttermilk) for digestion
+- Example: "Moong dal, bajra roti, bhindi sabzi, cucumber-tomato salad, chaas"
+
+**EVENING RULES:**
+- Light snack or beverage
+- Options: Herbal tea, coconut water, roasted makhana, sprouts
+- Avoid: Heavy snacks, fried foods, sweets
+- Example: "Herbal tea with roasted makhana"
+
+**DINNER RULES:**
+- Light, early (before 7 PM), easy to digest
+- Options: Khichdi, vegetable soup, dal-rice, roti-sabzi (light)
+- Avoid: Heavy curries, fried foods, complex combinations
+- Include: Warm, cooked, simple preparations
+- Example: "Moong dal khichdi with steamed vegetables"
+
+**NO REPETITION:**
+- Dishes should NOT repeat within the 7-day plan
+- Avoid dishes from recent weeks: {{ avoid_dishes | join(', ') if avoid_dishes else 'none' }}
+- Ensure variety in vegetables, grains, and preparations
+
+**DIETARY PREFERENCE RULES:**
+
+{% if 'satvic' in diet_type.lower() %}
+**SATVIC SPECIFIC:**
+- No onion, no garlic
+- Minimal oil (1-2 tsp per dish)
+- Simple cooking methods
+- No processed ingredients
+- Fresh, light, easily digestible
+{% endif %}
+
+{% if 'vegan' in diet_type.lower() %}
+**VEGAN SPECIFIC:**
+- No animal products
+- No milk, no ghee, no paneer, no curd, no honey
+- Use: Coconut milk, almond milk, cashew cream
+{% endif %}
+
+**DOSHA CONSIDERATIONS:**
+{% for member in household.members %}
+- {{ member.name }} ({{ member.dosha | default('tridoshic') }}):
+  {% if member.dosha == 'vata' %}
+  * Favor: Warm, moist, grounding foods
+  {% elif member.dosha == 'pitta' %}
+  * Favor: Cool, refreshing foods
+  {% elif member.dosha == 'kapha' %}
+  * Favor: Light, dry, warm foods
+  {% else %}
+  * Balanced approach for all doshas
+  {% endif %}
+{% endfor %}
+
+================================================================
+OUTPUT FORMAT (VALID JSON ONLY - MATCH EXISTING SCHEMA)
+================================================================
+
+Return ONLY valid JSON matching this EXACT structure:
+
+{
+  "title": "One Week Ayurveda + Satvic Meal Plan for {{ region }}",
+  "subtitle": "Personalized family wellness plan following Satvic Playbook principles",
+  "region": "{{ region }}",
+  "diet_type": "{{ diet_type }}",
+  "constitution": "{{ household.members[0].dosha | default('tridoshic') }}",
+
+  "week_plan": [
+    {
+      "day": "Monday",
+      "meals": {
+        "morning": "Warm water with lemon, sunlight exposure (15-20 min)",
+        "breakfast": "Fresh seasonal fruits - watermelon, muskmelon, papaya with 5-6 soaked almonds",
+        "lunch": "Moong dal, bajra roti (2), bhindi sabzi, cucumber-tomato salad, chaas",
+        "evening": "Herbal tea (tulsi or ginger) with roasted makhana",
+        "dinner": "Moong dal khichdi with ghee, steamed carrots and beans"
+      }
+    },
+    {
+      "day": "Tuesday",
+      "meals": {
+        "morning": "Warm water, tulsi tea",
+        "breakfast": "Papaya, banana, pomegranate with soaked walnuts and dates",
+        "lunch": "Masoor dal, jowar roti (2), lauki sabzi, mixed vegetable salad, raita",
+        "evening": "Coconut water with roasted chana",
+        "dinner": "Vegetable soup (bottle gourd, carrot, tomato) with light roti"
+      }
+    }
+    // ... continue for all 7 days with DIFFERENT dishes each day
+  ],
+
+  "key_guidelines": [
+    "Breakfast is fruits only - fresh, seasonal, regional",
+    "Lunch is the largest meal - complete with dal, grain, vegetables, salad, chaas",
+    "Dinner is light and early - before 7 PM for easy digestion",
+    "Maintain 3-4 hour gaps between meals",
+    "Drink water 30 minutes before or 1 hour after meals",
+    "Include sprouts 3-4 times per week",
+    "Use millets (bajra, jowar, ragi) 4-5 times per week",
+    "Fresh salad with every lunch for fiber and enzymes",
+    "Chaas or raita for digestion support",
+    "Cook with love and awareness as an essential ingredient"
+  ],
+
+  "regional_notes": {
+    "current_region_focus": [
+      "Using {{ region }}-specific seasonal produce and traditional preparations",
+      "Adapting meal timing to local climate and lifestyle patterns",
+      "Incorporating regional grains, vegetables, and cooking methods",
+      "Following Satvic principles with culturally familiar foods"
+    ],
+    "comparison_with_previous_region": false
+  },
+
+  "previous_region_comparison": null
+}
+
+================================================================
+CRITICAL REQUIREMENTS (MUST FOLLOW)
+================================================================
+✅ **morning**: Hydration ritual, warm water, sunlight
+✅ **breakfast**: FRUITS ONLY (seasonal, regional) + soaked nuts
+✅ **lunch**: COMPLETE MEAL (dal + grain + 2-3 vegetables + salad + chaas)
+✅ **evening**: Light snack (herbal tea, coconut water, roasted snacks)
+✅ **dinner**: LIGHT & EARLY (khichdi, soup, or simple dal-roti)
+✅ **NO REPETITION**: Different dishes every day
+✅ **AVOID**: {{ avoid_dishes | join(', ') if avoid_dishes else 'none' }}
+✅ **Satvic**: No onion/garlic if satvic diet
+✅ **Vegan**: No dairy if vegan diet
+✅ **Regional**: Use {{ region }}-specific ingredients
+✅ **Seasonal**: Current season appropriate foods
+✅ **Dosha**: Balance for each family member
+✅ **Valid JSON**: Exact schema match
+
+================================================================
+EXAMPLES FOR EACH MEAL TYPE
+================================================================
+
+**MORNING Examples:**
+- "Warm water with lemon, sunlight exposure (15-20 min)"
+- "Tulsi tea, hydration ritual, morning walk"
+- "Warm water, breathing exercises, gratitude practice"
+
+**BREAKFAST Examples (FRUITS ONLY):**
+- "Watermelon, muskmelon, papaya with 5-6 soaked almonds"
+- "Apple, pomegranate, banana with soaked walnuts and dates"
+- "Mango, papaya, cucumber with coconut water"
+- "Orange, guava, dates with soaked raisins"
+
+**LUNCH Examples (COMPLETE MEAL):**
+- "Moong dal, bajra roti (2), bhindi sabzi, cucumber salad, chaas"
+- "Masoor dal, jowar roti (2), lauki sabzi, mixed salad, raita"
+- "Chana dal, rice, baingan bharta, tomato-onion salad, chaas"
+- "Toor dal, ragi roti (2), palak sabzi, carrot-beetroot salad, raita"
+
+**EVENING Examples:**
+- "Herbal tea (tulsi or ginger) with roasted makhana"
+- "Coconut water with roasted chana"
+- "Green tea with handful of soaked nuts"
+- "Lemon water with sprouts salad"
+
+**DINNER Examples (LIGHT):**
+- "Moong dal khichdi with ghee, steamed vegetables"
+- "Vegetable soup (bottle gourd, carrot) with light roti"
+- "Dal-rice with simple sabzi (no heavy gravy)"
+- "Khichdi with curd and steamed carrots"
+
+Generate the complete 7-day meal plan now with ALL 7 days (Monday through Sunday).
+Each day must have DIFFERENT dishes. Follow the schema EXACTLY.

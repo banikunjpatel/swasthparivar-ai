@@ -68,11 +68,11 @@ export const ReviewAnswers = ({ questions, answers, onUpdateAnswer, onSubmit }: 
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {question.options.map((option, optIndex) => {
-                    const isSelected = answers[question.id] === option.text;
+                    const isSelected = answers[question.id] === option.label;
                     return (
                       <div
                         key={optIndex}
-                        onClick={() => onUpdateAnswer(question.id, option.text)}
+                        onClick={() => onUpdateAnswer(question.id, option.label)}
                         className={cn(
                           "flex flex-col items-center p-3 rounded-lg border-2 cursor-pointer transition-all",
                           isSelected 
@@ -80,7 +80,12 @@ export const ReviewAnswers = ({ questions, answers, onUpdateAnswer, onSubmit }: 
                             : "border-border hover:border-primary/50"
                         )}
                       >
-                        <img src={option.image} alt={option.text} className="w-16 h-16 object-cover rounded mb-2" />
+                        <div className="relative w-16 h-16 mb-2">
+                          <img src={option.image} alt={option.text} className="w-full h-full object-cover rounded" />
+                          <div className="absolute -top-1 -left-1 w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold">
+                            {option.label}
+                          </div>
+                        </div>
                         <span className={cn(
                           "text-sm font-medium text-center",
                           isSelected ? "text-primary" : "text-foreground"
@@ -102,7 +107,14 @@ export const ReviewAnswers = ({ questions, answers, onUpdateAnswer, onSubmit }: 
               </div>
             ) : (
               <div className="bg-accent/30 rounded-lg p-4 border-l-4 border-primary">
-                <p className="text-foreground font-medium">{answers[question.id]}</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    {answers[question.id]}
+                  </div>
+                  <p className="text-foreground font-medium">
+                    {question.options.find(opt => opt.label === answers[question.id])?.text || answers[question.id]}
+                  </p>
+                </div>
               </div>
             )}
           </motion.div>

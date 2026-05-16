@@ -194,9 +194,24 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
                 try {
                   // Map dietary preference to backend dietType enum
                   const dietPref = (members?.[0]?.dietaryPreferences || '').toLowerCase();
-                  const dietType: 'veg' | 'non_veg' | 'eggs_ok' =
-                    dietPref.includes('non') ? 'non_veg' :
-                      dietPref.includes('egg') ? 'eggs_ok' : 'veg';
+                  
+                  // Direct mapping for exact matches
+                  let dietType: 'vegetarian' | 'satvic' | 'vegan' | 'non_veg' | 'eggs_ok' | 'veg';
+                  
+                  if (dietPref === 'satvic') {
+                    dietType = 'satvic';
+                  } else if (dietPref === 'vegetarian') {
+                    dietType = 'vegetarian';
+                  } else if (dietPref === 'vegan') {
+                    dietType = 'vegan';
+                  } else if (dietPref.includes('non')) {
+                    dietType = 'non_veg';
+                  } else if (dietPref.includes('egg')) {
+                    dietType = 'eggs_ok';
+                  } else {
+                    // Default fallback
+                    dietType = 'vegetarian';
+                  }
 
                   const memberPayload = (members || []).map((m: any) => ({
                     name: m.fullName || m.name || 'Member',
@@ -375,7 +390,7 @@ const MealPlanView: React.FC<MealPlanViewProps> = ({ mealPlan, members, onSelect
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div>
             <h2 className="text-2xl font-bold text-gray-800">Meal Plan</h2>
-            <p className="text-gray-600">Your personalized Ayurvedic meal plan</p>
+            <p className="text-gray-600">Your personalized natural living meal plan</p>
           </div>
           <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
             {(['day', 'week'] as ViewMode[]).map((mode) => (

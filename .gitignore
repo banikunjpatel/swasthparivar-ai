@@ -33,10 +33,21 @@ node_modules/
 client/node_modules
 client/package-lock.json
 client/.vite
+
+# =========================================
+# Secrets — never commit these
+# =========================================
+.env
+.env.local
+.env.production
+backend/credentials/
+*.pem
+*.key
 # =========================================
 # IDE / Editors
 # =========================================
 .vscode/
+.kiro/
 .idea/
 *.sublime-project
 *.sublime-workspace
@@ -71,11 +82,7 @@ coverage.xml
 # =========================================
 # Environment / Config files
 # =========================================
-
-
 *.ini
-*.yaml
-*.yml
 config.json
 
 # =========================================

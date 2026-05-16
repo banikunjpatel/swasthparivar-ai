@@ -14,8 +14,15 @@ dependencies = [
   "pydantic>=2.7",
   "pydantic-settings>=2.3",
   "jinja2>=3.1",
+  "anthropic>=0.40",
   "openai>=1.40",
   "cachetools>=5.3",
+  "motor>=3.3",
+  "pymongo>=4.6",
+  "firebase-admin>=6.4",
+  "python-jose[cryptography]>=3.3",
+  "python-dotenv>=1.0",
+  "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]

@@ -15,9 +15,10 @@ MEAL_PLAN = "meal_plan"
 RECIPE = "recipe"
 GROCERY = "grocery"
 PRAKRITI = "prakriti"
+FAMILY_GUIDANCE = "family_guidance"
 
 # Useful collections
-ALL_TASKS: tuple[str, ...] = (MEAL_PLAN, RECIPE, GROCERY, PRAKRITI)
+ALL_TASKS: tuple[str, ...] = (MEAL_PLAN, RECIPE, GROCERY, PRAKRITI, FAMILY_GUIDANCE)
 
 
 def normalize_task(task: str) -> str:

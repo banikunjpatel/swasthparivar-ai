@@ -88,7 +88,7 @@ export const GroceryList: React.FC<GroceryListProps> = ({ userId, mealPlan }) =>
                     </div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">No Grocery List Yet</h2>
                     <p className="text-gray-600 mb-6 max-w-md">
-                        Follow these simple steps to get your personalized Ayurvedic grocery list:
+                        Follow these simple steps to get your personalized natural living grocery list:
                     </p>
 
                     <div className="max-w-2xl w-full space-y-5">
@@ -99,7 +99,7 @@ export const GroceryList: React.FC<GroceryListProps> = ({ userId, mealPlan }) =>
                             },
                             {
                                 title: 'Generate a meal plan',
-                                desc: 'Our AI will create seasonal, dosha-based meals for you.',
+                                desc: 'Our AI will create seasonal, body-type-based meals for you.',
                             },
                             {
                                 title: 'Get your grocery list',

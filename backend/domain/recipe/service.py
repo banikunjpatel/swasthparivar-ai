@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, Optional
 
 from pydantic import ValidationError
 
@@ -21,9 +21,10 @@ SYSTEM_PROMPT = (
 )
 
 class RecipeService:
-    def __init__(self, llm: LLMClient, cache: Cache | None):
+    def __init__(self, llm: LLMClient, cache: Cache | None, recipe_repo=None):
         self.llm = llm
         self.cache = cache
+        self.recipe_repo = recipe_repo
 
     def _cache_key(self, payload: dict) -> str:
         blob = json.dumps(payload, sort_keys=True).encode()
@@ -37,6 +38,41 @@ class RecipeService:
             "diet_type": req.dietType,
             "servings": req.servings,
         }
+        
+        # Check if recipe already exists in database (if not forcing regeneration)
+        if self.recipe_repo and not req.force:
+            existing = await self.recipe_repo.find_by_dish(
+                dish=req.dish,
+                region=req.region,
+                diet_type=req.dietType,
+                servings=req.servings,
+                user_id=req.userId
+            )
+            if existing:
+                # Update last accessed time
+                if "_id" in existing:
+                    await self.recipe_repo.update_access_time(existing["_id"])
+                
+                # Return existing recipe from database
+                try:
+                    data = GenerateRecipeResponse.model_validate({
+                        **existing,
+                        "meta": {
+                            "model": existing.get("modelMeta", {}).get("model", "cached"),
+                            "prompt_version": existing.get("modelMeta", {}).get("prompt_version", pv),
+                            "cached": True,
+                            "source": "database"
+                        }
+                    })
+                    return data, {
+                        "model": "cached",
+                        "prompt_version": pv,
+                        "cached": True,
+                        "source": "database"
+                    }
+                except (ValidationError, KeyError):
+                    pass  # Fall through to regenerate
+        
         user_prompt = render_prompt("recipe", pv, context)
         schema_name, schema = schema_by_task("recipe")
 
@@ -49,14 +85,17 @@ class RecipeService:
             "mo": req.model,
         }
         ck = self._cache_key(ck_payload)
+        
+        # Check cache (Redis/memory)
         if self.cache and not req.force:
             cached = await self.cache.get(ck)
             if cached:
                 try:
-                    return GenerateRecipeResponse.model_validate(cached["data"]), {**cached["meta"], "cached": True}
+                    return GenerateRecipeResponse.model_validate(cached["data"]), {**cached["meta"], "cached": True, "source": "cache"}
                 except ValidationError:
                     pass  # fall through to regenerate
 
+        # Generate new recipe from LLM
         resp = await self.llm.structured(
             task="recipe",
             system=SYSTEM_PROMPT,
@@ -67,11 +106,58 @@ class RecipeService:
         )
 
         try:
-            data = GenerateRecipeResponse.model_validate({**resp.data, "meta": {"model": resp.model, "prompt_version": pv, "cached": False}})
+            data = GenerateRecipeResponse.model_validate({
+                **resp.data,
+                "meta": {
+                    "model": resp.model,
+                    "prompt_version": pv,
+                    "cached": False,
+                    "source": "llm"
+                }
+            })
         except ValidationError as ve:
             raise ValueError(f"Model returned invalid recipe schema: {ve}")
 
+        # Save to cache
         if self.cache:
-            await self.cache.setex(ck, None, {"data": data.model_dump(), "meta": {"model": resp.model, "prompt_version": pv, "cached": False}})
+            await self.cache.setex(
+                ck,
+                None,
+                {
+                    "data": data.model_dump(),
+                    "meta": {
+                        "model": resp.model,
+                        "prompt_version": pv,
+                        "cached": False,
+                        "source": "llm"
+                    }
+                }
+            )
 
-        return data, {"model": resp.model, "prompt_version": pv, "cached": False}
+        # Save to database (fire-and-forget)
+        if self.recipe_repo:
+            try:
+                doc = {
+                    "userId": req.userId,
+                    "dish": req.dish,
+                    "region": req.region,
+                    "dietType": req.dietType,
+                    "servings": req.servings,
+                    "recipe": data.recipe.model_dump(),
+                    "notes": data.notes,
+                    "modelMeta": {
+                        "model": resp.model,
+                        "prompt_version": pv
+                    }
+                }
+                await self.recipe_repo.save(doc)
+            except Exception as e:
+                # Don't block response on DB save failure
+                print(f"Failed to save recipe to database: {e}")
+
+        return data, {
+            "model": resp.model,
+            "prompt_version": pv,
+            "cached": False,
+            "source": "llm"
+        }

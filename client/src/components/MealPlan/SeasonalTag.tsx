@@ -13,8 +13,7 @@ const SeasonalTag: React.FC<SeasonalTagProps> = ({ season, isCurrentSeason = fal
     summer: { icon: '☀️', color: 'yellow', name: 'Summer' },
     monsoon: { icon: '🌧️', color: 'blue', name: 'Monsoon' },
     autumn: { icon: '🍂', color: 'orange', name: 'Autumn' },
-    winter: { icon: '❄️', color: 'blue', name: 'Winter' },
-    'pre-winter': { icon: '🌨️', color: 'gray', name: 'Pre Winter' }
+    winter: { icon: '❄️', color: 'blue', name: 'Winter' }
   };
 
   const config = seasonConfig[season];

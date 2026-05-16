@@ -1,0 +1,3287 @@
+[
+  {
+    "season": "Winter",
+    "dayNumber": 1,
+    "globalDay": 1,
+    "element": "Fire",
+    "cycle": 1,
+    "title": "Step into morning sunlight for 10 mins",
+    "description": "Wake your body's inner heat"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 2,
+    "globalDay": 2,
+    "element": "Water",
+    "cycle": 1,
+    "title": "Warm turmeric water before your first meal",
+    "description": "Never cold, especially in winter"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 3,
+    "globalDay": 3,
+    "element": "Air",
+    "cycle": 1,
+    "title": "Open one window while cooking today",
+    "description": "Stale winter air dulls the mind and body"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 4,
+    "globalDay": 4,
+    "element": "Space",
+    "cycle": 1,
+    "title": "Keep a 12-hour gap between dinner and breakfast",
+    "description": "Your body rebuilds in this space"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 5,
+    "globalDay": 5,
+    "element": "Earth",
+    "cycle": 1,
+    "title": "Cook and eat together as a family tonight",
+    "description": "Warm, fresh, unhurried"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 6,
+    "globalDay": 6,
+    "element": "Fire",
+    "cycle": 2,
+    "title": "Add a pinch of black pepper to your morning drink",
+    "description": "It kindles inner warmth"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 7,
+    "globalDay": 7,
+    "element": "Water",
+    "cycle": 2,
+    "title": "Copper vessel water, warmed gently",
+    "description": "Drink one full cup before breakfast"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 8,
+    "globalDay": 8,
+    "element": "Air",
+    "cycle": 2,
+    "title": "Five slow deep breaths before your first meal",
+    "description": "Fill the lungs fully before you eat"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 9,
+    "globalDay": 9,
+    "element": "Space",
+    "cycle": 2,
+    "title": "Finish eating by 7pm tonight",
+    "description": "Let your digestive system rest fully before sleep"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 10,
+    "globalDay": 10,
+    "element": "Earth",
+    "cycle": 2,
+    "title": "Use one root vegetable in your cooking today",
+    "description": "Carrot, sweet potato, or beet"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 11,
+    "globalDay": 11,
+    "element": "Fire",
+    "cycle": 3,
+    "title": "Eat your largest meal at noon",
+    "description": "The midday sun supports your digestion today"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 12,
+    "globalDay": 12,
+    "element": "Water",
+    "cycle": 3,
+    "title": "Add a small piece of dried ginger to your morning water",
+    "description": "Warming and digestive"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 13,
+    "globalDay": 13,
+    "element": "Air",
+    "cycle": 3,
+    "title": "Cook with your kitchen door open today",
+    "description": "Let the air circulate freely"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 14,
+    "globalDay": 14,
+    "element": "Space",
+    "cycle": 3,
+    "title": "Eat dinner in silence tonight",
+    "description": "No television, no phones — just your family and food"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 15,
+    "globalDay": 15,
+    "element": "Earth",
+    "cycle": 3,
+    "title": "Cook your meals from scratch today",
+    "description": "No packaged food, no shortcuts"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 16,
+    "globalDay": 16,
+    "element": "Fire",
+    "cycle": 4,
+    "title": "Dry roast cumin and coriander before cooking dinner",
+    "description": "Aroma activates digestion"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 17,
+    "globalDay": 17,
+    "element": "Water",
+    "cycle": 4,
+    "title": "No cold drinks today at all",
+    "description": "If you need water with meals, let it be warm"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 18,
+    "globalDay": 18,
+    "element": "Air",
+    "cycle": 4,
+    "title": "After eating, sit quietly for 5 minutes",
+    "description": "Breathe slowly before resuming the day"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 19,
+    "globalDay": 19,
+    "element": "Space",
+    "cycle": 4,
+    "title": "No snacking after dinner tonight",
+    "description": "The space between meals is where healing happens"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 20,
+    "globalDay": 20,
+    "element": "Earth",
+    "cycle": 4,
+    "title": "Eat your meals sitting on the floor today if possible",
+    "description": "Grounding through the earth"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 21,
+    "globalDay": 21,
+    "element": "Fire",
+    "cycle": 5,
+    "title": "Light a lamp or candle at your dinner table tonight",
+    "description": "Eat in its warm glow"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 22,
+    "globalDay": 22,
+    "element": "Water",
+    "cycle": 5,
+    "title": "Sip warm cumin water after lunch",
+    "description": "It helps winter digestion settle"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 23,
+    "globalDay": 23,
+    "element": "Air",
+    "cycle": 5,
+    "title": "Open your bedroom window for 2 minutes in the morning",
+    "description": "Fresh air changes everything"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 24,
+    "globalDay": 24,
+    "element": "Space",
+    "cycle": 5,
+    "title": "Set your dinner table before serving",
+    "description": "Create space and intention before you eat"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 25,
+    "globalDay": 25,
+    "element": "Earth",
+    "cycle": 5,
+    "title": "Include sesame seeds in one meal today",
+    "description": "They are winter's most grounding food"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 26,
+    "globalDay": 26,
+    "element": "Fire",
+    "cycle": 6,
+    "title": "Sip warm ginger tea between meals today",
+    "description": "No cold water at all"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 27,
+    "globalDay": 27,
+    "element": "Water",
+    "cycle": 6,
+    "title": "Warm ajwain water in the evening",
+    "description": "10 minutes after your last meal"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 28,
+    "globalDay": 28,
+    "element": "Air",
+    "cycle": 6,
+    "title": "Before each meal today, take 3 deep breaths",
+    "description": "Release tension from your shoulders"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 29,
+    "globalDay": 29,
+    "element": "Space",
+    "cycle": 6,
+    "title": "Eat at the same table as a family tonight",
+    "description": "No individual plates in different rooms"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 30,
+    "globalDay": 30,
+    "element": "Earth",
+    "cycle": 6,
+    "title": "Source one vegetable from a local market today",
+    "description": "Know where your food comes from"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 31,
+    "globalDay": 31,
+    "element": "Fire",
+    "cycle": 7,
+    "title": "Walk outside for 5 minutes after your lunch",
+    "description": "Let sunlight reach your skin"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 32,
+    "globalDay": 32,
+    "element": "Water",
+    "cycle": 7,
+    "title": "Make a simple coriander seed tea today",
+    "description": "It balances water in the winter body"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 33,
+    "globalDay": 33,
+    "element": "Air",
+    "cycle": 7,
+    "title": "Spend 5 minutes outdoors after breakfast today",
+    "description": "Even the balcony counts"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 34,
+    "globalDay": 34,
+    "element": "Space",
+    "cycle": 7,
+    "title": "After dinner, sit without screens for 15 minutes",
+    "description": "Let the meal settle in stillness"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 35,
+    "globalDay": 35,
+    "element": "Earth",
+    "cycle": 7,
+    "title": "Cook a simple khichdi for one meal today",
+    "description": "Rice and dal — the most grounding combination"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 36,
+    "globalDay": 36,
+    "element": "Fire",
+    "cycle": 8,
+    "title": "Cook with mustard seeds today",
+    "description": "Let them splutter in warm ghee before your dish"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 37,
+    "globalDay": 37,
+    "element": "Water",
+    "cycle": 8,
+    "title": "No refrigerated foods or drinks today",
+    "description": "Everything at room temperature or warm"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 38,
+    "globalDay": 38,
+    "element": "Air",
+    "cycle": 8,
+    "title": "Cook calmly today — no rushing, no stress",
+    "description": "The food receives the energy you bring"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 39,
+    "globalDay": 39,
+    "element": "Space",
+    "cycle": 8,
+    "title": "Finish your dinner before 6:30pm today",
+    "description": "Give your body the longest possible rest"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 40,
+    "globalDay": 40,
+    "element": "Earth",
+    "cycle": 8,
+    "title": "Eat with your hands today",
+    "description": "The oldest form of feeling your food before it enters you"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 41,
+    "globalDay": 41,
+    "element": "Fire",
+    "cycle": 9,
+    "title": "Eat breakfast within one hour of waking",
+    "description": "Don't let the body stay cold and empty"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 42,
+    "globalDay": 42,
+    "element": "Water",
+    "cycle": 9,
+    "title": "Sip warm water every hour today",
+    "description": "Winter dehydrates quietly without asking"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 43,
+    "globalDay": 43,
+    "element": "Air",
+    "cycle": 9,
+    "title": "Light incense or dried herbs before dinner",
+    "description": "Breathe the aroma before eating"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 44,
+    "globalDay": 44,
+    "element": "Space",
+    "cycle": 9,
+    "title": "No food for 13 hours tonight",
+    "description": "If dinner was at 7pm, breakfast at 8am tomorrow"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 45,
+    "globalDay": 45,
+    "element": "Earth",
+    "cycle": 9,
+    "title": "Add a small amount of ghee to your cooked grains today",
+    "description": "It grounds and nourishes"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 46,
+    "globalDay": 46,
+    "element": "Fire",
+    "cycle": 10,
+    "title": "Add a small piece of fresh ginger to your cooking today",
+    "description": "Fire needs fuel"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 47,
+    "globalDay": 47,
+    "element": "Water",
+    "cycle": 10,
+    "title": "Fennel seed warm water before dinner",
+    "description": "It opens the digestive channels gently"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 48,
+    "globalDay": 48,
+    "element": "Air",
+    "cycle": 10,
+    "title": "Chew your food slowly today",
+    "description": "Digestion begins with breath and calm, not speed"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 49,
+    "globalDay": 49,
+    "element": "Space",
+    "cycle": 10,
+    "title": "Eat one meal today with your phone in another room",
+    "description": "Observe the quality of attention"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 50,
+    "globalDay": 50,
+    "element": "Earth",
+    "cycle": 10,
+    "title": "Cook your largest meal slowly today",
+    "description": "Low flame, lid on, unhurried time"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 51,
+    "globalDay": 51,
+    "element": "Fire",
+    "cycle": 11,
+    "title": "Sit in morning sunlight while drinking your first warm drink",
+    "description": "Receive winter light"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 52,
+    "globalDay": 52,
+    "element": "Water",
+    "cycle": 11,
+    "title": "Add a drop of ghee to your morning warm water",
+    "description": "Ancient winter hydration practice"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 53,
+    "globalDay": 53,
+    "element": "Air",
+    "cycle": 11,
+    "title": "Sit near a window while eating at least one meal today",
+    "description": "Let winter light in"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 54,
+    "globalDay": 54,
+    "element": "Space",
+    "cycle": 11,
+    "title": "Clear the kitchen completely after dinner",
+    "description": "Physical Space creates mental space"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 55,
+    "globalDay": 55,
+    "element": "Earth",
+    "cycle": 11,
+    "title": "Eat at the same time as the rest of your family today",
+    "description": "Rhythm grounds the body"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 56,
+    "globalDay": 56,
+    "element": "Fire",
+    "cycle": 12,
+    "title": "Use sesame oil for cooking today",
+    "description": "Sesame is the warmest oil for winter bodies"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 57,
+    "globalDay": 57,
+    "element": "Water",
+    "cycle": 12,
+    "title": "Warm water with a pinch of rock salt and lemon after waking",
+    "description": "Mineral grounding"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 58,
+    "globalDay": 58,
+    "element": "Air",
+    "cycle": 12,
+    "title": "After your last meal, step outside for 3 minutes",
+    "description": "Breathe the cool night air slowly"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 59,
+    "globalDay": 59,
+    "element": "Space",
+    "cycle": 12,
+    "title": "Before sleeping, acknowledge one thing your body did well today",
+    "description": "Close with gratitude"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 60,
+    "globalDay": 60,
+    "element": "Earth",
+    "cycle": 12,
+    "title": "Use earthenware or iron cookware today if available",
+    "description": "Cook in vessels that carry earth"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 61,
+    "globalDay": 61,
+    "element": "Fire",
+    "cycle": 13,
+    "title": "Make sure dinner is hot and freshly cooked",
+    "description": "Not warm, not reheated — hot"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 62,
+    "globalDay": 62,
+    "element": "Water",
+    "cycle": 13,
+    "title": "Replace your afternoon chai with warm tulsi water today",
+    "description": "Observe the difference"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 63,
+    "globalDay": 63,
+    "element": "Air",
+    "cycle": 13,
+    "title": "Cook your meals today without the exhaust fan",
+    "description": "Let the aromas fill the kitchen"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 64,
+    "globalDay": 64,
+    "element": "Space",
+    "cycle": 13,
+    "title": "Cook less food than usual tonight",
+    "description": "Eat until 75% full — leave space inside"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 65,
+    "globalDay": 65,
+    "element": "Earth",
+    "cycle": 13,
+    "title": "Include one green leafy vegetable in today's meals",
+    "description": "Roots and leaves both ground"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 66,
+    "globalDay": 66,
+    "element": "Fire",
+    "cycle": 14,
+    "title": "Add a quarter teaspoon of turmeric to your morning water",
+    "description": "It feeds your inner fire"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 67,
+    "globalDay": 67,
+    "element": "Water",
+    "cycle": 14,
+    "title": "Drink warm water 30 minutes before each meal",
+    "description": "Not during, not after — before"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 68,
+    "globalDay": 68,
+    "element": "Air",
+    "cycle": 14,
+    "title": "Before cooking, take one full minute of silence and slow breathing",
+    "description": "Calm transfers"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 69,
+    "globalDay": 69,
+    "element": "Space",
+    "cycle": 14,
+    "title": "No second helpings tonight",
+    "description": "Eat slowly enough that one serving feels complete"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 70,
+    "globalDay": 70,
+    "element": "Earth",
+    "cycle": 14,
+    "title": "Cook enough for leftovers tomorrow morning",
+    "description": "Continuity and abundance are earthy"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 71,
+    "globalDay": 71,
+    "element": "Fire",
+    "cycle": 15,
+    "title": "Cook your evening meal with a lid on",
+    "description": "Trap the heat, concentrate the nourishment"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 72,
+    "globalDay": 72,
+    "element": "Water",
+    "cycle": 15,
+    "title": "Boil water for 10 minutes today before drinking",
+    "description": "Winter water carries cold memory"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 73,
+    "globalDay": 73,
+    "element": "Air",
+    "cycle": 15,
+    "title": "Air out your dining space before dinner",
+    "description": "Open windows for 5 minutes first"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 74,
+    "globalDay": 74,
+    "element": "Space",
+    "cycle": 15,
+    "title": "Light a small lamp after dinner instead of bright lights",
+    "description": "Signal the body to rest"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 75,
+    "globalDay": 75,
+    "element": "Earth",
+    "cycle": 15,
+    "title": "Add a pinch of rock salt instead of regular salt today",
+    "description": "It carries mineral memory"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 76,
+    "globalDay": 76,
+    "element": "Fire",
+    "cycle": 16,
+    "title": "Eat three meals today at the same time as yesterday",
+    "description": "Rhythm builds digestive fire"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 77,
+    "globalDay": 77,
+    "element": "Water",
+    "cycle": 16,
+    "title": "Warm water with a pinch of cinnamon after dinner",
+    "description": "It closes digestion gently"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 78,
+    "globalDay": 78,
+    "element": "Air",
+    "cycle": 16,
+    "title": "Eat without talking for the first 5 minutes of one meal today",
+    "description": "Pure breath, pure food"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 79,
+    "globalDay": 79,
+    "element": "Space",
+    "cycle": 16,
+    "title": "Finish dinner 3 hours before bedtime tonight",
+    "description": "Your last meal and sleep need space"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 80,
+    "globalDay": 80,
+    "element": "Earth",
+    "cycle": 16,
+    "title": "Eat your morning meal sitting down, not standing",
+    "description": "Receive nourishment with stillness"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 81,
+    "globalDay": 81,
+    "element": "Fire",
+    "cycle": 17,
+    "title": "Chew a small piece of raw ginger with a drop of lemon before lunch",
+    "description": "Simple and powerful"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 82,
+    "globalDay": 82,
+    "element": "Water",
+    "cycle": 17,
+    "title": "No cold milk today",
+    "description": "If you drink milk, warm it fully with a pinch of cardamom"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 83,
+    "globalDay": 83,
+    "element": "Air",
+    "cycle": 17,
+    "title": "Three deep breaths before cooking, three before eating",
+    "description": "Bookend your meals with Air"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 84,
+    "globalDay": 84,
+    "element": "Space",
+    "cycle": 17,
+    "title": "Sit quietly at the table for 5 minutes after finishing your meal",
+    "description": "Just breathe"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 85,
+    "globalDay": 85,
+    "element": "Earth",
+    "cycle": 17,
+    "title": "Cook one traditional family recipe today",
+    "description": "Food carries ancestral earth memory"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 86,
+    "globalDay": 86,
+    "element": "Fire",
+    "cycle": 18,
+    "title": "Before bed, drink a small cup of warm milk with turmeric",
+    "description": "Close the day with warmth"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 87,
+    "globalDay": 87,
+    "element": "Water",
+    "cycle": 18,
+    "title": "Three cups of warm water today at your meal times",
+    "description": "Make it a family practice"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 88,
+    "globalDay": 88,
+    "element": "Air",
+    "cycle": 18,
+    "title": "Step into your garden or outdoor space tonight",
+    "description": "Breathe the winter night air slowly"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 89,
+    "globalDay": 89,
+    "element": "Space",
+    "cycle": 18,
+    "title": "Tonight: dinner done, kitchen closed, family together",
+    "description": "Honour the space of evening"
+  },
+  {
+    "season": "Winter",
+    "dayNumber": 90,
+    "globalDay": 90,
+    "element": "Earth",
+    "cycle": 18,
+    "title": "Include urad dal or rajma in today's cooking",
+    "description": "Legumes are the earth's protein gift"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 1,
+    "globalDay": 91,
+    "element": "Earth",
+    "cycle": 1,
+    "title": "Eat one freshly cooked root vegetable today",
+    "description": "Anchor restless spring energy in earth"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 2,
+    "globalDay": 92,
+    "element": "Fire",
+    "cycle": 1,
+    "title": "Make lunch your largest meal today",
+    "description": "Afternoon sun helps digest what spring stirs"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 3,
+    "globalDay": 93,
+    "element": "Water",
+    "cycle": 1,
+    "title": "Sip warm water with dry ginger all day today",
+    "description": "Spring dries the body from within"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 4,
+    "globalDay": 94,
+    "element": "Space",
+    "cycle": 1,
+    "title": "Finish eating before sunset today",
+    "description": "Spring evenings need quiet and emptiness"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 5,
+    "globalDay": 95,
+    "element": "Air",
+    "cycle": 1,
+    "title": "Five slow breaths before eating",
+    "description": "Notice the wind moving in your body today"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 6,
+    "globalDay": 96,
+    "element": "Earth",
+    "cycle": 2,
+    "title": "Start your day with a warm cooked breakfast",
+    "description": "No raw food, no cold cereal in spring"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 7,
+    "globalDay": 97,
+    "element": "Fire",
+    "cycle": 2,
+    "title": "Add fresh ginger to your cooking today",
+    "description": "Spring needs warmth to fight the dryness"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 8,
+    "globalDay": 98,
+    "element": "Water",
+    "cycle": 2,
+    "title": "Copper vessel water warmed gently",
+    "description": "Your first drink of the day, every spring day"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 9,
+    "globalDay": 99,
+    "element": "Space",
+    "cycle": 2,
+    "title": "No snacking today between meals",
+    "description": "Let the body experience space between food"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 10,
+    "globalDay": 100,
+    "element": "Air",
+    "cycle": 2,
+    "title": "Cook with one window open today",
+    "description": "Spring air outside is cleaner than winter's stale air"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 11,
+    "globalDay": 101,
+    "element": "Earth",
+    "cycle": 3,
+    "title": "Include sweet potato or carrot in your lunch today",
+    "description": "Dense earth calms spring lightness"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 12,
+    "globalDay": 102,
+    "element": "Fire",
+    "cycle": 3,
+    "title": "Eat breakfast within one hour of waking",
+    "description": "Spring mornings need early fuel"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 13,
+    "globalDay": 103,
+    "element": "Water",
+    "cycle": 3,
+    "title": "Warm tulsi tea in the afternoon today",
+    "description": "Spring allergies respond to tulsi deeply"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 14,
+    "globalDay": 104,
+    "element": "Space",
+    "cycle": 3,
+    "title": "Eat one meal today in complete silence",
+    "description": "Notice how the food tastes differently"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 15,
+    "globalDay": 105,
+    "element": "Air",
+    "cycle": 3,
+    "title": "Three deep breaths before each meal today",
+    "description": "Let Air settle before Earth enters"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 16,
+    "globalDay": 106,
+    "element": "Earth",
+    "cycle": 4,
+    "title": "Cook your meals on low flame today",
+    "description": "Slow cooking grounds scattered spring energy"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 17,
+    "globalDay": 107,
+    "element": "Fire",
+    "cycle": 4,
+    "title": "Walk for 5 minutes in the morning sun today",
+    "description": "Before eating breakfast"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 18,
+    "globalDay": 108,
+    "element": "Water",
+    "cycle": 4,
+    "title": "No cold drinks at all today",
+    "description": "Spring and cold water together create congestion"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 19,
+    "globalDay": 109,
+    "element": "Space",
+    "cycle": 4,
+    "title": "Finish dinner by 6:30pm today",
+    "description": "Spring asks for early closure of the eating day"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 20,
+    "globalDay": 110,
+    "element": "Air",
+    "cycle": 4,
+    "title": "After breakfast, spend 5 minutes outdoors",
+    "description": "Morning spring air nourishes differently"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 21,
+    "globalDay": 111,
+    "element": "Earth",
+    "cycle": 5,
+    "title": "Eat your meals at the same time today",
+    "description": "Routine is the antidote to spring restlessness"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 22,
+    "globalDay": 112,
+    "element": "Fire",
+    "cycle": 5,
+    "title": "Dry roast your spices before adding them today",
+    "description": "Intensify warmth in every dish"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 23,
+    "globalDay": 113,
+    "element": "Water",
+    "cycle": 5,
+    "title": "Warm coriander seed water after lunch today",
+    "description": "It clears spring heaviness from blood"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 24,
+    "globalDay": 114,
+    "element": "Space",
+    "cycle": 5,
+    "title": "Set the table before serving tonight",
+    "description": "Create intentional space before the meal"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 25,
+    "globalDay": 115,
+    "element": "Air",
+    "cycle": 5,
+    "title": "Chew every bite slowly today",
+    "description": "Spring asks for deliberate pace, not scattered rushing"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 26,
+    "globalDay": 116,
+    "element": "Earth",
+    "cycle": 6,
+    "title": "Include sesame or til in your cooking today",
+    "description": "Warming and grounding for spring body"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 27,
+    "globalDay": 117,
+    "element": "Fire",
+    "cycle": 6,
+    "title": "Add black pepper to your morning warm water today",
+    "description": "Simple and powerful"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 28,
+    "globalDay": 118,
+    "element": "Water",
+    "cycle": 6,
+    "title": "Drink warm water 30 minutes before each meal today",
+    "description": "Prepare the body to receive"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 29,
+    "globalDay": 119,
+    "element": "Space",
+    "cycle": 6,
+    "title": "Clear the kitchen after dinner and do not return",
+    "description": "Physical space signals body rest"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 30,
+    "globalDay": 120,
+    "element": "Air",
+    "cycle": 6,
+    "title": "Cook calmly today without rushing",
+    "description": "The food receives the energy of the cook always"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 31,
+    "globalDay": 121,
+    "element": "Earth",
+    "cycle": 7,
+    "title": "Eat a warm grain-based breakfast today",
+    "description": "Oats, daliya, or poha — not fruit alone"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 32,
+    "globalDay": 122,
+    "element": "Fire",
+    "cycle": 7,
+    "title": "Cook with cumin seeds today",
+    "description": "Let them bloom in ghee before adding vegetables"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 33,
+    "globalDay": 123,
+    "element": "Water",
+    "cycle": 7,
+    "title": "Sip warm cumin water in the evening",
+    "description": "Simple, grounding, spring-protective"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 34,
+    "globalDay": 124,
+    "element": "Space",
+    "cycle": 7,
+    "title": "No food for 12 hours tonight",
+    "description": "Trust the space between meals to do its work"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 35,
+    "globalDay": 125,
+    "element": "Air",
+    "cycle": 7,
+    "title": "Breathe through your nose while cooking today",
+    "description": "Filter the spring air consciously"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 36,
+    "globalDay": 126,
+    "element": "Earth",
+    "cycle": 8,
+    "title": "Use ghee in your cooking today",
+    "description": "It grounds and lubricates the dry spring body"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 37,
+    "globalDay": 127,
+    "element": "Fire",
+    "cycle": 8,
+    "title": "Eat your second meal before 2pm today",
+    "description": "Spring fire peaks early and fades fast"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 38,
+    "globalDay": 128,
+    "element": "Water",
+    "cycle": 8,
+    "title": "Warm ajwain water tonight before bed",
+    "description": "It dries excess moisture from the body"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 39,
+    "globalDay": 129,
+    "element": "Space",
+    "cycle": 8,
+    "title": "Eat at 75% capacity today",
+    "description": "Spring lightness extends to how much you eat"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 40,
+    "globalDay": 130,
+    "element": "Air",
+    "cycle": 8,
+    "title": "Before sleeping, take 10 slow deep breaths",
+    "description": "Spring nights ask for conscious settling"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 41,
+    "globalDay": 131,
+    "element": "Earth",
+    "cycle": 9,
+    "title": "Include one cooked leafy green in your meals today",
+    "description": "Spinach or methi, never raw"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 42,
+    "globalDay": 132,
+    "element": "Fire",
+    "cycle": 9,
+    "title": "Light a small lamp at your dining table tonight",
+    "description": "Eat in warm, intentional light"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 43,
+    "globalDay": 133,
+    "element": "Water",
+    "cycle": 9,
+    "title": "Make a warm fennel tea today",
+    "description": "Fennel calms the nervous spring digestive system"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 44,
+    "globalDay": 134,
+    "element": "Space",
+    "cycle": 9,
+    "title": "One screen-free meal today",
+    "description": "Full attention on food, family, and present moment"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 45,
+    "globalDay": 135,
+    "element": "Air",
+    "cycle": 9,
+    "title": "Eat without distraction for one meal today",
+    "description": "Just food, just breath, just family"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 46,
+    "globalDay": 136,
+    "element": "Earth",
+    "cycle": 10,
+    "title": "Cook khichdi for one meal today",
+    "description": "The most grounding meal in the Indian kitchen"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 47,
+    "globalDay": 137,
+    "element": "Fire",
+    "cycle": 10,
+    "title": "Add turmeric to every cooked dish today",
+    "description": "It feeds the spring digestive fire"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 48,
+    "globalDay": 138,
+    "element": "Water",
+    "cycle": 10,
+    "title": "No cold milk today",
+    "description": "Warm it with cardamom and a pinch of ginger"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 49,
+    "globalDay": 139,
+    "element": "Space",
+    "cycle": 10,
+    "title": "After dinner, spend 10 minutes outside",
+    "description": "Breathe spring evening air before sleeping"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 50,
+    "globalDay": 140,
+    "element": "Air",
+    "cycle": 10,
+    "title": "Open your bedroom window for 5 minutes this morning",
+    "description": "Invite spring air into rest"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 51,
+    "globalDay": 141,
+    "element": "Earth",
+    "cycle": 11,
+    "title": "Eat sitting down at a table today",
+    "description": "Spring makes us hurried — resist it with stillness"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 52,
+    "globalDay": 142,
+    "element": "Fire",
+    "cycle": 11,
+    "title": "Cook with a lid on today",
+    "description": "Concentrated heat helps spring digestion recover"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 53,
+    "globalDay": 143,
+    "element": "Water",
+    "cycle": 11,
+    "title": "Boil your drinking water for 5 minutes today",
+    "description": "Spring water carries transitional energy"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 54,
+    "globalDay": 144,
+    "element": "Space",
+    "cycle": 11,
+    "title": "Cook only what the family will eat tonight",
+    "description": "No excess, no waste, no leftovers"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 55,
+    "globalDay": 145,
+    "element": "Air",
+    "cycle": 11,
+    "title": "After lunch, walk slowly outside for 3 minutes",
+    "description": "Breathe and observe, not exercise"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 56,
+    "globalDay": 146,
+    "element": "Earth",
+    "cycle": 12,
+    "title": "Use mustard seeds in your tempering today",
+    "description": "Warming earth energy in every bite"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 57,
+    "globalDay": 147,
+    "element": "Fire",
+    "cycle": 12,
+    "title": "Sit in direct sunlight for 5 minutes after breakfast",
+    "description": "Let your skin receive warmth"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 58,
+    "globalDay": 148,
+    "element": "Water",
+    "cycle": 12,
+    "title": "Honey in warm water this morning",
+    "description": "Only warm, never hot — spring immunity practice"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 59,
+    "globalDay": 149,
+    "element": "Space",
+    "cycle": 12,
+    "title": "Sit quietly for 5 minutes after finishing dinner",
+    "description": "Let the meal settle before moving"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 60,
+    "globalDay": 150,
+    "element": "Air",
+    "cycle": 12,
+    "title": "Light incense at dinner time today",
+    "description": "Smell is the sense of Air — engage it consciously"
+  },
+  {
+    "season": "Spring",
+    "dayNumber": 61,
+    "globalDay": 151,
+    "element": "Earth",
+    "cycle": 13,
+    "title": "Source vegetables from a local market this week",
+    "description": "Spring produce grounds locally"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 1,
+    "globalDay": 152,
+    "element": "Earth",
+    "cycle": 1,
+    "title": "One seasonal local vegetable at your main meal today",
+    "description": "Let the earth cool your fire"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 2,
+    "globalDay": 153,
+    "element": "Water",
+    "cycle": 1,
+    "title": "Copper vessel warm water before sunrise",
+    "description": "Hydrate before summer heat arrives"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 3,
+    "globalDay": 154,
+    "element": "Air",
+    "cycle": 1,
+    "title": "Five slow breaths at every meal today",
+    "description": "Summer heat shortens the breath naturally"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 4,
+    "globalDay": 155,
+    "element": "Space",
+    "cycle": 1,
+    "title": "Last meal before 7pm tonight",
+    "description": "Summer nights need the body light and open"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 5,
+    "globalDay": 156,
+    "element": "Fire",
+    "cycle": 1,
+    "title": "Lunch is your main meal today",
+    "description": "Cook on low flame — honour fire without adding to it"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 6,
+    "globalDay": 157,
+    "element": "Earth",
+    "cycle": 2,
+    "title": "Include ash gourd or bottle gourd in your cooking today",
+    "description": "Summer's coolest vegetables"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 7,
+    "globalDay": 158,
+    "element": "Water",
+    "cycle": 2,
+    "title": "Sip warm water with a pinch of fennel seeds through the day",
+    "description": "Summer cooling from within"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 8,
+    "globalDay": 159,
+    "element": "Air",
+    "cycle": 2,
+    "title": "Cook with your kitchen window open today",
+    "description": "Summer kitchen heat needs airflow"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 9,
+    "globalDay": 160,
+    "element": "Space",
+    "cycle": 2,
+    "title": "No snacking after dinner",
+    "description": "Summer body needs a long clean space to cool down"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 10,
+    "globalDay": 161,
+    "element": "Fire",
+    "cycle": 2,
+    "title": "Add a small pinch of cumin to your cooking today",
+    "description": "Warmth that does not overheat"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 11,
+    "globalDay": 162,
+    "element": "Earth",
+    "cycle": 3,
+    "title": "Cook your meals on low flame today",
+    "description": "High heat in cooking adds to summer fire"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 12,
+    "globalDay": 163,
+    "element": "Water",
+    "cycle": 3,
+    "title": "Coconut water at midday today",
+    "description": "Nature's most perfect summer hydration"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 13,
+    "globalDay": 164,
+    "element": "Air",
+    "cycle": 3,
+    "title": "Sit in a breeze while eating one meal today",
+    "description": "Let moving air accompany your food"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 14,
+    "globalDay": 165,
+    "element": "Space",
+    "cycle": 3,
+    "title": "12-hour gap between dinner and breakfast",
+    "description": "Summer overnight fast is deeply cooling"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 15,
+    "globalDay": 166,
+    "element": "Fire",
+    "cycle": 3,
+    "title": "Eat before 1pm today",
+    "description": "Summer digestive fire peaks at noon — use it wisely"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 16,
+    "globalDay": 167,
+    "element": "Earth",
+    "cycle": 4,
+    "title": "Eat your meals sitting in a cool shaded area today",
+    "description": "Summer bodies need cool earth"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 17,
+    "globalDay": 168,
+    "element": "Water",
+    "cycle": 4,
+    "title": "No cold water during or after meals today",
+    "description": "It kills digestive fire even in summer"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 18,
+    "globalDay": 169,
+    "element": "Air",
+    "cycle": 4,
+    "title": "Three deep breaths before eating today",
+    "description": "Cool the inner fire with conscious breath"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 19,
+    "globalDay": 170,
+    "element": "Space",
+    "cycle": 4,
+    "title": "Eat at 75% capacity today",
+    "description": "Summer asks for less food, not more"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 20,
+    "globalDay": 171,
+    "element": "Fire",
+    "cycle": 4,
+    "title": "Cook on the lowest flame setting today",
+    "description": "Summer fire is already strong enough"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 21,
+    "globalDay": 172,
+    "element": "Earth",
+    "cycle": 5,
+    "title": "Include cucumber or ridge gourd in lunch today",
+    "description": "Cooling earth foods for hot months"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 22,
+    "globalDay": 173,
+    "element": "Water",
+    "cycle": 5,
+    "title": "Coriander seed water cooled to room temperature today",
+    "description": "The ancient summer cooler"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 23,
+    "globalDay": 174,
+    "element": "Air",
+    "cycle": 5,
+    "title": "After lunch, sit quietly in shade for 5 minutes",
+    "description": "Breathe slowly, do not rush back"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 24,
+    "globalDay": 175,
+    "element": "Space",
+    "cycle": 5,
+    "title": "Clear the table and kitchen after dinner",
+    "description": "Let the space be clean before sleeping"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 25,
+    "globalDay": 176,
+    "element": "Fire",
+    "cycle": 5,
+    "title": "A small piece of fresh ginger in one meal only",
+    "description": "Summer fire needs just a touch"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 26,
+    "globalDay": 177,
+    "element": "Earth",
+    "cycle": 6,
+    "title": "Use coconut in your cooking today",
+    "description": "Grated or oil — the most cooling earth ingredient"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 27,
+    "globalDay": 178,
+    "element": "Water",
+    "cycle": 6,
+    "title": "Sip water slowly all day",
+    "description": "Summer dehydrates faster than you feel thirst — stay ahead"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 28,
+    "globalDay": 179,
+    "element": "Air",
+    "cycle": 6,
+    "title": "Cook in the early morning or evening today",
+    "description": "Avoid the midday kitchen heat"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 29,
+    "globalDay": 180,
+    "element": "Space",
+    "cycle": 6,
+    "title": "One meal in complete silence today",
+    "description": "Notice how food tastes in spacious attention"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 30,
+    "globalDay": 181,
+    "element": "Fire",
+    "cycle": 6,
+    "title": "No hot spices today",
+    "description": "Black pepper, chilli, mustard in full measure add summer fire"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 31,
+    "globalDay": 182,
+    "element": "Earth",
+    "cycle": 7,
+    "title": "Cook rice as your base grain today",
+    "description": "It is the most cooling grain for summer bodies"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 32,
+    "globalDay": 183,
+    "element": "Water",
+    "cycle": 7,
+    "title": "Warm rose water in a glass of water today",
+    "description": "Cooling the inner fire with summer's flower"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 33,
+    "globalDay": 184,
+    "element": "Air",
+    "cycle": 7,
+    "title": "Chew slowly and breathe between bites today",
+    "description": "Summer rush overheats the body"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 34,
+    "globalDay": 185,
+    "element": "Space",
+    "cycle": 7,
+    "title": "Finish dinner before 6:30pm today",
+    "description": "Long summer evenings deserve empty stomachs"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 35,
+    "globalDay": 186,
+    "element": "Fire",
+    "cycle": 7,
+    "title": "Warm but not hot food at lunch today",
+    "description": "Match your meal temperature to summer wisdom"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 36,
+    "globalDay": 187,
+    "element": "Earth",
+    "cycle": 8,
+    "title": "Include coriander leaves generously in one meal today",
+    "description": "Cooling and grounding both"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 37,
+    "globalDay": 188,
+    "element": "Water",
+    "cycle": 8,
+    "title": "No carbonated drinks today",
+    "description": "Soda adds internal heat and disturbs summer digestion"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 38,
+    "globalDay": 189,
+    "element": "Air",
+    "cycle": 8,
+    "title": "Open your home to cross ventilation during cooking today",
+    "description": "Air is your ally"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 39,
+    "globalDay": 190,
+    "element": "Space",
+    "cycle": 8,
+    "title": "No second helpings at any meal today",
+    "description": "Feel where fullness begins and stop there"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 40,
+    "globalDay": 191,
+    "element": "Fire",
+    "cycle": 8,
+    "title": "Use coriander powder generously today",
+    "description": "It adds flavour without adding fire"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 41,
+    "globalDay": 192,
+    "element": "Earth",
+    "cycle": 9,
+    "title": "Eat a warm but not hot meal today",
+    "description": "Body temperature food is safer than steaming hot"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 42,
+    "globalDay": 193,
+    "element": "Water",
+    "cycle": 9,
+    "title": "Diluted buttermilk with a pinch of cumin at lunch today",
+    "description": "Best summer digestive drink"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 43,
+    "globalDay": 194,
+    "element": "Air",
+    "cycle": 9,
+    "title": "Before your evening meal, stand outside for 3 minutes",
+    "description": "Receive the evening breeze"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 44,
+    "globalDay": 195,
+    "element": "Space",
+    "cycle": 9,
+    "title": "Set the table before serving tonight",
+    "description": "Intentional space before nourishment"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 45,
+    "globalDay": 196,
+    "element": "Fire",
+    "cycle": 9,
+    "title": "Eat in the shade at lunch today",
+    "description": "Avoid direct sun while eating in summer"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 46,
+    "globalDay": 197,
+    "element": "Earth",
+    "cycle": 10,
+    "title": "Source a seasonal summer vegetable from the local market today",
+    "description": "Eat what grows now"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 47,
+    "globalDay": 198,
+    "element": "Water",
+    "cycle": 10,
+    "title": "Drink water before you feel thirsty today",
+    "description": "Thirst in summer means you are already behind"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 48,
+    "globalDay": 199,
+    "element": "Air",
+    "cycle": 10,
+    "title": "One screen-free, quiet meal today",
+    "description": "Just breathing and eating together"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 49,
+    "globalDay": 200,
+    "element": "Space",
+    "cycle": 10,
+    "title": "After dinner, step outside to the open sky for 5 minutes",
+    "description": "Summer Space above you"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 50,
+    "globalDay": 201,
+    "element": "Fire",
+    "cycle": 10,
+    "title": "Cook with fennel seeds today",
+    "description": "They add digestion support without heat"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 51,
+    "globalDay": 202,
+    "element": "Earth",
+    "cycle": 11,
+    "title": "Include raw banana or raw jackfruit in your cooking today if available",
+    "description": "Grounding"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 52,
+    "globalDay": 203,
+    "element": "Water",
+    "cycle": 11,
+    "title": "Warm water with mint leaves cooled to room temperature after meals today",
+    "description": "Natural cooler"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 53,
+    "globalDay": 204,
+    "element": "Air",
+    "cycle": 11,
+    "title": "After dinner, walk slowly outside for 5 minutes",
+    "description": "Evening air is summer's gift"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 54,
+    "globalDay": 205,
+    "element": "Space",
+    "cycle": 11,
+    "title": "Cook only enough for the meal",
+    "description": "No leftovers tonight — summer food should be fresh only"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 55,
+    "globalDay": 206,
+    "element": "Fire",
+    "cycle": 11,
+    "title": "A small amount of ghee on your cooked rice today",
+    "description": "It mediates fire wisely"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 56,
+    "globalDay": 207,
+    "element": "Earth",
+    "cycle": 12,
+    "title": "Add a small amount of coconut oil to your cooked rice today",
+    "description": "Cooling and earthy"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 57,
+    "globalDay": 208,
+    "element": "Water",
+    "cycle": 12,
+    "title": "No ice water ever — especially in summer",
+    "description": "Ice shocks the digestive fire permanently"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 58,
+    "globalDay": 209,
+    "element": "Air",
+    "cycle": 12,
+    "title": "Cook calmly today",
+    "description": "Heat in the cook transfers to the food more powerfully in summer"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 59,
+    "globalDay": 210,
+    "element": "Space",
+    "cycle": 12,
+    "title": "Sit quietly for 5 minutes after finishing your meal",
+    "description": "Stillness after summer eating"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 60,
+    "globalDay": 211,
+    "element": "Fire",
+    "cycle": 12,
+    "title": "No deep-fried snacks today",
+    "description": "Summer fire plus fried food is always too much"
+  },
+  {
+    "season": "Summer",
+    "dayNumber": 61,
+    "globalDay": 212,
+    "element": "Earth",
+    "cycle": 13,
+    "title": "Cook a simple moong dal today",
+    "description": "The lightest and most cooling legume for summer"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 1,
+    "globalDay": 213,
+    "element": "Fire",
+    "cycle": 1,
+    "title": "Ginger and black pepper in one meal today",
+    "description": "Your digestion needs rekindling in monsoon"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 2,
+    "globalDay": 214,
+    "element": "Earth",
+    "cycle": 1,
+    "title": "Root vegetables and freshly cooked grains today",
+    "description": "Monsoon makes the body crave ground"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 3,
+    "globalDay": 215,
+    "element": "Air",
+    "cycle": 1,
+    "title": "Windows open while cooking today",
+    "description": "Monsoon air stagnates inside — your kitchen needs flow"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 4,
+    "globalDay": 216,
+    "element": "Space",
+    "cycle": 1,
+    "title": "One full meal in silence today",
+    "description": "No screens — let the body process what it has received"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 5,
+    "globalDay": 217,
+    "element": "Water",
+    "cycle": 1,
+    "title": "Warm herbal water only today",
+    "description": "No cold, no raw — water is already everywhere in monsoon"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 6,
+    "globalDay": 218,
+    "element": "Fire",
+    "cycle": 2,
+    "title": "Eat your largest meal at noon today",
+    "description": "Monsoon fire is weak — use the sun when it appears"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 7,
+    "globalDay": 219,
+    "element": "Earth",
+    "cycle": 2,
+    "title": "Cook with sweet potato or yam today",
+    "description": "The most grounding monsoon vegetables"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 8,
+    "globalDay": 220,
+    "element": "Air",
+    "cycle": 2,
+    "title": "Five deep breaths before each meal today",
+    "description": "Monsoon humidity compresses the breath"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 9,
+    "globalDay": 221,
+    "element": "Space",
+    "cycle": 2,
+    "title": "Finish eating by 7pm tonight",
+    "description": "Monsoon evenings are heavy — body needs early space"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 10,
+    "globalDay": 222,
+    "element": "Water",
+    "cycle": 2,
+    "title": "No cold drinks at any meal today",
+    "description": "Monsoon cold water extinguishes the already weak fire"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 11,
+    "globalDay": 223,
+    "element": "Fire",
+    "cycle": 3,
+    "title": "Add carom seeds to your cooking today",
+    "description": "Most powerful digestive spice for monsoon"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 12,
+    "globalDay": 224,
+    "element": "Earth",
+    "cycle": 3,
+    "title": "Eat freshly cooked food at every meal today",
+    "description": "No leftovers in monsoon — ever"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 13,
+    "globalDay": 225,
+    "element": "Air",
+    "cycle": 3,
+    "title": "Cook your morning meal with the kitchen door open",
+    "description": "Air circulation in damp weather"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 14,
+    "globalDay": 226,
+    "element": "Space",
+    "cycle": 3,
+    "title": "No snacking between meals today",
+    "description": "Monsoon bodies digest slowly — space is medicine"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 15,
+    "globalDay": 227,
+    "element": "Water",
+    "cycle": 3,
+    "title": "Warm ginger water through the day today",
+    "description": "Not plain water — it needs warming medicine"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 16,
+    "globalDay": 228,
+    "element": "Fire",
+    "cycle": 4,
+    "title": "Dry roast your spices before cooking today",
+    "description": "Concentrated warmth activates monsoon Agni"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 17,
+    "globalDay": 229,
+    "element": "Earth",
+    "cycle": 4,
+    "title": "Include old rice (not new crop) in your cooking today",
+    "description": "Old rice is more grounding"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 18,
+    "globalDay": 230,
+    "element": "Air",
+    "cycle": 4,
+    "title": "After eating, sit near an open window for 5 minutes",
+    "description": "Breathe outside monsoon air"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 19,
+    "globalDay": 231,
+    "element": "Space",
+    "cycle": 4,
+    "title": "12-hour gap between dinner and breakfast",
+    "description": "Trust the overnight space to do its work"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 20,
+    "globalDay": 232,
+    "element": "Water",
+    "cycle": 4,
+    "title": "Boil your drinking water for 10 minutes today",
+    "description": "Monsoon water carries heavy energy"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 21,
+    "globalDay": 233,
+    "element": "Fire",
+    "cycle": 5,
+    "title": "Warm ginger tea before your first meal today",
+    "description": "Open the digestive channel in damp weather"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 22,
+    "globalDay": 234,
+    "element": "Earth",
+    "cycle": 5,
+    "title": "Add a small amount of rock salt to your cooking today",
+    "description": "Minerals ground the monsoon body"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 23,
+    "globalDay": 235,
+    "element": "Air",
+    "cycle": 5,
+    "title": "Chew your food slowly and completely today",
+    "description": "Monsoon digestion is already slow"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 24,
+    "globalDay": 236,
+    "element": "Space",
+    "cycle": 5,
+    "title": "Clear and clean the kitchen after dinner tonight",
+    "description": "Physical space supports body space"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 25,
+    "globalDay": 237,
+    "element": "Water",
+    "cycle": 5,
+    "title": "Warm ajwain water after meals today",
+    "description": "It dries the internal excess moisture of monsoon"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 26,
+    "globalDay": 238,
+    "element": "Fire",
+    "cycle": 6,
+    "title": "Cook on medium-high flame today",
+    "description": "Monsoon needs heat in the kitchen to counter damp"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 27,
+    "globalDay": 239,
+    "element": "Earth",
+    "cycle": 6,
+    "title": "Cook a simple khichdi today",
+    "description": "Rice and dal together — the most grounding monsoon meal"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 28,
+    "globalDay": 240,
+    "element": "Air",
+    "cycle": 6,
+    "title": "Cook calmly without rushing today",
+    "description": "Monsoon anxiety transfers into food easily"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 29,
+    "globalDay": 241,
+    "element": "Space",
+    "cycle": 6,
+    "title": "Eat at 75% capacity today",
+    "description": "Monsoon asks for less volume, more quality"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 30,
+    "globalDay": 242,
+    "element": "Water",
+    "cycle": 6,
+    "title": "No refrigerated liquids today",
+    "description": "Everything at room temperature or warmer"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 31,
+    "globalDay": 243,
+    "element": "Fire",
+    "cycle": 7,
+    "title": "Add a teaspoon of ghee to your cooked meal today",
+    "description": "It feeds the digestive fire directly"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 32,
+    "globalDay": 244,
+    "element": "Earth",
+    "cycle": 7,
+    "title": "Include sesame seeds in your meal today",
+    "description": "Warming and grounding for damp weather"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 33,
+    "globalDay": 245,
+    "element": "Air",
+    "cycle": 7,
+    "title": "Open your bedroom window briefly each morning",
+    "description": "Even monsoon outside air is fresher inside"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 34,
+    "globalDay": 246,
+    "element": "Space",
+    "cycle": 7,
+    "title": "Screen-free dinner tonight",
+    "description": "Family, food, and the sound of monsoon outside"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 35,
+    "globalDay": 247,
+    "element": "Water",
+    "cycle": 7,
+    "title": "Dried ginger powder in your warm water today",
+    "description": "More potent than fresh in wet weather"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 36,
+    "globalDay": 248,
+    "element": "Fire",
+    "cycle": 8,
+    "title": "Eat breakfast within 30 minutes of waking",
+    "description": "Monsoon mornings need early fire activation"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 37,
+    "globalDay": 249,
+    "element": "Earth",
+    "cycle": 8,
+    "title": "Eat your meals sitting on the floor today if possible",
+    "description": "Earth connection in monsoon"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 38,
+    "globalDay": 250,
+    "element": "Air",
+    "cycle": 8,
+    "title": "Three conscious breaths before serving food today",
+    "description": "Bring Air into the act of nourishing"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 39,
+    "globalDay": 251,
+    "element": "Space",
+    "cycle": 8,
+    "title": "Set the table intentionally before serving",
+    "description": "Space before food changes the experience"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 40,
+    "globalDay": 252,
+    "element": "Water",
+    "cycle": 8,
+    "title": "No curd today",
+    "description": "It increases water and heaviness in an already damp monsoon body"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 41,
+    "globalDay": 253,
+    "element": "Fire",
+    "cycle": 9,
+    "title": "Sip warm ginger water between meals today",
+    "description": "Keep the internal fire burning all day"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 42,
+    "globalDay": 254,
+    "element": "Earth",
+    "cycle": 9,
+    "title": "Cook with ghee today",
+    "description": "It grounds the body and feeds digestion simultaneously"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 43,
+    "globalDay": 255,
+    "element": "Air",
+    "cycle": 9,
+    "title": "Walk outside in the monsoon breeze for 5 minutes today",
+    "description": "If raining, stand in the doorway"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 44,
+    "globalDay": 256,
+    "element": "Space",
+    "cycle": 9,
+    "title": "Finish dinner before 6:30pm today",
+    "description": "Give your monsoon body the longest night of rest"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 45,
+    "globalDay": 257,
+    "element": "Water",
+    "cycle": 9,
+    "title": "Warm coriander seed tea in the afternoon today",
+    "description": "Gently moves excess water in the body"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 46,
+    "globalDay": 258,
+    "element": "Fire",
+    "cycle": 10,
+    "title": "Add long pepper (pippali) to your cooking if available",
+    "description": "Strongest monsoon digestive spice"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 47,
+    "globalDay": 259,
+    "element": "Earth",
+    "cycle": 10,
+    "title": "Source a local vegetable today",
+    "description": "Monsoon produce is hyperlocal — honour that"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 48,
+    "globalDay": 260,
+    "element": "Air",
+    "cycle": 10,
+    "title": "Breathe through your nose today while eating",
+    "description": "Filter the moist monsoon air consciously"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 49,
+    "globalDay": 261,
+    "element": "Space",
+    "cycle": 10,
+    "title": "Sit quietly for 10 minutes after dinner",
+    "description": "No movement, no screens — just stillness"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 50,
+    "globalDay": 262,
+    "element": "Water",
+    "cycle": 10,
+    "title": "Sip warm water only, in small quantities",
+    "description": "Large amounts of water at once in monsoon overloads"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 51,
+    "globalDay": 263,
+    "element": "Fire",
+    "cycle": 11,
+    "title": "Eat hot food at every meal today",
+    "description": "Not warm, not room temperature — genuinely hot"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 52,
+    "globalDay": 264,
+    "element": "Earth",
+    "cycle": 11,
+    "title": "Include drumstick or moringa in your cooking today",
+    "description": "Nature's monsoon ground medicine"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 53,
+    "globalDay": 265,
+    "element": "Air",
+    "cycle": 11,
+    "title": "Light natural incense before dinner tonight",
+    "description": "Engage Air through smell in damp season"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 54,
+    "globalDay": 266,
+    "element": "Space",
+    "cycle": 11,
+    "title": "Cook only enough for one meal tonight",
+    "description": "Freshness matters more than quantity in monsoon"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 55,
+    "globalDay": 267,
+    "element": "Water",
+    "cycle": 11,
+    "title": "Fenugreek seed warm water tonight",
+    "description": "It dries monsoon excess from the digestive tract"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 56,
+    "globalDay": 268,
+    "element": "Fire",
+    "cycle": 12,
+    "title": "Use mustard seeds in your tempering today",
+    "description": "They carry intense warming fire energy"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 57,
+    "globalDay": 269,
+    "element": "Earth",
+    "cycle": 12,
+    "title": "Use iron cookware today if available",
+    "description": "Iron carries earth's mineral memory"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 58,
+    "globalDay": 270,
+    "element": "Air",
+    "cycle": 12,
+    "title": "Sit quietly after eating and breathe for 3 minutes",
+    "description": "Monsoon digestion needs calm air"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 59,
+    "globalDay": 271,
+    "element": "Space",
+    "cycle": 12,
+    "title": "No second helpings at any meal today",
+    "description": "Feel the edge of fullness and honour it"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 60,
+    "globalDay": 272,
+    "element": "Water",
+    "cycle": 12,
+    "title": "No lassi or buttermilk today",
+    "description": "Curd-based drinks increase heaviness in monsoon"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 61,
+    "globalDay": 273,
+    "element": "Fire",
+    "cycle": 13,
+    "title": "No raw food at any meal today",
+    "description": "Monsoon demands everything be fire-transformed"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 62,
+    "globalDay": 274,
+    "element": "Earth",
+    "cycle": 13,
+    "title": "Cook your meals from scratch today",
+    "description": "No packaged food — monsoon demands pure earth food"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 63,
+    "globalDay": 275,
+    "element": "Air",
+    "cycle": 13,
+    "title": "Take 5 breaths outdoors in the morning before your first drink",
+    "description": "Start with outside Air"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 64,
+    "globalDay": 276,
+    "element": "Space",
+    "cycle": 13,
+    "title": "After the last meal, close the kitchen completely",
+    "description": "The space between eating and sleeping"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 65,
+    "globalDay": 277,
+    "element": "Water",
+    "cycle": 13,
+    "title": "Warm tulsi water in the morning today",
+    "description": "Tulsi dries and protects in wet season"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 66,
+    "globalDay": 278,
+    "element": "Fire",
+    "cycle": 14,
+    "title": "Morning sunlight when it appears in monsoon",
+    "description": "Even 5 minutes feeds the inner fire"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 67,
+    "globalDay": 279,
+    "element": "Earth",
+    "cycle": 14,
+    "title": "Add urad dal or whole green gram to one meal today",
+    "description": "Earthy legumes for monsoon body"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 68,
+    "globalDay": 280,
+    "element": "Air",
+    "cycle": 14,
+    "title": "Cook without the exhaust fan today",
+    "description": "Let monsoon kitchen aromas fill the space"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 69,
+    "globalDay": 281,
+    "element": "Space",
+    "cycle": 14,
+    "title": "One moment of gratitude before every meal today",
+    "description": "Space lives in conscious pause"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 70,
+    "globalDay": 282,
+    "element": "Water",
+    "cycle": 14,
+    "title": "Drink warm water 20 minutes before each meal today",
+    "description": "Never with or after food in monsoon"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 71,
+    "globalDay": 283,
+    "element": "Fire",
+    "cycle": 15,
+    "title": "Add hing (asafoetida) to your dal or vegetables today",
+    "description": "It reignites sluggish digestion"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 72,
+    "globalDay": 284,
+    "element": "Earth",
+    "cycle": 15,
+    "title": "Include ridge gourd or snake gourd in your cooking today",
+    "description": "Light yet grounding"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 73,
+    "globalDay": 285,
+    "element": "Air",
+    "cycle": 15,
+    "title": "Eat one meal today with the window open to the rain",
+    "description": "Sound of rain is Air medicine"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 74,
+    "globalDay": 286,
+    "element": "Space",
+    "cycle": 15,
+    "title": "Eat dinner 3 full hours before sleeping tonight",
+    "description": "Digestion needs waking space"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 75,
+    "globalDay": 287,
+    "element": "Water",
+    "cycle": 15,
+    "title": "Warm cumin water after dinner tonight",
+    "description": "Final digestive support for a heavy monsoon day"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 76,
+    "globalDay": 288,
+    "element": "Fire",
+    "cycle": 16,
+    "title": "Chew a small piece of ginger with rock salt before lunch today",
+    "description": "The classic Agni starter"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 77,
+    "globalDay": 289,
+    "element": "Earth",
+    "cycle": 16,
+    "title": "Eat at the same time today as yesterday",
+    "description": "Monsoon bodies need rhythmic earth anchoring"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 78,
+    "globalDay": 290,
+    "element": "Air",
+    "cycle": 16,
+    "title": "Before sleeping, breathe slowly 10 times",
+    "description": "Clear the day's humid air from your lungs"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 79,
+    "globalDay": 291,
+    "element": "Space",
+    "cycle": 16,
+    "title": "No fruit after meals today",
+    "description": "Fruit eaten after food ferments in the monsoon gut"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 80,
+    "globalDay": 292,
+    "element": "Water",
+    "cycle": 16,
+    "title": "No fresh fruit juice today",
+    "description": "The water content is too high for an already water-heavy season"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 81,
+    "globalDay": 293,
+    "element": "Fire",
+    "cycle": 17,
+    "title": "Cook your food covered and on heat longer than usual",
+    "description": "Monsoon food needs more fire"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 82,
+    "globalDay": 294,
+    "element": "Earth",
+    "cycle": 17,
+    "title": "Cook with a pinch of turmeric in every dish today",
+    "description": "Earth's most grounding spice"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 83,
+    "globalDay": 295,
+    "element": "Air",
+    "cycle": 17,
+    "title": "After lunch, stand near a window and breathe the post-meal air for 2 minutes",
+    "description": "Conscious Air"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 84,
+    "globalDay": 296,
+    "element": "Space",
+    "cycle": 17,
+    "title": "Tonight: dinner done, family gathered, kitchen closed",
+    "description": "Honour the evening as Space"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 85,
+    "globalDay": 297,
+    "element": "Water",
+    "cycle": 17,
+    "title": "Replace your evening chai with warm ginger-tulsi tea today",
+    "description": "Pure monsoon medicine"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 86,
+    "globalDay": 298,
+    "element": "Fire",
+    "cycle": 18,
+    "title": "Eat three regular hot meals today — no skipping",
+    "description": "Monsoon fire dies without regular fuel"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 87,
+    "globalDay": 299,
+    "element": "Earth",
+    "cycle": 18,
+    "title": "Make a simple warm grain porridge for breakfast today",
+    "description": "Grains are monsoon's foundation"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 88,
+    "globalDay": 300,
+    "element": "Air",
+    "cycle": 18,
+    "title": "Invite every family member to take one deep breath together before eating tonight",
+    "description": "Shared Air"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 89,
+    "globalDay": 301,
+    "element": "Space",
+    "cycle": 18,
+    "title": "Acknowledge the cook today before eating",
+    "description": "It creates a moment of Space and gratitude"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 90,
+    "globalDay": 302,
+    "element": "Water",
+    "cycle": 18,
+    "title": "Only one cup of liquid with each meal today",
+    "description": "Monsoon body needs less, not more water"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 91,
+    "globalDay": 303,
+    "element": "Fire",
+    "cycle": 19,
+    "title": "Warm turmeric milk at bedtime tonight",
+    "description": "Close the monsoon day with golden fire"
+  },
+  {
+    "season": "Monsoon",
+    "dayNumber": 92,
+    "globalDay": 304,
+    "element": "Earth",
+    "cycle": 19,
+    "title": "Include methi (fenugreek) seeds in your tempering today",
+    "description": "Bitter earth for damp season"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 1,
+    "globalDay": 305,
+    "element": "Earth",
+    "cycle": 1,
+    "title": "Warm light meal today — easy to digest",
+    "description": "The body is clearing after monsoon heaviness"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 2,
+    "globalDay": 306,
+    "element": "Fire",
+    "cycle": 1,
+    "title": "Ten minutes of morning sun today",
+    "description": "Autumn light is soft but your fire still needs it"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 3,
+    "globalDay": 307,
+    "element": "Water",
+    "cycle": 1,
+    "title": "Warm herbal water through the day today",
+    "description": "Keep fluids moving as autumn air turns dry"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 4,
+    "globalDay": 308,
+    "element": "Air",
+    "cycle": 1,
+    "title": "Five slow breaths before your first meal today",
+    "description": "Autumn air is clean — receive it"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 5,
+    "globalDay": 309,
+    "element": "Space",
+    "cycle": 1,
+    "title": "Eat one meal in silence today",
+    "description": "Notice the clarity that autumn brings to eating"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 6,
+    "globalDay": 310,
+    "element": "Earth",
+    "cycle": 2,
+    "title": "Include a freshly cooked root vegetable in your main meal today",
+    "description": "Grounding after rains"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 7,
+    "globalDay": 311,
+    "element": "Fire",
+    "cycle": 2,
+    "title": "Add fresh ginger to your cooking today",
+    "description": "Autumn mornings are cool and need warming"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 8,
+    "globalDay": 312,
+    "element": "Water",
+    "cycle": 2,
+    "title": "Copper vessel warm water before your first meal today",
+    "description": "Open autumn with warm water"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 9,
+    "globalDay": 313,
+    "element": "Air",
+    "cycle": 2,
+    "title": "Cook with one window open today",
+    "description": "Fresh autumn air is cleaner than indoor kitchen air"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 10,
+    "globalDay": 314,
+    "element": "Space",
+    "cycle": 2,
+    "title": "Finish eating before sunset today",
+    "description": "Autumn evenings are long and clear — honour that space"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 11,
+    "globalDay": 315,
+    "element": "Earth",
+    "cycle": 3,
+    "title": "Cook from scratch today",
+    "description": "No packaged food — autumn is the season of fresh beginnings"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 12,
+    "globalDay": 316,
+    "element": "Fire",
+    "cycle": 3,
+    "title": "Make lunch your largest meal today",
+    "description": "Autumn fire is moderate — use the midday sun"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 13,
+    "globalDay": 317,
+    "element": "Water",
+    "cycle": 3,
+    "title": "Warm tulsi tea in the afternoon today",
+    "description": "Tulsi is autumn's protective herb"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 14,
+    "globalDay": 318,
+    "element": "Air",
+    "cycle": 3,
+    "title": "After breakfast, stand outside for 5 minutes",
+    "description": "Breathe the cool autumn morning air"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 15,
+    "globalDay": 319,
+    "element": "Space",
+    "cycle": 3,
+    "title": "No snacking after dinner tonight",
+    "description": "Autumn body is clearing — give it clean space"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 16,
+    "globalDay": 320,
+    "element": "Earth",
+    "cycle": 4,
+    "title": "Use ghee in your cooking today",
+    "description": "It grounds and nourishes the post-monsoon body"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 17,
+    "globalDay": 321,
+    "element": "Fire",
+    "cycle": 4,
+    "title": "Dry roast cumin and coriander before cooking today",
+    "description": "Concentrated autumn warmth"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 18,
+    "globalDay": 322,
+    "element": "Water",
+    "cycle": 4,
+    "title": "No cold drinks at any meal today",
+    "description": "Autumn cooling outside doesn't mean cold inside"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 19,
+    "globalDay": 323,
+    "element": "Air",
+    "cycle": 4,
+    "title": "Three deep breaths before each meal today",
+    "description": "Let Air prepare the body for Earth"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 20,
+    "globalDay": 324,
+    "element": "Space",
+    "cycle": 4,
+    "title": "12-hour gap between dinner and breakfast",
+    "description": "Overnight space in autumn is deeply restorative"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 21,
+    "globalDay": 325,
+    "element": "Earth",
+    "cycle": 5,
+    "title": "Include sesame seeds in one meal today",
+    "description": "Warming and anchoring for autumn bodies"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 22,
+    "globalDay": 326,
+    "element": "Fire",
+    "cycle": 5,
+    "title": "Warm ginger tea before your first meal today",
+    "description": "Open the channel gently in cool weather"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 23,
+    "globalDay": 327,
+    "element": "Water",
+    "cycle": 5,
+    "title": "Warm coriander seed water after lunch today",
+    "description": "Gently keeps autumn digestion moving"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 24,
+    "globalDay": 328,
+    "element": "Air",
+    "cycle": 5,
+    "title": "Chew slowly today",
+    "description": "Autumn asks for deliberate, unhurried pace at the table"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 25,
+    "globalDay": 329,
+    "element": "Space",
+    "cycle": 5,
+    "title": "Screen-free dinner tonight",
+    "description": "Family, autumn light, food, and quiet presence"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 26,
+    "globalDay": 330,
+    "element": "Earth",
+    "cycle": 6,
+    "title": "Cook khichdi for lunch today",
+    "description": "Lightest and most grounding autumn meal"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 27,
+    "globalDay": 331,
+    "element": "Fire",
+    "cycle": 6,
+    "title": "Add black pepper to one dish today",
+    "description": "Autumn body benefits from gentle warming spice"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 28,
+    "globalDay": 332,
+    "element": "Water",
+    "cycle": 6,
+    "title": "Sip warm water every hour today",
+    "description": "Autumn dryness is subtle but real"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 29,
+    "globalDay": 333,
+    "element": "Air",
+    "cycle": 6,
+    "title": "Cook calmly without rushing today",
+    "description": "Autumn cooking rewards patience and calm"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 30,
+    "globalDay": 334,
+    "element": "Space",
+    "cycle": 6,
+    "title": "Eat at 75% capacity today",
+    "description": "Autumn asks for lightness after months of monsoon weight"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 31,
+    "globalDay": 335,
+    "element": "Earth",
+    "cycle": 7,
+    "title": "Eat your meals at the same time today as yesterday",
+    "description": "Routine grounds autumn energy"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 32,
+    "globalDay": 336,
+    "element": "Fire",
+    "cycle": 7,
+    "title": "Walk outside in the morning for 5 minutes today",
+    "description": "Autumn sun is gentle but real"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 33,
+    "globalDay": 337,
+    "element": "Water",
+    "cycle": 7,
+    "title": "Warm ajwain water before bed tonight",
+    "description": "It closes the digestive system gently"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 34,
+    "globalDay": 338,
+    "element": "Air",
+    "cycle": 7,
+    "title": "Open the bedroom window for 5 minutes in the morning",
+    "description": "Autumn air quality is highest now"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 35,
+    "globalDay": 339,
+    "element": "Space",
+    "cycle": 7,
+    "title": "Clear the kitchen completely after dinner tonight",
+    "description": "Clean space for a clear season"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 36,
+    "globalDay": 340,
+    "element": "Earth",
+    "cycle": 8,
+    "title": "Include sweet potato in your cooking today",
+    "description": "Dense earth for a season of clearing"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 37,
+    "globalDay": 341,
+    "element": "Fire",
+    "cycle": 8,
+    "title": "Cook breakfast and eat it hot today",
+    "description": "No cold or room-temperature morning food"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 38,
+    "globalDay": 342,
+    "element": "Water",
+    "cycle": 8,
+    "title": "Honey in warm water this morning",
+    "description": "Only warm, never hot — autumn immunity practice"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 39,
+    "globalDay": 343,
+    "element": "Air",
+    "cycle": 8,
+    "title": "Light incense at dinner time today",
+    "description": "Smell is Air's sense — engage it in autumn"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 40,
+    "globalDay": 344,
+    "element": "Space",
+    "cycle": 8,
+    "title": "Set the table before serving tonight",
+    "description": "Space and intention before nourishment"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 41,
+    "globalDay": 345,
+    "element": "Earth",
+    "cycle": 9,
+    "title": "Source a local autumn vegetable today",
+    "description": "Eat what the season is offering right now"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 42,
+    "globalDay": 346,
+    "element": "Fire",
+    "cycle": 9,
+    "title": "Include turmeric in every dish today",
+    "description": "Autumn's universal warming spice"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 43,
+    "globalDay": 347,
+    "element": "Water",
+    "cycle": 9,
+    "title": "No refrigerated drinks today",
+    "description": "Everything at room temperature or warmer"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 44,
+    "globalDay": 348,
+    "element": "Air",
+    "cycle": 9,
+    "title": "After dinner, take 10 slow breaths outside",
+    "description": "Autumn evening air is medicine"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 45,
+    "globalDay": 349,
+    "element": "Space",
+    "cycle": 9,
+    "title": "Sit quietly for 10 minutes after your last meal today",
+    "description": "Autumn Space settles in stillness"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 46,
+    "globalDay": 350,
+    "element": "Earth",
+    "cycle": 10,
+    "title": "Cook with iron cookware if available today",
+    "description": "Earth mineral memory for post-monsoon body"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 47,
+    "globalDay": 351,
+    "element": "Fire",
+    "cycle": 10,
+    "title": "Light a small lamp at your dinner table tonight",
+    "description": "Autumn evenings respond to warm light"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 48,
+    "globalDay": 352,
+    "element": "Water",
+    "cycle": 10,
+    "title": "Warm fennel tea this afternoon",
+    "description": "It soothes the autumn digestive system gently"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 49,
+    "globalDay": 353,
+    "element": "Air",
+    "cycle": 10,
+    "title": "Breathe through your nose today",
+    "description": "Filter the increasingly dry autumn air consciously"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 50,
+    "globalDay": 354,
+    "element": "Space",
+    "cycle": 10,
+    "title": "Finish dinner before 6:30pm today",
+    "description": "Long autumn evenings deserve empty, resting bodies"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 51,
+    "globalDay": 355,
+    "element": "Earth",
+    "cycle": 11,
+    "title": "Add a pinch of rock salt to your cooking today",
+    "description": "Mineral grounding after monsoon loss"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 52,
+    "globalDay": 356,
+    "element": "Fire",
+    "cycle": 11,
+    "title": "Eat your meals hot today",
+    "description": "Not warm, not room temperature — genuinely hot food"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 53,
+    "globalDay": 357,
+    "element": "Water",
+    "cycle": 11,
+    "title": "Drink water before meals today, not during",
+    "description": "Autumn digestion benefits from this order"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 54,
+    "globalDay": 358,
+    "element": "Air",
+    "cycle": 11,
+    "title": "Eat one meal today in an outdoor or semi-outdoor space",
+    "description": "Autumn air surrounds you"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 55,
+    "globalDay": 359,
+    "element": "Space",
+    "cycle": 11,
+    "title": "No second helpings today",
+    "description": "Feel the edge of enough and honour it consciously"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 56,
+    "globalDay": 360,
+    "element": "Earth",
+    "cycle": 12,
+    "title": "Eat sitting down at a table today",
+    "description": "Autumn asks for stillness after monsoon movement"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 57,
+    "globalDay": 361,
+    "element": "Fire",
+    "cycle": 12,
+    "title": "Cook with mustard seeds in your tempering today",
+    "description": "Their heat opens autumn digestion"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 58,
+    "globalDay": 362,
+    "element": "Water",
+    "cycle": 12,
+    "title": "Warm water with a pinch of cinnamon after dinner tonight",
+    "description": "Closes the day gently"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 59,
+    "globalDay": 363,
+    "element": "Air",
+    "cycle": 12,
+    "title": "Cook your morning meal slowly today",
+    "description": "Autumn mornings reward patient breathing"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 60,
+    "globalDay": 364,
+    "element": "Space",
+    "cycle": 12,
+    "title": "Cook only enough for one meal tonight",
+    "description": "Freshness and lightness over abundance"
+  },
+  {
+    "season": "Autumn",
+    "dayNumber": 61,
+    "globalDay": 365,
+    "element": "Earth",
+    "cycle": 13,
+    "title": "Cook your largest meal slowly today",
+    "description": "Low flame, long time — autumn rewards patience"
+  }
+]

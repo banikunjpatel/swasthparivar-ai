@@ -148,71 +148,234 @@ export const DINACHARYA_RECOMMENDATIONS: DinacharyaRecommendation[] = [
   }
 ];
 
-export const RUTUCHARYA_GUIDANCE: { [key in Season]: RutucharyaGuidance } = {
+export const RUTUCHARYA_GUIDANCE: { [key in Season]: RutucharyaGuidance } =  {
   spring: {
     season: 'spring',
     foods_to_favor: ['bitter greens', 'barley', 'honey', 'light fruits', 'warming spices'],
     foods_to_avoid: ['heavy foods', 'dairy', 'sweet fruits', 'cold foods'],
     lifestyle_tips: ['Exercise more', 'Dry brushing', 'Detox practices', 'Rise early'],
+    element_guidance: {
+      earth: ['Light dry bitter foods', 'Neem', 'Turmeric', 'Natural detox season'],
+      water: ['Warm herbal teas', 'Reduce heavy fluids'],
+      fire: ['Digestive fire reawakening', 'Morning sunlight essential'],
+      air: ['Vigorous kapalabhati', 'Clear winter stagnation'],
+      space: ['Ideal season for extended natural fasting and cleansing']
+    },
     dosha_considerations: {
-      vata: ['Moderate exercise', 'Warm foods still important'],
-      pitta: ['Avoid overheating', 'Cool morning exercise'],
-      kapha: ['Vigorous exercise', 'Reduce heavy foods', 'Stimulating activities']
+      vata: {
+        guidance: ['Moderate exercise', 'Warm foods still important'],
+        element_guidance: {
+          earth: ['Warm, oily, heavy foods', 'Ghee daily', 'Root vegetables'],
+          water: ['Warm water only', 'Herbal teas', 'No cold drinks ever'],
+          fire: ['Eat at consistent times', 'Never skip meals', 'Noon is essential'],
+          air: ['Slow deep breathing before meals', 'Avoid eating anxious'],
+          space: ['Short fasts only (10–12 hrs)', 'Long fasting worsens Vata']
+        }
+      },
+      pitta: {
+        guidance: ['Avoid overheating', 'Cool morning exercise'],
+        element_guidance: {
+          earth: ['Cooling foods', 'Coconut', 'Mint', 'Sweet fruits', 'Avoid spicy'],
+          water: ['Coconut water', 'Rose water', 'Stay very hydrated'],
+          fire: ['Avoid midday sun', 'Eat before 1pm', 'Cool cooking preferred'],
+          air: ['Sitali cooling breath before meals', 'Calm environment'],
+          space: ['Moon-phase fasting', 'Silence cools the mind naturally']
+        }
+      },
+      kapha: {
+        guidance: ['Vigorous exercise', 'Reduce heavy foods', 'Stimulating activities'],
+        element_guidance: {
+          earth: ['Light, dry, warm foods', 'Millets', 'Legumes', 'Bitter greens'],
+          water: ['Warm ginger water', 'Honey in warm water', 'Reduce dairy'],
+          fire: ['Morning sunlight essential', 'Skip breakfast if not hungry'],
+          air: ['Vigorous kapalabhati before meals', 'Movement energises'],
+          space: ['Longer fasts well-tolerated and very beneficial']
+        }
+      }
     }
   },
+
   summer: {
     season: 'summer',
     foods_to_favor: ['sweet fruits', 'cooling vegetables', 'coconut', 'mint', 'rose water'],
     foods_to_avoid: ['spicy foods', 'hot foods', 'sour foods', 'alcohol'],
     lifestyle_tips: ['Stay cool', 'Avoid midday sun', 'Swimming', 'Cool environments'],
+    element_guidance: {
+      earth: ['Cooling foods', 'Coconut', 'Mint', 'Sweet juicy fruits', 'Buttermilk'],
+      water: ['Increase intake', 'Coconut water', 'Rose sherbat'],
+      fire: ['Avoid midday sun', 'Eat before noon', 'Sitali cooling breath'],
+      air: ['Early morning movement only', 'Avoid effort in heat'],
+      space: ['Moon-phase fasting', 'Shorter eating windows']
+    },
     dosha_considerations: {
-      vata: ['Stay hydrated', 'Avoid too much cold'],
-      pitta: ['Cooling foods essential', 'Avoid heated activities', 'Gentle exercise'],
-      kapha: ['Light, cooling foods', 'Moderate exercise']
+      vata: {
+        guidance: ['Stay hydrated', 'Avoid too much cold'],
+        element_guidance: {
+          earth: ['Warm, oily, heavy foods', 'Ghee daily', 'Root vegetables'],
+          water: ['Warm water only', 'Herbal teas', 'No cold drinks ever'],
+          fire: ['Eat at consistent times', 'Never skip meals', 'Noon is essential'],
+          air: ['Slow deep breathing before meals', 'Avoid eating anxious'],
+          space: ['Short fasts only (10–12 hrs)', 'Long fasting worsens Vata']
+        }
+      },
+      pitta: {
+        guidance: ['Cooling foods essential', 'Avoid heated activities', 'Gentle exercise'],
+        element_guidance: {
+          earth: ['Cooling foods', 'Coconut', 'Mint', 'Sweet fruits', 'Avoid spicy'],
+          water: ['Coconut water', 'Rose water', 'Stay very hydrated'],
+          fire: ['Avoid midday sun', 'Eat before 1pm', 'Cool cooking preferred'],
+          air: ['Sitali cooling breath before meals', 'Calm environment'],
+          space: ['Moon-phase fasting', 'Silence cools the mind naturally']
+        }
+      },
+      kapha: {
+        guidance: ['Light, cooling foods', 'Moderate exercise'],
+        element_guidance: {
+          earth: ['Light, dry, warm foods', 'Millets', 'Legumes', 'Bitter greens'],
+          water: ['Warm ginger water', 'Honey in warm water', 'Reduce dairy'],
+          fire: ['Morning sunlight essential', 'Skip breakfast if not hungry'],
+          air: ['Vigorous kapalabhati before meals', 'Movement energises'],
+          space: ['Longer fasts well-tolerated and very beneficial']
+        }
+      }
     }
   },
+
   monsoon: {
     season: 'monsoon',
     foods_to_favor: ['warm spices', 'ginger', 'garlic', 'cooked vegetables', 'herbal teas'],
     foods_to_avoid: ['raw foods', 'cold drinks', 'leafy greens', 'street food'],
     lifestyle_tips: ['Stay dry', 'Boost immunity', 'Warm foods', 'Indoor exercises'],
+    element_guidance: {
+      earth: ['Light foods', 'Moong', 'Old rice', 'Ginger', 'Easily digestible meals'],
+      water: ['Boil all water', 'Avoid raw food', 'Warm ginger water daily'],
+      fire: ['Digestive fire weakens', 'Eat small warm cooked meals'],
+      air: ['Indoor breathing practices', 'Avoid cold wind on the body'],
+      space: ['Ekadashi fasting recommended', 'Natural gut cleansing']
+    },
     dosha_considerations: {
-      vata: ['Extra warmth needed', 'Grounding foods'],
-      pitta: ['Avoid excess heat', 'Gentle warming'],
-      kapha: ['Prevent congestion', 'Warming spices important']
+      vata: {
+        guidance: ['Extra warmth needed', 'Grounding foods'],
+        element_guidance: {
+          earth: ['Warm, oily, heavy foods', 'Ghee daily', 'Root vegetables'],
+          water: ['Warm water only', 'Herbal teas', 'No cold drinks ever'],
+          fire: ['Eat at consistent times', 'Never skip meals', 'Noon is essential'],
+          air: ['Slow deep breathing before meals', 'Avoid eating anxious'],
+          space: ['Short fasts only (10–12 hrs)', 'Long fasting worsens Vata']
+        }
+      },
+      pitta: {
+        guidance: ['Avoid excess heat', 'Gentle warming'],
+        element_guidance: {
+          earth: ['Cooling foods', 'Coconut', 'Mint', 'Sweet fruits', 'Avoid spicy'],
+          water: ['Coconut water', 'Rose water', 'Stay very hydrated'],
+          fire: ['Avoid midday sun', 'Eat before 1pm', 'Cool cooking preferred'],
+          air: ['Sitali cooling breath before meals', 'Calm environment'],
+          space: ['Moon-phase fasting', 'Silence cools the mind naturally']
+        }
+      },
+      kapha: {
+        guidance: ['Prevent congestion', 'Warming spices important'],
+        element_guidance: {
+          earth: ['Light, dry, warm foods', 'Millets', 'Legumes', 'Bitter greens'],
+          water: ['Warm ginger water', 'Honey in warm water', 'Reduce dairy'],
+          fire: ['Morning sunlight essential', 'Skip breakfast if not hungry'],
+          air: ['Vigorous kapalabhati before meals', 'Movement energises'],
+          space: ['Longer fasts well-tolerated and very beneficial']
+        }
+      }
     }
   },
+
   autumn: {
     season: 'autumn',
     foods_to_favor: ['root vegetables', 'warming spices', 'nuts', 'warm milk', 'sesame oil'],
     foods_to_avoid: ['cold foods', 'raw foods', 'dry foods', 'bitter tastes'],
     lifestyle_tips: ['Oil massage', 'Warm baths', 'Regular routine', 'Grounding activities'],
+    element_guidance: {
+      earth: ['Sweet', 'Bitter', 'Astringent foods', 'Pomegranate', 'Amla'],
+      water: ['Moonlight-charged water', 'Light hydration'],
+      fire: ['Cooling season', 'No excess heat or spice', 'Cooling ghee'],
+      air: ['Gentle nadi shodhana', 'Grounding'],
+      space: ['Gradual shift from summer fasting to autumn nourishment']
+    },
     dosha_considerations: {
-      vata: ['Most important season for care', 'Warm, moist, heavy foods'],
-      pitta: ['Cooling down from summer heat', 'Sweet, bitter tastes'],
-      kapha: ['Prepare for winter', 'Warming foods']
+      vata: {
+        guidance: ['Most important season for care', 'Warm, moist, heavy foods'],
+        element_guidance: {
+          earth: ['Warm, oily, heavy foods', 'Ghee daily', 'Root vegetables'],
+          water: ['Warm water only', 'Herbal teas', 'No cold drinks ever'],
+          fire: ['Eat at consistent times', 'Never skip meals', 'Noon is essential'],
+          air: ['Slow deep breathing before meals', 'Avoid eating anxious'],
+          space: ['Short fasts only (10–12 hrs)', 'Long fasting worsens Vata']
+        }
+      },
+      pitta: {
+        guidance: ['Cooling down from summer heat', 'Sweet, bitter tastes'],
+        element_guidance: {
+          earth: ['Cooling foods', 'Coconut', 'Mint', 'Sweet fruits', 'Avoid spicy'],
+          water: ['Coconut water', 'Rose water', 'Stay very hydrated'],
+          fire: ['Avoid midday sun', 'Eat before 1pm', 'Cool cooking preferred'],
+          air: ['Sitali cooling breath before meals', 'Calm environment'],
+          space: ['Moon-phase fasting', 'Silence cools the mind naturally']
+        }
+      },
+      kapha: {
+        guidance: ['Prepare for winter', 'Warming foods'],
+        element_guidance: {
+          earth: ['Light, dry, warm foods', 'Millets', 'Legumes', 'Bitter greens'],
+          water: ['Warm ginger water', 'Honey in warm water', 'Reduce dairy'],
+          fire: ['Morning sunlight essential', 'Skip breakfast if not hungry'],
+          air: ['Vigorous kapalabhati before meals', 'Movement energises'],
+          space: ['Longer fasts well-tolerated and very beneficial']
+        }
+      }
     }
   },
+
   winter: {
     season: 'winter',
     foods_to_favor: ['warm foods', 'healthy fats', 'hot spices', 'nuts', 'warming teas'],
     foods_to_avoid: ['cold foods', 'ice cream', 'raw foods', 'bitter foods'],
     lifestyle_tips: ['Stay warm', 'Oil massage', 'Hearty foods', 'Indoor activities'],
+    element_guidance: {
+      earth: ['Rich nourishing foods', 'Sesame', 'Ghee', 'Urad dal', 'Til ladoo'],
+      water: ['Warm water', 'Herbal decoctions', 'Spiced milk', 'Reduce cold'],
+      fire: ['Digestive fire strongest', 'Nourish deeply'],
+      air: ['Surya namaskar indoors', 'Bhastrika'],
+      space: ['Less fasting', 'Body needs warmth and nourishment']
+    },
     dosha_considerations: {
-      vata: ['Heavy, warm, oily foods', 'Extra care needed'],
-      pitta: ['Can handle more heat', 'Warming foods okay'],
-      kapha: ['Stimulating foods', 'Avoid too much heaviness']
-    }
-  },
-  'pre-winter': {
-    season: 'pre-winter',
-    foods_to_favor: ['warming spices', 'light foods', 'honey', 'ginger', 'turmeric'],
-    foods_to_avoid: ['heavy foods', 'excess dairy', 'cold foods', 'sweet foods'],
-    lifestyle_tips: ['Prepare for spring', 'Light detox', 'Increase activity', 'Early rising'],
-    dosha_considerations: {
-      vata: ['Transition carefully', 'Still need warming foods'],
-      pitta: ['Gentle warming', 'Prepare for hot season'],
-      kapha: ['Begin spring cleansing', 'Reduce heavy foods']
+      vata: {
+        guidance: ['Heavy, warm, oily foods', 'Extra care needed'],
+        element_guidance: {
+          earth: ['Warm, oily, heavy foods', 'Ghee daily', 'Root vegetables'],
+          water: ['Warm water only', 'Herbal teas', 'No cold drinks ever'],
+          fire: ['Eat at consistent times', 'Never skip meals', 'Noon is essential'],
+          air: ['Slow deep breathing before meals', 'Avoid eating anxious'],
+          space: ['Short fasts only (10–12 hrs)', 'Long fasting worsens Vata']
+        }
+      },
+      pitta: {
+        guidance: ['Can handle more heat', 'Warming foods okay'],
+        element_guidance: {
+          earth: ['Cooling foods', 'Coconut', 'Mint', 'Sweet fruits', 'Avoid spicy'],
+          water: ['Coconut water', 'Rose water', 'Stay very hydrated'],
+          fire: ['Avoid midday sun', 'Eat before 1pm', 'Cool cooking preferred'],
+          air: ['Sitali cooling breath before meals', 'Calm environment'],
+          space: ['Moon-phase fasting', 'Silence cools the mind naturally']
+        }
+      },
+      kapha: {
+        guidance: ['Stimulating foods', 'Avoid too much heaviness'],
+        element_guidance: {
+          earth: ['Light, dry, warm foods', 'Millets', 'Legumes', 'Bitter greens'],
+          water: ['Warm ginger water', 'Honey in warm water', 'Reduce dairy'],
+          fire: ['Morning sunlight essential', 'Skip breakfast if not hungry'],
+          air: ['Vigorous kapalabhati before meals', 'Movement energises'],
+          space: ['Longer fasts well-tolerated and very beneficial']
+        }
+      }
     }
   }
 };

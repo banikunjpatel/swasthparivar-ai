@@ -12,8 +12,10 @@ from api.grocery_generate import router as grocery_list_router
 from api.grocery_category_generate import router as grocery_categories_router
 from api.dosha_detector import router as prakriti_router
 from api.members import router as members_router
+from api.family_guidance import router as family_guidance_router
 # from api.firebase_auth import router as firebase_router
 from  api.users import router as users_router
+from api.tasks import router as tasks_router
 from dotenv import load_dotenv
 import os
 
@@ -78,6 +80,8 @@ def create_app() -> FastAPI:
     # app.include_router(firebase_router, prefix="/api/v1")
     app.include_router(users_router, prefix="/api/v1")
     app.include_router(members_router, prefix="/api/v1")
+    app.include_router(tasks_router, prefix="/api/v1")
+    app.include_router(family_guidance_router, prefix="/api/v1")
 
     return app
 

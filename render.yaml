@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: prakriti-parivar-api
+    runtime: python
+    region: singapore
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: MONGODB_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_MIN
+        value: "30"
+      - key: REFRESH_TOKEN_DAYS
+        value: "7"
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: FIREBASE_CREDENTIALS
+        sync: false
+      - key: MSG91_AUTH_KEY
+        sync: false
+      - key: MSG91_SENDER_ID
+        value: SWASTH
+      - key: MSG91_ROUTE
+        value: "4"
+      - key: MSG91_COUNTRY_CODE
+        value: "91"

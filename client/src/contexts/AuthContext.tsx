@@ -2,7 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import apiClient from '../apiCall/api';
 import { signOut } from "firebase/auth";
 import { auth } from "../components/Auth/firebaseConfig";
-import { id } from 'date-fns/locale';
+import { markUserAsNew } from '../hooks/useOnboarding';
+import { getCurrentSeason } from '../utils/ayurvedic-logic';
 
 
 interface User {
@@ -13,6 +14,8 @@ interface User {
   weight?: number;
   height?: number;
   location?: string;
+  region?: string;
+  preference?: string;
   dietType: 'vegetarian' | 'non-vegetarian' | 'vegan';
   allergies: string[];
   healthConditions: string[];
@@ -23,9 +26,12 @@ interface User {
     kapha: number;
   };
   assessmentCompleted: boolean;
+  onboardingCompleted?: boolean;
   lastLogin: string;
   createdAt: string;
   updatedAt: string;
+  season?: string;
+  seasonLastUpdated?: string;
 }
 
 interface AuthContextType {
@@ -131,7 +137,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Sign in response:', userData);
       let loginData = {
-        uId: userData.uid
+        uId: userData.uid,
+        season: getCurrentSeason(),
       }
       const response = await apiClient.login(loginData);
       if (response.error) {
@@ -145,6 +152,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(user);
         setIsAuthenticated(true);
         localStorage.setItem('user', JSON.stringify(user));
+        
+        // Mark user as new for onboarding flow
+        markUserAsNew(user.userId);
       }
 
       return {};

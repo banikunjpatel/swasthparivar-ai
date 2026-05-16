@@ -32,7 +32,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, fallback }) =
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Authentication Required</h2>
           <p className="text-gray-600 mb-6">
-            Please sign in to access your personalized Ayurvedic wellness features and meal plans.
+            Please sign in to access your personalized natural living features and meal plans.
           </p>
           <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 border border-green-200">
             <p className="text-sm text-gray-700">

@@ -130,9 +130,43 @@ export interface RutucharyaGuidance {
   foods_to_favor: string[];
   foods_to_avoid: string[];
   lifestyle_tips: string[];
+  element_guidance?: {
+    earth?: string[];
+    water?: string[];
+    fire?: string[];
+    air?: string[];
+    space?: string[];
+  };
   dosha_considerations: {
-    vata: string[];
-    pitta: string[];
-    kapha: string[];
+    vata: {
+      guidance: string[];
+      element_guidance?: {
+        earth?: string[];
+        water?: string[];
+        fire?: string[];
+        air?: string[];
+        space?: string[];
+      };
+    };
+    pitta: {
+      guidance: string[];
+      element_guidance?: {
+        earth?: string[];
+        water?: string[];
+        fire?: string[];
+        air?: string[];
+        space?: string[];
+      };
+    };
+    kapha: {
+      guidance: string[];
+      element_guidance?: {
+        earth?: string[];
+        water?: string[];
+        fire?: string[];
+        air?: string[];
+        space?: string[];
+      };
+    };
   };
 }

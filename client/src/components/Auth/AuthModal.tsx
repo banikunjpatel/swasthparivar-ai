@@ -253,9 +253,14 @@ import {
   sendEmailVerification,
   RecaptchaVerifier,
   signInWithPhoneNumber,
+  sendPasswordResetEmail,
+  fetchSignInMethodsForEmail,
+  User,
 } from "firebase/auth";
 import { auth, googleProvider } from "./firebaseConfig";
 import { useAuth } from "../../contexts/AuthContext";
+import { getCurrentSeason } from "../../utils/ayurvedic-logic";
+import SetPasswordModal from "./SetPasswordModal";
 
 interface AuthModalProps {
   open: boolean;
@@ -277,9 +282,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const [setPasswordOpen, setSetPasswordOpen] = useState(false);
+  const [googleFirebaseUser, setGoogleFirebaseUser] = useState<User | null>(null);
+
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+
   const { signIn, signUp } = useAuth();
 
-  if (!open) return null;
+  // Stay mounted while set-password prompt is active even if parent closed the auth modal
+  if (!open && !setPasswordOpen) return null;
 
   // ---------- Helpers ----------
   const resetForm = () => {
@@ -291,6 +306,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
     setOtp("");
     setConfirmationResult(null);
     setUseOtp(false);
+    setForgotMode(false);
+    setForgotEmail('');
+    setForgotSuccess(false);
+    setForgotError('');
   };
 
   const handleFirebaseError = (err: any) => {
@@ -310,16 +329,49 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
         setError("Your password is too weak. Please use a stronger one.");
         break;
       case "auth/user-not-found":
-        setError("No account found with this email. Try signing up.");
+        setError("No account found with this email address. Please check and try again, or sign up.");
         break;
       case "auth/wrong-password":
-        setError("Incorrect password. Try again.");
+        setError("Incorrect password. Please double-check your password and try again.");
+        break;
+      case "auth/invalid-credential":
+        setError("The email or password you entered is incorrect. Please try again.");
         break;
       case "auth/too-many-requests":
-        setError("Too many attempts. Try again later.");
+        setError("Too many failed attempts. Please wait a few minutes and try again.");
         break;
       default:
         setError(err.message || "Authentication failed. Please try again.");
+    }
+  };
+
+  // ---------- Forgot password ----------
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotError('');
+    if (!forgotEmail.trim()) { setForgotError('Please enter your email address.'); return; }
+    setForgotLoading(true);
+    try {
+      const methods = await fetchSignInMethodsForEmail(auth, forgotEmail.trim());
+      if (methods.length > 0 && !methods.includes('password') && methods.includes('google.com')) {
+        setForgotError(
+          'This account uses Google Sign-In only. Please sign in with Google, then set a password from your profile menu (top-right corner).'
+        );
+        setForgotLoading(false);
+        return;
+      }
+      await sendPasswordResetEmail(auth, forgotEmail.trim());
+      setForgotSuccess(true);
+    } catch (err: any) {
+      if (err.code === 'auth/user-not-found') {
+        setForgotError('No account found with this email address.');
+      } else if (err.code === 'auth/invalid-email') {
+        setForgotError('Please enter a valid email address.');
+      } else {
+        setForgotError(err.message || 'Failed to send reset email. Try again.');
+      }
+    } finally {
+      setForgotLoading(false);
     }
   };
 
@@ -331,28 +383,44 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const token = await result.user.getIdToken();
-      // Determine if backend signup or signin - we use signUp for new users and signIn for existing.
-      // Attempt signIn first (backend should return appropriate error if user not found).
+
       const payload = {
+        idToken: token,
         uid: result.user.uid,
+        name: result.user.displayName || "",
         email: result.user.email,
         phoneNumber: result.user.phoneNumber || "",
         createdAt: result.user.metadata.creationTime,
         emailVerified: result.user.emailVerified,
+        season: getCurrentSeason(),
       };
 
+      // Register is an upsert on the backend: safe for both new and returning users.
+      // Always call it first so the user record exists before we try to login.
+      const regRes = await signUp(payload);
+      if (regRes?.error) {
+        setError(regRes.error || "Registration failed. Please try again.");
+        return;
+      }
+
+      // Sign in to fetch the user record and persist session
       const res = await signIn(payload, token);
       if (res?.error) {
-        // If backend says user not found, we can optionally give signup option.
-        // Here we try to sign up automatically only if user chooses (but Option B: OTP login only => for Google we'll show message)
-        setError(res.error || "Login failed. Please sign up first.");
-        // Do not auto-signup in Option B.
+        setError(res.error || "Login failed. Please try again.");
       } else {
-        setSuccess("Login successful!");
-        setTimeout(() => {
-          onClose();
-          resetForm();
-        }, 1000);
+        // Check if user has a password provider linked
+        const hasPassword = result.user.providerData.some(
+          (p) => p.providerId === 'password'
+        );
+        if (!hasPassword) {
+          // Show set-password prompt — keep component mounted, hide the auth overlay
+          setGoogleFirebaseUser(result.user);
+          setSetPasswordOpen(true);
+          // Don't call onClose() yet — SetPasswordModal's onClose will do it
+        } else {
+          setSuccess("Login successful!");
+          setTimeout(() => { onClose(); resetForm(); }, 800);
+        }
       }
     } catch (err: any) {
       handleFirebaseError(err);
@@ -419,15 +487,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
 
   // ---------- Phone OTP (Option B: OTP login only) ----------
   const setupRecaptcha = () => {
-  if (!(window as any).recaptchaVerifier) {
-    (window as any).recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      "recaptcha-container",
-      { size: "invisible" }
-    );
-  }
-  return (window as any).recaptchaVerifier;
-};
+    if (!(window as any).recaptchaVerifier) {
+      (window as any).recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        { size: "invisible" }
+      );
+    }
+    return (window as any).recaptchaVerifier;
+  };
 
   const handleSendOtp = async () => {
     setError("");
@@ -440,8 +508,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
     try {
       // setupRecaptcha();
       const appVerifier = setupRecaptcha();
-  const fullPhone = `+91${phone}`;
-  const confirmationResult = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
+      const fullPhone = `+91${phone}`;
+      const confirmationResult = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
       //  const appVerifier = setupRecaptcha();
       // const fullPhone = `+91${phone}`;
       // const result = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
@@ -488,7 +556,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
         // We assume backend returns consistent error messages in res.error
         setError(
           res.error ||
-            "No account associated with this phone number. Please sign up using Email & Password."
+          "No account associated with this phone number. Please sign up using Email & Password."
         );
       } else {
         setSuccess("Login successful!");
@@ -512,42 +580,43 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
 
   // ---------- UI ----------
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative max-h-[90vh] overflow-y-auto">
-        <button
-          onClick={() => {
-            onClose();
-            resetForm();
-          }}
-          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <X className="h-5 w-5" />
-        </button>
+    <>
+      {open && !setPasswordOpen && <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative max-h-[90vh] overflow-y-auto">
+          <button
+            onClick={() => {
+              onClose();
+              resetForm();
+            }}
+            className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
 
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">🧘‍♀️</span>
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl">🧘‍♀️</span>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800">
+              {isLogin ? "Welcome Back" : "Begin Your Journey"}
+            </h2>
+            <p className="text-gray-600 mt-2">
+              {isLogin
+                ? "Continue your natural living journey"
+                : "Discover personalized nutrition for your unique nature"}
+            </p>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800">
-            {isLogin ? "Welcome Back" : "Begin Your Journey"}
+
+          <h2 className="text-2xl font-semibold text-center mb-6">
+            {isLogin ? "Sign In" : "Create Account"}
           </h2>
-          <p className="text-gray-600 mt-2">
-            {isLogin
-              ? "Continue your Ayurvedic wellness journey"
-              : "Discover personalized nutrition for your unique constitution"}
-          </p>
-        </div>
 
-        <h2 className="text-2xl font-semibold text-center mb-6">
-          {isLogin ? "Sign In" : "Create Account"}
-        </h2>
-
-        {/* Form */}
-        <form
-          onSubmit={useOtp ? handleVerifyOtp : handleEmailAuth}
-          className="space-y-4"
-        >
-          {/* Toggle between Email and OTP 
+          {/* Form */}
+          <form
+            onSubmit={useOtp ? handleVerifyOtp : handleEmailAuth}
+            className="space-y-4"
+          >
+            {/* Toggle between Email and OTP 
           <div className="flex items-center justify-center gap-3 mb-2">
             <button
               type="button"
@@ -577,136 +646,226 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
             </button>
           </div>*/}
 
-          {useOtp ? (
-            <>
-              {/* PHONE */}
-              <input
-                type="tel"
-                placeholder="Enter 10-digit mobile number"
-                className="w-full border rounded-lg px-4 py-2"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                required
-              />
-
-              {confirmationResult ? (
+            {useOtp ? (
+              <>
+                {/* PHONE */}
                 <input
-                  type="text"
-                  placeholder="Enter OTP"
+                  type="tel"
+                  placeholder="Enter 10-digit mobile number"
                   className="w-full border rounded-lg px-4 py-2"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
                   required
                 />
-              ) : null}
 
-              {!confirmationResult ? (
-                <button
-                  type="button"
-                  onClick={handleSendOtp}
-                  disabled={loading}
-                  className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
-                >
-                  {loading ? "Sending OTP..." : "Send OTP"}
-                </button>
-              ) : (
+                {confirmationResult ? (
+                  <input
+                    type="text"
+                    placeholder="Enter OTP"
+                    className="w-full border rounded-lg px-4 py-2"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    required
+                  />
+                ) : null}
+
+                {!confirmationResult ? (
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    disabled={loading}
+                    className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
+                  >
+                    {loading ? "Sending OTP..." : "Send OTP"}
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
+                  >
+                    {loading ? "Verifying..." : "Verify OTP"}
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                {/* EMAIL / PASSWORD */}
+                <input
+                  type="email"
+                  placeholder="Email"
+                  className="w-full border rounded-lg px-4 py-2"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <div>
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    className="w-full border rounded-lg px-4 py-2"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  {isLogin && (
+                    <button
+                      type="button"
+                      onClick={() => { setForgotMode(true); setForgotEmail(email); setForgotError(''); setForgotSuccess(false); }}
+                      className="mt-1.5 text-xs text-green-600 hover:underline float-right"
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
+
                 <button
                   type="submit"
                   disabled={loading}
                   className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
                 >
-                  {loading ? "Verifying..." : "Verify OTP"}
+                  {loading ? "Please wait..." : isLogin ? "Login" : "Sign Up"}
                 </button>
-              )}
-            </>
-          ) : (
-            <>
-              {/* EMAIL / PASSWORD */}
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full border rounded-lg px-4 py-2"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full border rounded-lg px-4 py-2"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              </>
+            )}
+          </form>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
-              >
-                {loading ? "Please wait..." : isLogin ? "Login" : "Sign Up"}
-              </button>
-            </>
+          {/* status messages */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+              <div className="flex items-start space-x-2">
+                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+            </div>
           )}
-        </form>
 
-        {/* status messages */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-            <div className="flex items-start space-x-2">
-              <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-              <p className="text-red-600 text-sm">{error}</p>
+          {success && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
+              <div className="flex items-start space-x-2">
+                <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                <p className="text-green-600 text-sm">{success}</p>
+              </div>
+            </div>
+          )}
+
+          {/* ── Forgot-password panel (overlays the modal content) ── */}
+          {forgotMode && (
+            <div className="absolute inset-0 bg-white rounded-2xl z-10 flex flex-col p-8">
+              {forgotSuccess ? (
+                <div className="flex flex-col items-center justify-center flex-1 text-center">
+                  <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h3 className="font-bold text-gray-800 text-lg mb-2">Check your inbox</h3>
+                  <p className="text-gray-500 text-sm mb-1">
+                    We sent a password reset link to
+                  </p>
+                  <p className="font-semibold text-gray-700 text-sm mb-6">{forgotEmail}</p>
+                  <button
+                    onClick={() => setForgotMode(false)}
+                    className="w-full bg-green-600 text-white py-2.5 rounded-lg font-semibold hover:bg-green-700 transition"
+                  >
+                    Back to Login
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3 mb-6">
+                    <button
+                      onClick={() => setForgotMode(false)}
+                      className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+                    >
+                      ←
+                    </button>
+                    <div>
+                      <h3 className="font-bold text-gray-800 text-lg">Reset Password</h3>
+                      <p className="text-gray-500 text-xs mt-0.5">We'll email you a reset link</p>
+                    </div>
+                  </div>
+                  <form onSubmit={handleForgotPassword} className="space-y-4 flex-1">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+                      <input
+                        type="email"
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                        placeholder="Enter your email"
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                        required
+                        autoFocus
+                      />
+                    </div>
+                    {forgotError && (
+                      <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2.5">
+                        <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                        <p className="text-red-600 text-xs">{forgotError}</p>
+                      </div>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={forgotLoading}
+                      className="w-full bg-gradient-to-r from-green-600 to-teal-600 text-white py-2.5 rounded-lg font-semibold hover:opacity-90 active:scale-95 transition disabled:opacity-60"
+                    >
+                      {forgotLoading ? 'Sending…' : 'Send Reset Link'}
+                    </button>
+                  </form>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Google Sign-in */}
+          <div className="mt-4 text-center">
+            <button
+              onClick={handleGoogleLogin}
+              className="w-full bg-gray-100 py-2 rounded-lg hover:bg-gray-200 flex items-center justify-center gap-2"
+              disabled={loading}
+            >
+              <img
+                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                alt="Google"
+                className="w-5 h-5"
+              />
+              Sign in with Google
+            </button>
+          </div>
+
+          <p className="text-center text-sm mt-4">
+            {isLogin ? "New to Prakriti Parivar?" : "Already user of Prakriti Parivar?"}
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-green-600 ml-1 hover:underline"
+            >
+              {isLogin ? "Sign up" : "Login"}
+            </button>
+          </p>
+
+          {/* recaptcha container */}
+
+
+          <div className="mt-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 border border-green-200">
+            <div className="text-center">
+              <p className="text-sm text-gray-700 mb-2 font-semibold">🌿 Ancient Wisdom, Natural Living</p>
+              <p className="text-xs text-gray-600">Guidance rooted in your family's true nature</p>
             </div>
           </div>
-        )}
-
-        {success && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
-            <div className="flex items-start space-x-2">
-              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-              <p className="text-green-600 text-sm">{success}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Google Sign-in */}
-        <div className="mt-4 text-center">
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full bg-gray-100 py-2 rounded-lg hover:bg-gray-200 flex items-center justify-center gap-2"
-            disabled={loading}
-          >
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              alt="Google"
-              className="w-5 h-5"
-            />
-            Sign in with Google
-          </button>
         </div>
+        <div id="recaptcha-container" />
+      </div>}
 
-        <p className="text-center text-sm mt-4">
-          {isLogin ? "New to Swasth Parivar?" : "Already user of Swasth Parivar?"}
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-green-600 ml-1 hover:underline"
-          >
-            {isLogin ? "Sign up" : "Login"}
-          </button>
-        </p>
-
-        {/* recaptcha container */}
-        
-
-        <div className="mt-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 border border-green-200">
-          <div className="text-center">
-            <p className="text-sm text-gray-700 mb-2 font-semibold">🌿 Ancient Wisdom, Modern Science</p>
-            <p className="text-xs text-gray-600">Personalized wellness based on your Ayurvedic constitution</p>
-          </div>
-        </div>
-      </div>
-      <div id="recaptcha-container" />
-    </div>
+      {/* Set-password prompt shown after Google sign-in */}
+      <SetPasswordModal
+        open={setPasswordOpen}
+        firebaseUser={googleFirebaseUser}
+        onClose={() => {
+          setSetPasswordOpen(false);
+          setGoogleFirebaseUser(null);
+          onClose();
+          resetForm();
+        }}
+      />
+    </>
   );
 };
 

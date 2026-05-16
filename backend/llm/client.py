@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
 from openai import AsyncOpenAI
-from openai import APIError, APITimeoutError, RateLimitError
+from openai import APIError, APITimeoutError, AuthenticationError, RateLimitError
 
 
 @dataclass
@@ -114,6 +114,8 @@ class LLMClient:
                 text = resp.choices[0].message.content  # guaranteed JSON string for json_schema
                 data = json.loads(text)
                 return StructuredResult(data=data, model=model, raw=resp)
+            except AuthenticationError:
+                raise  # wrong key — retrying won't help
             except (RateLimitError, APITimeoutError, APIError) as e:
                 last_err = e
                 # simple exponential backoff: 0.5s, 1s, 2s...

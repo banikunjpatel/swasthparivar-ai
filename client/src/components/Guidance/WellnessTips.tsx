@@ -47,7 +47,7 @@ const prakritiTips: Record<'vata' | 'pitta' | 'kapha', string[]> = {
 const todayTip = {
     title: 'Morning Ritual',
     description:
-        'Start your day with a glass of warm water mixed with a pinch of turmeric and lemon juice. This simple Ayurvedic practice helps detoxify your system and boosts immunity.',
+        'Start your day with a glass of warm water mixed with a pinch of turmeric and lemon juice. This simple traditional practice helps detoxify your system and boosts immunity.',
 };
 
 const WellnessTips: React.FC<WellnessTipsProps> = ({ season, members }) => {
@@ -58,7 +58,7 @@ const WellnessTips: React.FC<WellnessTipsProps> = ({ season, members }) => {
 
     return (
         <div className="p-6 rounded-md shadow-md bg-green-50">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">🌿 Wellness & Ayurvedic Tips</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">🌿 Wellness & Natural Living Tips</h2>
 
             {/* Today's Tip */}
             <div className="bg-green-100 border border-green-300 p-4 rounded-md shadow-sm mb-6">

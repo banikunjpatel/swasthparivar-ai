@@ -16,31 +16,36 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 13% 18%;
 
-    --primary: 134 58% 43%;
+    /* Brand: Emerald Green #059669 → Teal #0d9488 */
+    --primary: 161 94% 30%;
     --primary-foreground: 0 0% 100%;
+    --primary-dark: 175 84% 32%;
+    --primary-darker: 175 84% 16%;
 
-    --secondary: 134 45% 95%;
-    --secondary-foreground: 134 58% 25%;
+    /* emerald-50 #ecfdf5 */
+    --secondary: 152 76% 96%;
+    --secondary-foreground: 163 88% 20%;
 
     --muted: 210 20% 96%;
     --muted-foreground: 220 13% 46%;
 
-    --accent: 134 50% 88%;
-    --accent-foreground: 134 58% 25%;
+    /* teal-50 #f0fdfa */
+    --accent: 166 76% 97%;
+    --accent-foreground: 163 88% 20%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 134 58% 43%;
+    --ring: 161 94% 30%;
 
     --radius: 0.75rem;
-    
-    /* Wellness theme custom tokens */
-    --wellness-green: 134 58% 43%;
-    --wellness-green-light: 134 50% 88%;
-    --wellness-green-dark: 134 58% 35%;
+
+    /* Brand custom tokens */
+    --wellness-green: 161 94% 30%;
+    --wellness-green-light: 152 76% 96%;
+    --wellness-green-dark: 175 84% 32%;
     
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -48,7 +53,7 @@
     
     /* Shadows */
     --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --shadow-card-hover: 0 4px 16px rgba(46, 175, 77, 0.15);
+    --shadow-card-hover: 0 4px 16px rgba(5, 150, 105, 0.15);
 
     --sidebar-background: 0 0% 98%;
 
@@ -77,27 +82,28 @@
     --popover: 220 15% 16%;
     --popover-foreground: 210 20% 98%;
 
-    --primary: 134 58% 50%;
+    /* Brand dark variants — same hues, higher lightness for dark bg */
+    --primary: 161 84% 42%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 15% 22%;
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 175 30% 20%;
+    --secondary-foreground: 161 60% 85%;
 
     --muted: 220 15% 22%;
     --muted-foreground: 220 13% 65%;
 
-    --accent: 134 50% 25%;
-    --accent-foreground: 210 20% 98%;
+    --accent: 175 30% 24%;
+    --accent-foreground: 161 60% 85%;
 
     --destructive: 0 62.8% 50%;
     --destructive-foreground: 210 20% 98%;
 
     --border: 220 15% 22%;
     --input: 220 15% 22%;
-    --ring: 134 58% 50%;
-    
+    --ring: 161 84% 42%;
+
     --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-card-hover: 0 4px 16px rgba(46, 175, 77, 0.25);
+    --shadow-card-hover: 0 4px 16px rgba(5, 150, 105, 0.25);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

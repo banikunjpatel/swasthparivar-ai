@@ -59,10 +59,12 @@ export function transformMealPlan(rawData: any[]): TransformedMealPlan[] {
           dinner: dayObj.meals?.dinner || null,
         },
       }));
+      // weekStart lives on the envelope (entry.weekStart), NOT on entry.plan
+      const rawWeekStart: string = entry.weekStart || entry.plan?.weekStart || '';
       return {
-        id: entry._id || entry.plan.weekStart || 'plan',
+        id: entry._id || rawWeekStart || 'plan',
         userId: entry.userId,
-        weekStart: entry.plan.weekStart?.split('T')[0] || entry.plan.weekStart,
+        weekStart: rawWeekStart.split('T')[0],
         days,
       };
     }

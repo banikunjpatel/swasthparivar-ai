@@ -11,23 +11,35 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "vata": { "type": "number", "minimum": 0, "maximum": 100 },
-        "pitta": { "type": "number", "minimum": 0, "maximum": 100 },
-        "kapha": { "type": "number", "minimum": 0, "maximum": 100 }
+        "vata": { "type": "number" },
+        "pitta": { "type": "number" },
+        "kapha": { "type": "number" }
       },
       "required": ["vata", "pitta", "kapha"]
+    },
+    "elements": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fire": { "type": "number" },
+        "water": { "type": "number" },
+        "earth": { "type": "number" },
+        "air": { "type": "number" },
+        "space": { "type": "number" }
+      },
+      "required": ["fire", "water", "earth", "air", "space"]
     },
     "guidance": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "foods_to_favor": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "foods_to_avoid": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "lifestyle_tips": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        "foods_to_favor": { "type": "array", "items": { "type": "string" } },
+        "foods_to_avoid": { "type": "array", "items": { "type": "string" } },
+        "lifestyle_tips": { "type": "array", "items": { "type": "string" } }
       },
       "required": ["foods_to_favor", "foods_to_avoid", "lifestyle_tips"]
     },
     "notes": { "type": "string" }
   },
-  "required": ["primaryDosha", "distribution", "guidance"]
+  "required": ["primaryDosha", "distribution", "elements", "guidance"]
 }

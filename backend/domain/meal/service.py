@@ -18,22 +18,29 @@ from .models import (
     FamilyMember,
     GenerateMealPlanRequest,
     GenerateMealPlanResponse,
+    MealPlanDocument,
     WeeklyMealPlan,
 )
 from .validators import infer_household, validate_week_start
 
 
 SYSTEM_PROMPT = (
-    "You are an expert Indian nutritionist and home-cooking planner. "
-    "Create a 7-day plan with breakfast, lunch, dinner. Respect region, diet, and household doshas. "
-    "Use metric units (g, kg, ml, L, pcs). Output ONLY valid JSON matching the provided schema."
+    "You are Prakriti Parivar, an expert in natural living and traditional wellness consultant. "
+    "Generate a 7-day personalized meal plan for the entire family following natural living principles, "
+    "Satvic guidelines, and seasonal wisdom. "
+    "CRITICAL: Breakfast must be FRUITS ONLY (seasonal, regional). "
+    "Lunch must be the LARGEST MEAL with dal, grain, vegetables, salad, and chaas. "
+    "Dinner must be LIGHT and EARLY. "
+    "NO REPETITION of dishes within the week. "
+    "Output ONLY valid JSON matching the provided schema."
 )
 
 class MealPlanService:
-    def __init__(self, llm: LLMClient, cache: Cache | None, rotation_repo=None):
+    def __init__(self, llm: LLMClient, cache: Cache | None, rotation_repo=None, meal_plan_repo=None):
         self.llm = llm
         self.cache = cache
         self.rotation_repo = rotation_repo
+        self.meal_plan_repo = meal_plan_repo
 
     def _cache_key(self, payload: dict) -> str:
         blob = json.dumps(payload, sort_keys=True).encode()
@@ -148,6 +155,21 @@ class MealPlanService:
 
         if self.cache:
             await self.cache.setex(ck, None, {"plan": plan.model_dump(), "meta": meta})
+
+        # Persist to MongoDB (fire-and-forget — never blocks the response)
+        if self.meal_plan_repo:
+            try:
+                doc = MealPlanDocument(
+                    userId=req.userId,
+                    plan=plan,
+                    modelMeta=meta,
+                ).model_dump(mode="json")
+                doc["weekStart"] = req.weekStart
+                doc["region"] = req.region
+                doc["dietType"] = req.dietType
+                await self.meal_plan_repo.save(doc)
+            except Exception:
+                pass
 
         # Record rotation for this user/week (optional if DB configured)
         if self.rotation_repo:

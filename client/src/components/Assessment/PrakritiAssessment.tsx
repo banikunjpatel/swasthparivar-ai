@@ -8,7 +8,6 @@ import { AnimatePresence } from "framer-motion";
 import { quizQuestions } from "../../data/quizQuestions";
 import { Button } from "@mui/material";
 import { apiClient } from "../../apiCall/api";
-import { useAuth } from "../../hooks/useAuth";
 
 type QuizStage = 'questions' | 'review' | 'success';
 
@@ -30,7 +29,6 @@ export const PrakritiQuiz = ({ member, onComplete }: PrakritiQuizProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [stage, setStage] = useState<QuizStage>('questions');
-  const { user } = useAuth();
 
   const handleAnswerSelect = (answer: string) => {
     setAnswers(prev => ({
@@ -61,27 +59,23 @@ export const PrakritiQuiz = ({ member, onComplete }: PrakritiQuizProps) => {
   };
 
   const handleSubmit = async () => {
-    // Transform answers to backend format
-    const questions = quizQuestions.map((q) => {
-      const answer = answers[q.id];
-      return {
-        question: q.question,
-        answer: answer || "",
-      };
+    if (!member) {
+      console.error("No member provided for assessment");
+      return;
+    }
+
+    // Transform answers to the new format: { "1": "A", "2": "B", ... }
+    const answersMap: Record<string, string> = {};
+    Object.entries(answers).forEach(([questionId, answer]) => {
+      answersMap[questionId] = answer;
     });
 
-    // Get profile data from member (if provided) or user context
-    const profile = {
-      name: member?.fullName || user?.name || "User",
-      age: member?.age || user?.age || undefined,
-      gender: member?.gender || undefined,
-      region: member?.state || user?.location || undefined,
-    };
+    console.log('Submitting rule-based assessment with answers:', answersMap);
 
-    // Call prakriti assessment API
-    const response = await apiClient.calculatePrakriti({
-      profile,
-      questions,
+    // Call new rule-based prakriti assessment API
+    const response = await apiClient.calculatePrakritiRuleBased({
+      memberId: member._id,
+      answers: answersMap,
     });
 
     if (response.error) {
@@ -91,8 +85,8 @@ export const PrakritiQuiz = ({ member, onComplete }: PrakritiQuizProps) => {
 
     console.log("Prakriti assessment result:", response.data);
 
-    // If member is provided, update member with complete prakriti assessment
-    if (member && response.data) {
+    // Update member with complete prakriti assessment
+    if (response.data) {
       // Structure the prakriti assessment data according to backend schema
       const prakritiAssessment = {
         primaryDosha: response.data.primaryDosha || 'unknown',
@@ -102,19 +96,30 @@ export const PrakritiQuiz = ({ member, onComplete }: PrakritiQuizProps) => {
           pitta: response.data.distribution?.pitta || 0,
           kapha: response.data.distribution?.kapha || 0,
         },
+        elements: response.data.elements ? {
+          fire: response.data.elements.fire || 0,
+          water: response.data.elements.water || 0,
+          earth: response.data.elements.earth || 0,
+          air: response.data.elements.air || 0,
+          space: response.data.elements.space || 0,
+        } : undefined,
         guidance: {
           foods_to_favor: response.data.guidance?.foods_to_favor || [],
           foods_to_avoid: response.data.guidance?.foods_to_avoid || [],
           lifestyle_tips: response.data.guidance?.lifestyle_tips || [],
         },
         notes: response.data.notes || null,
-        version: "1.0",
+        version: "2.0-rule-based",
       };
 
+      console.log('Saving prakriti assessment with elements:', prakritiAssessment);
+
       try {
-        await apiClient.updateFamilyMember(member._id, {
+        const updateResponse = await apiClient.updateFamilyMember(member._id, {
           prakriti: prakritiAssessment,
         });
+
+        console.log('Member update response:', updateResponse);
 
         // Call onComplete callback to refresh member list
         if (onComplete) {
@@ -153,7 +158,7 @@ export const PrakritiQuiz = ({ member, onComplete }: PrakritiQuizProps) => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto pb-10">
+    <div className="max-w-3xl mx-auto pb-4">
       <ProgressBar current={currentQuestion + 1} total={quizQuestions.length} />
 
       <AnimatePresence mode="wait">
@@ -165,7 +170,7 @@ export const PrakritiQuiz = ({ member, onComplete }: PrakritiQuizProps) => {
         />
       </AnimatePresence>
 
-      <div className="flex justify-between items-center mt-8 gap-4">
+      <div className="flex justify-between items-center mt-4 gap-4">
         <Button
           onClick={handleBack}
           variant="outlined"

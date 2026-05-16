@@ -63,7 +63,7 @@ const NoMealPlan: React.FC<NoMealPlanProps> = ({ members, userId, onPlanGenerate
             <Award className="text-orange-500 mt-1" />
             <div>
               <h4 className="font-semibold text-gray-800">2. Complete Prakriti Assessment</h4>
-              <p className="text-gray-600 text-sm">Discover individual Ayurvedic constitutions for personalized recommendations</p>
+              <p className="text-gray-600 text-sm">Discover individual body type assessments for personalized recommendations</p>
             </div>
           </div>
 

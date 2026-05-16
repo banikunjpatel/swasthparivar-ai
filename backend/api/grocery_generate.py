@@ -22,7 +22,7 @@ async def grocery_list_generate(
     model = x_model if (allow_override and x_model) else body.model
     prompt_version = x_prompt_ver if x_prompt_ver is not None else body.prompt_version
 
-    svc = GroceryService(llm=request.app.state.llm, cache=request.app.state.cache)
+    svc = GroceryService(llm=request.app.state.claude_llm, cache=request.app.state.cache)
     final_req = body.model_copy(update={"model": model, "prompt_version": prompt_version})
 
     data, meta = await svc.generate(final_req)

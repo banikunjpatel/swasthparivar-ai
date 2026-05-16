@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import List, Literal, Optional
 from pydantic import BaseModel, Field
 
-DietType = Literal["veg", "non_veg", "eggs_ok"]
+DietType = Literal["vegetarian", "satvic", "vegan", "non_veg", "eggs_ok", "veg"]
 
 class Ingredient(BaseModel):
     name: str
@@ -23,6 +23,7 @@ class GenerateRecipeRequest(BaseModel):
     region: str
     dietType: DietType
     servings: int = Field(ge=1)
+    userId: Optional[str] = None  # Add userId for tracking
     model: Optional[str] = None
     prompt_version: Optional[int] = None
     force: bool = False
