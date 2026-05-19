@@ -33,20 +33,19 @@ def create_app() -> FastAPI:
 
     cors = cors_config()
     allowed_origins_env = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o]
-    
-    # Get origins from config, env, or default
-    cors_origins = cors.get("allow_origins")
-    if cors_origins:
-        origins = cors_origins
-    elif allowed_origins_env:
+
+    # Env var takes highest priority, then non-wildcard settings.yml value, then default
+    cors_origins_file = cors.get("allow_origins")
+    if allowed_origins_env:
         origins = allowed_origins_env
+    elif cors_origins_file and cors_origins_file != ["*"]:
+        origins = cors_origins_file
     else:
         origins = ["*"]
-    
+
     allow_creds = cors.get("allow_credentials", True)
-    
+
     # CORS spec: cannot use allow_origins=["*"] with allow_credentials=True
-    # If credentials are enabled and origins is ["*"], use specific dev origins
     if allow_creds and origins == ["*"]:
         origins = [
             "http://localhost:3000",
@@ -55,10 +54,8 @@ def create_app() -> FastAPI:
             "http://127.0.0.1:5173",
             "http://localhost:8080",
         ]
-        print(f"CORS Warning: Using default dev origins because allow_credentials=True and origins=['*']")
-        print(f"CORS: Allowed origins: {origins}")
-    else:
-        print(f"CORS: Allowed origins: {origins}")
+
+    print(f"CORS: Allowed origins: {origins}")
     
     app.add_middleware(
         CORSMiddleware,

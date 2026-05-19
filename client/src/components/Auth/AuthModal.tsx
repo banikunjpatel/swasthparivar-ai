@@ -394,28 +394,28 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
         season: getCurrentSeason(),
       };
 
-      // Register is an upsert on the backend: safe for both new and returning users.
-      // Always call it first so the user record exists before we try to login.
-      const regRes = await signUp(payload);
-      if (regRes?.error) {
-        setError(regRes.error || "Registration failed. Please try again.");
-        return;
+      // Try login first — only register if the user doesn't exist yet
+      let res = await signIn(payload, token);
+
+      if (res?.error) {
+        // User not found → register then login
+        const regRes = await signUp(payload);
+        if (regRes?.error) {
+          setError(regRes.error || "Registration failed. Please try again.");
+          return;
+        }
+        res = await signIn(payload, token);
       }
 
-      // Sign in to fetch the user record and persist session
-      const res = await signIn(payload, token);
       if (res?.error) {
         setError(res.error || "Login failed. Please try again.");
       } else {
-        // Check if user has a password provider linked
         const hasPassword = result.user.providerData.some(
           (p) => p.providerId === 'password'
         );
         if (!hasPassword) {
-          // Show set-password prompt — keep component mounted, hide the auth overlay
           setGoogleFirebaseUser(result.user);
           setSetPasswordOpen(true);
-          // Don't call onClose() yet — SetPasswordModal's onClose will do it
         } else {
           setSuccess("Login successful!");
           setTimeout(() => { onClose(); resetForm(); }, 800);
@@ -824,7 +824,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
                 alt="Google"
                 className="w-5 h-5"
               />
-              Sign in with Google
+              {isLogin ? 'Sign in with Google' : 'Sign up with Google'}
             </button>
           </div>
 

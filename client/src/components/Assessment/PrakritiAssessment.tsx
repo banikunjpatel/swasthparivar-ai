@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ProgressBar } from "./ProgressBar";
 import { QuestionCard } from "./QuestionCard";
 import { ReviewAnswers } from "./ReviewAnswers";
@@ -29,6 +29,18 @@ export const PrakritiQuiz = ({ member, onComplete }: PrakritiQuizProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [stage, setStage] = useState<QuizStage>('questions');
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let parent = containerRef.current?.parentElement;
+    while (parent) {
+      if (parent.scrollHeight > parent.clientHeight) {
+        parent.scrollTo({ top: 0, behavior: 'smooth' });
+        break;
+      }
+      parent = parent.parentElement;
+    }
+  }, [currentQuestion]);
 
   const handleAnswerSelect = (answer: string) => {
     setAnswers(prev => ({
@@ -147,7 +159,7 @@ export const PrakritiQuiz = ({ member, onComplete }: PrakritiQuizProps) => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto pb-4">
+    <div ref={containerRef} className="max-w-3xl mx-auto pb-8">
       <ProgressBar current={currentQuestion + 1} total={quizQuestions.length} />
 
       <AnimatePresence mode="wait">
