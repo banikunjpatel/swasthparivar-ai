@@ -50,12 +50,12 @@ const PrakritiAssessmentDialog = ({
   if (!open || !member) return null;
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-start justify-center px-4 pb-4 pt-14 sm:pt-16">
-      <div className="bg-white w-full max-w-3xl max-h-[calc(100vh-3.5rem)] sm:max-h-[calc(100vh-4rem)] rounded-2xl shadow-xl flex flex-col">
+      <div className="bg-white w-full max-w-3xl max-h-[calc(100dvh-3.5rem)] sm:max-h-[calc(100dvh-4rem)] rounded-2xl shadow-xl flex flex-col">
         <div className="px-6 py-3 border-b flex items-center justify-between shrink-0">
           <h2 className="text-base font-semibold text-gray-800">Body Type Assessment</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl leading-none" aria-label="Close">✕</button>
         </div>
-        <div className="flex-1 overflow-y-auto px-6 py-4 overscroll-contain">
+        <div className="flex-1 overflow-y-auto min-h-0 px-6 py-4 overscroll-contain">
           <PrakritiQuiz member={member} onComplete={onClose} />
         </div>
       </div>

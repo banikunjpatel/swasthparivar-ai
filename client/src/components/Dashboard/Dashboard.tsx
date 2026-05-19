@@ -91,9 +91,8 @@ const MEAL_META = {
 } as const;
 
 const QUICK_ACTIONS = [
-  { label: 'Prakriti Plate', sub: 'See your personalized meals', icon: '🍽️', section: 'meal-plan' },
-  { label: 'Browse Grocery', sub: 'Get what you need', icon: '🛒', section: 'grocery' },
-  { label: 'Meal Recipes', sub: 'Explore healthy recipes', icon: '🌿', section: 'guidance' },
+  { label: 'Family Members', sub: 'Manage your family profiles', icon: '👨‍👩‍👧', section: 'family' },
+  { label: 'Guidance', sub: "Family's seasonal wisdom", icon: '🧘‍♀️', section: 'guidance' },
 ];
 
 /* ─── MealCard (commented out - not currently used) ───────────────────────── */
@@ -493,11 +492,12 @@ const Dashboard: React.FC<DashboardProps> = ({
 
             {/* QUICK ACTIONS */}
             <div className="bg-card rounded-2xl border border-border shadow-sm p-5">
-              <h3 className="font-bold text-foreground mb-3">Upcoming Sections</h3>
+              <h3 className="font-bold text-foreground mb-3">Current Sections</h3>
               <div className="space-y-2">
                 {QUICK_ACTIONS.map(a => (
                   <button
                     key={a.section}
+                    onClick={() => onNavigate(a.section)}
                     className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-colors group"
                   >
                     <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-xl flex-shrink-0">

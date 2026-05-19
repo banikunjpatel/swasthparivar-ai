@@ -166,6 +166,10 @@ function AppContent() {
   }, [user]);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentSection]);
+
+  useEffect(() => {
     setCurrentSeason(getCurrentSeason());
     if (user && members && members.length > 0) {
       fetchMealPlan();
@@ -378,22 +382,16 @@ function AppContent() {
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
               <div className="space-y-2">
                 <button
-                  onClick={() => setCurrentSection('meal-plan')}
-                  className="w-full text-left p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors text-sm font-medium text-gray-700"
+                  onClick={() => setCurrentSection('family')}
+                  className="w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors text-sm font-medium text-gray-700"
                 >
-                  🍽️ View Meal Plan
-                </button>
-                <button
-                  onClick={() => setCurrentSection('grocery')}
-                  className="w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-sm font-medium text-gray-700"
-                >
-                  🛒 Browse Grocery
+                  👨‍👩‍👧 Family Members
                 </button>
                 <button
                   onClick={() => setCurrentSection('guidance')}
                   className="w-full text-left p-3 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors text-sm font-medium text-gray-700"
                 >
-                  🧘‍♀️ Daily Guidance
+                  🧘‍♀️ Guidance
                 </button>
               </div>
             </div>
